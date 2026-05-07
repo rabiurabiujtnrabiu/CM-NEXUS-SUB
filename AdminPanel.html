@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Owner Control Panel | CM Nexus Sub</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --primary: #0062ff;
+            --dark: #070a13;
+            --surface: #0f1424;
+            --border: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--dark); color: var(--text-main); padding-bottom: 50px; }
+
+        header {
+            padding: 20px; background: var(--surface); border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000;
+        }
+        header h1 { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        header h1 i { color: var(--warning); }
+        .back-btn { font-size: 18px; color: var(--primary); cursor: pointer; }
+
+        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
+
+        /* STATS GRID */
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card {
+            background: var(--surface); padding: 20px; border-radius: 24px; border: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: 5px;
+        }
+        .stat-card span { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
+        .stat-card h3 { font-size: 22px; font-weight: 800; color: var(--primary); }
+
+        /* ADMIN CARD ACTION */
+        .admin-card {
+            background: var(--surface); border-radius: 28px; border: 1px solid var(--border);
+            padding: 24px; margin-bottom: 25px;
+        }
+        .card-title { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
+        
+        input, textarea {
+            width: 100%; padding: 15px 18px; border-radius: 16px; border: 2px solid var(--border);
+            outline: none; font-size: 13px; font-weight: 700; color: var(--text-main); background: var(--dark);
+            transition: 0.3s;
+        }
+        input:focus, textarea:focus { border-color: var(--primary); }
+
+        .btn-admin {
+            width: 100%; padding: 15px; border: none; border-radius: 16px;
+            background: var(--primary); color: white; font-weight: 800; font-size: 14px;
+            cursor: pointer; transition: 0.3s; text-transform: uppercase;
+        }
+        .btn-admin:active { transform: scale(0.97); }
+
+        /* TICKETS LIST */
+        .ticket-item {
+            background: var(--dark); padding: 16px; border-radius: 18px; border: 1px solid var(--border);
+            margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;
+        }
+        .ticket-meta { display: flex; justify-content: space-between; align-items: center; }
+        .ticket-user { font-size: 12px; font-weight: 800; color: var(--warning); }
+        .ticket-status { font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 20px; background: rgba(0,98,255,0.1); color: var(--primary); }
+        .ticket-subject { font-size: 13px; font-weight: 800; color: var(--text-main); }
+        .ticket-msg { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><i class="fas fa-crown"></i> Commander Panel</h1>
+        <div class="back-btn" onclick="location.href='Wallet.html'"><i class="fas fa-home"></i></div>
+    </header>
+
+    <div class="container">
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span>Total Users</span>
+                <h3 id="totalUsers">0</h3>
+            </div>
+            <div class="stat-card">
+                <span>Open Tickets</span>
+                <h3 id="openTickets" style="color: var(--warning);">0</h3>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <div class="card-title"><i class="fas fa-wallet"></i> Fund User Wallet</div>
+            <div class="form-group">
+                <label>Target Username</label>
+                <input type="text" id="fundUser" placeholder="Enter user's exact username">
+            </div>
+            <div class="form-group">
+                <label>Amount (₦)</label>
+                <input type="number" id="fundAmount" placeholder="e.g. 5000">
+            </div>
+            <button class="btn-admin" onclick="creditUserWallet()">Credit User</button>
+        </div>
+
+        <div class="admin-card">
+            <div class="card-title"><i class="fas fa-bullhorn"></i> Broadcast to Feed</div>
+            <div class="form-group">
+                <label>Post Title</label>
+                <input type="text" id="postTitle" placeholder="e.g. Cheap MTN Data Active">
+            </div>
+            <div class="form-group">
+                <label>Post Message</label>
+                <textarea id="postMsg" rows="3" placeholder="Write announcement text here..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Image URL (Optional)</label>
+                <input type="text" id="postImg" placeholder="Enter image direct link">
+            </div>
+            <button class="btn-admin" style="background: var(--warning);" onclick="publishAdminFeed()">Publish Broadcast</button>
+        </div>
+
+        <div class="admin-card">
+            <div class="card-title"><i class="fas fa-headset"></i> Support Tickets</div>
+            <div id="ticketsArea">
+                <p style="text-align: center; color: var(--text-muted); font-size: 13px;">No active support tickets found.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+            authDomain: "cm-nexus-sub.firebaseapp.com",
+            projectId: "cm-nexus-sub",
+            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+            storageBucket: "cm-nexus-sub.firebasestorage.app",
+            messagingSenderId: "22010501991",
+            appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
+        };
+
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.database();
+
+        // 1. STATS & TRACKERS
+        db.ref('users/').on('value', snap => {
+            document.getElementById('totalUsers').innerText = snap.numChildren();
+        });
+
+        db.ref('support_tickets/').on('value', snap => {
+            const ticketsArea = document.getElementById('ticketsArea');
+            ticketsArea.innerHTML = "";
+            let ticketCount = 0;
+
+            snap.forEach(child => {
+                ticketCount++;
+                const ticket = child.val();
+                const key = child.key;
+
+                const card = `
+                    <div class="ticket-item">
+                        <div class="ticket-meta">
+                            <span class="ticket-user">@${ticket.username}</span>
+                            <span class="ticket-status" onclick="resolveTicket('${key}')" style="cursor:pointer;">Resolve <i class="fas fa-check"></i></span>
+                        </div>
+                        <div class="ticket-subject">${ticket.subject}</div>
+                        <div class="ticket-msg">${ticket.message}</div>
+                    </div>
+                `;
+                ticketsArea.innerHTML += card;
+            });
+
+            document.getElementById('openTickets').innerText = ticketCount;
+            if(ticketCount === 0) {
+                ticketsArea.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 13px;">No active support tickets found.</p>`;
+            }
+        });
+
+        // 2. FUND USER WALLET
+        function creditUserWallet() {
+            const username = document.getElementById('fundUser').value.trim().toLowerCase();
+            const amount = parseFloat(document.getElementById('fundAmount').value);
+
+            if(!username || isNaN(amount) || amount <= 0) {
+                return Swal.fire('Error', 'Please enter a valid username and positive amount.', 'error');
+            }
+
+            Swal.fire({
+                title: 'Processing Credit...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            const userRef = db.ref('users/' + username);
+            userRef.once('value', snap => {
+                if(!snap.exists()) {
+                    Swal.fire('Not Found', 'This user does not exist in the database.', 'error');
+                    return;
+                }
+
+                const currentWallet = parseFloat(snap.val().wallet) || 0;
+                const newWallet = currentWallet + amount;
+
+                userRef.child('wallet').set(newWallet).then(() => {
+                    Swal.fire('Success!', `@${username} wallet funded with ₦${amount.toLocaleString()}. New balance: ₦${newWallet.toLocaleString()}`, 'success');
+                    document.getElementById('fundUser').value = "";
+                    document.getElementById('fundAmount').value = "";
+                });
+            });
+        }
+
+        // 3. BROADCAST ANNOUNCEMENT
+        function publishAdminFeed() {
+            const title = document.getElementById('postTitle').value.trim();
+            const msg = document.getElementById('postMsg').value.trim();
+            const img = document.getElementById('postImg').value.trim();
+
+            if(!msg) return Swal.fire('Required', 'Broadcast message body cannot be empty.', 'warning');
+
+            const postPayload = {
+                title: title || "Official Broadcast",
+                message: msg,
+                imageUrl: img || null,
+                timestamp: Date.now()
+            };
+
+            db.ref('admin_feed/').push(postPayload).then(() => {
+                Swal.fire('Published!', 'Announcement has been broadcast live to all users.', 'success');
+                document.getElementById('postTitle').value = "";
+                document.getElementById('postMsg').value = "";
+                document.getElementById('postImg').value = "";
+            });
+        }
+
+        // 4. RESOLVE TICKETS (Delete after investigation)
+        function resolveTicket(key) {
+            Swal.fire({
+                title: 'Resolve Ticket?',
+                text: "Have you investigated and solved this user's complaint?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                confirmButtonText: 'Yes, Resolve'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    db.ref('support_tickets/' + key).remove().then(() => {
+                        Swal.fire('Resolved!', 'Support ticket has been closed successfully.', 'success');
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

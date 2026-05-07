@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Account Settings | Elite Arena Pro</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* ASALIN STYLE DIN KA - BAN TABA KOMAI BA */
+        :root {
+            --primary: #1A237E; --accent: #FFD600; --bg: #F4F7FE; --white: #ffffff;
+            --text-main: #1e293b; --text-dim: #64748b; --border: #e2e8f0;
+            --glow: rgba(26, 35, 126, 0.15); --danger: #ef4444; --success: #10b981;
+        }
+
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg); color: var(--text-main); padding-bottom: 50px; overflow-x: hidden; }
+
+        header { 
+            padding: 20px; display: flex; align-items: center; gap: 15px; 
+            background: var(--white); border-bottom: 1px solid rgba(0,0,0,0.02);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .back-btn { font-size: 20px; color: var(--primary); cursor: pointer; transition: 0.2s; }
+        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--primary); letter-spacing: -0.5px; }
+
+        .profile-card {
+            background: var(--white); margin: 20px; padding: 25px; 
+            border-radius: 28px; text-align: center;
+            box-shadow: 0 10px 30px rgba(26, 35, 126, 0.03); border: 1px solid rgba(26, 35, 126, 0.04);
+            animation: fadeInDown 0.5s ease;
+        }
+        .avatar-box {
+            width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary) 0%, #3f51b5 100%);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 15px; color: var(--white); font-size: 32px; font-weight: 800;
+            box-shadow: 0 8px 20px rgba(26, 35, 126, 0.2);
+        }
+        .profile-card h2 { margin: 0 0 5px; font-size: 18px; font-weight: 800; color: var(--primary); }
+        .profile-card p { margin: 0; font-size: 12px; font-weight: 600; color: var(--text-dim); }
+
+        .settings-container { margin: 0 20px; }
+        .settings-block {
+            background: var(--white); padding: 25px 20px; border-radius: 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.015); margin-bottom: 20px;
+            border: 1px solid rgba(0,0,0,0.01);
+        }
+        .block-title { font-size: 12px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; }
+
+        input {
+            width: 100%; padding: 15px 18px; border-radius: 18px; border: 2px solid #e2e8f0;
+            outline: none; font-size: 14px; font-weight: 700; color: var(--text-main); background: #f8fafc;
+        }
+        input:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 6px 15px var(--glow); }
+
+        .biometric-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-top: 1px solid #f1f5f9; margin-top: 15px; }
+        
+        /* Modern Switch */
+        .switch { position: relative; display: inline-block; width: 46px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--success); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .btn-save { width: 100%; padding: 16px; border: none; border-radius: 18px; background: var(--primary); color: var(--white); font-weight: 800; font-size: 14px; cursor: pointer; text-transform: uppercase; }
+        .btn-logout { width: 100%; padding: 16px; border: 2px solid #fee2e2; border-radius: 18px; background: #fff5f5; color: var(--danger); font-weight: 800; font-size: 14px; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="back-btn" onclick="location.href='Profile.html'"><i class="fas fa-arrow-left"></i></div>
+        <h1>Account Settings</h1>
+    </header>
+
+    <div class="profile-card">
+        <div class="avatar-box" id="avatarLetter">U</div>
+        <h2 id="profileUsername">Loading...</h2>
+        <p id="profileEmail">loading@user.com</p>
+    </div>
+
+    <div class="settings-container animate__animated animate__fadeInUp">
+        <div class="settings-block">
+            <div class="block-title"><i class="fas fa-user-cog"></i><span>Personal Information</span></div>
+            <div class="form-group"><label>Full Name</label><input type="text" id="fullName" placeholder="Full name"></div>
+            <div class="form-group"><label>Phone Number</label><input type="number" id="phoneNo" placeholder="Phone number"></div>
+            <button class="btn-save" onclick="savePersonalDetails()">Save Profile Changes</button>
+        </div>
+
+        <div class="settings-block">
+            <div class="block-title"><i class="fas fa-shield-alt"></i><span>Security & Authorization</span></div>
+            <div class="form-group"><label>New 4-Digit PIN</label><input type="number" id="securityPin" placeholder="Enter 4-Digit Security PIN" oninput="if(value.length>4) value=value.slice(0,4)"></div>
+            <button class="btn-save" onclick="saveSecurityPin()">Update Security PIN</button>
+
+            <div class="biometric-row">
+                <div class="biometric-info"><span>Fingerprint Auth</span><br><small style="font-size:10px; color:#999;">Authorize with fingerprint</small></div>
+                <label class="switch">
+                    <input type="checkbox" id="biometricToggle" onchange="toggleBiometrics(this)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <button class="btn-logout" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i><span>Sign Out Account</span></button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // NEW FIREBASE SYNC - CM-NEXUS-SUB
+        const firebaseConfig = { databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com" };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const myName = localStorage.getItem('username') || "Elite_User";
+
+        // Realtime Listener
+        db.ref('users/' + myName).on('value', snap => {
+            const u = snap.val();
+            if (u) {
+                document.getElementById('profileUsername').innerText = "@" + myName;
+                document.getElementById('profileEmail').innerText = u.email || "no-email@elite.com";
+                document.getElementById('avatarLetter').innerText = myName.charAt(0).toUpperCase();
+                document.getElementById('fullName').value = u.fullName || "";
+                document.getElementById('phoneNo').value = u.phone || "";
+                document.getElementById('securityPin').value = u.transactionPin || "";
+            }
+        });
+
+        // Biometrics Switch State
+        document.getElementById('biometricToggle').checked = localStorage.getItem('useFingerprint') === 'true';
+
+        function toggleBiometrics(chk) {
+            localStorage.setItem('useFingerprint', chk.checked ? 'true' : 'false');
+            Swal.fire('Updated', `Fingerprint auth ${chk.checked ? 'enabled' : 'disabled'}.`, 'info');
+        }
+
+        function savePersonalDetails() {
+            const name = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phoneNo').value.trim();
+            if (name.length < 3 || phone.length < 10) return Swal.fire('Error', 'Fill all fields correctly.', 'warning');
+            
+            Swal.showLoading();
+            db.ref('users/' + myName).update({ fullName: name, phone: phone }).then(() => {
+                Swal.fire('Success', 'Profile updated live.', 'success');
+            });
+        }
+
+        function saveSecurityPin() {
+            const pin = document.getElementById('securityPin').value.trim();
+            if (pin.length !== 4) return Swal.fire('Error', 'PIN must be 4 digits.', 'warning');
+            
+            Swal.showLoading();
+            db.ref('users/' + myName).update({ transactionPin: pin }).then(() => {
+                Swal.fire('Success', 'Transaction PIN updated.', 'success');
+            });
+        }
+
+        function logoutUser() {
+            Swal.fire({ title: 'Logout?', text: 'Sign out from Elite Arena Pro?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444' })
+            .then((r) => { if (r.isConfirmed) { localStorage.clear(); window.location.href = "Login.html"; } });
+        }
+    </script>
+</body>
+</html>

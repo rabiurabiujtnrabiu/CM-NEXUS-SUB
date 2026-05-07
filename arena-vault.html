@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CM Arena Vault | The Financial Bank</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root { --p: #0A192F; --card: #112240; --gold: #FFD600; --cyan: #64FFDA; }
+        body { margin: 0; background: var(--p); font-family: 'Plus Jakarta Sans', sans-serif; color: white; padding: 10px 10px 40px; }
+
+        /* THE BANK CARD */
+        .vault-card {
+            background: linear-gradient(135deg, #1d2d44 0%, #0a192f 100%);
+            margin: 15px 10px 25px; padding: 35px 25px; border-radius: 35px; border: 1.5px solid var(--gold);
+            text-align: center; position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+        .vault-card i { position: absolute; right: -15px; bottom: -15px; font-size: 110px; opacity: 0.04; color: var(--gold); }
+        .points-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--cyan); font-weight: 800; }
+        .big-xp { font-size: 42px; font-weight: 900; color: var(--gold); margin: 12px 0; text-shadow: 0 0 20px rgba(255, 214, 0, 0.2); }
+        .conversion-rate { font-size: 10px; opacity: 0.6; font-style: italic; }
+
+        /* EXCHANGE GRID */
+        .items-grid { padding: 0 5px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .item-box { 
+            background: var(--card); border-radius: 25px; padding: 20px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
+        }
+        .item-box i { font-size: 24px; color: var(--gold); margin-bottom: 12px; }
+        .item-title { font-size: 14px; font-weight: 800; margin-bottom: 5px; }
+        .item-cost { font-size: 12px; color: var(--cyan); font-weight: 700; margin-bottom: 15px; }
+
+        .btn-ex {
+            width: 100%; padding: 12px; border-radius: 15px; border: none;
+            background: #233554; color: #495670; font-weight: 900; font-size: 11px;
+            text-transform: uppercase; transition: 0.3s;
+        }
+        .active-btn { background: var(--gold) !important; color: var(--p) !important; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 214, 0, 0.2); }
+        .active-btn:active { transform: scale(0.95); }
+
+        /* Custom SweetAlert integration to match premium theme */
+        .swal2-popup { border-radius: 28px !important; background: var(--card) !important; color: white !important; }
+        .swal2-title { color: white !important; font-weight: 800 !important; }
+        .swal2-html-container { color: #ccd6f6 !important; }
+    </style>
+</head>
+<body>
+
+    <div class="vault-card">
+        <i class="fas fa-university"></i>
+        <div class="points-label">Total Verified Assets</div>
+        <div class="big-xp" id="xpDisplay">0 XP</div>
+        <div class="conversion-rate">Exchange Rate: 10,000 XP = ₦1,000</div>
+    </div>
+
+    <div class="items-grid">
+        <div class="item-box">
+            <i class="fas fa-sim-card"></i>
+            <div class="item-title">₦200 Airtime</div>
+            <div class="item-cost">2,000 XP</div>
+            <button class="btn-ex" id="btnAirtime" onclick="startExchange('Airtime', 2000, 200)">EXCHANGE</button>
+        </div>
+
+        <div class="item-box">
+            <i class="fas fa-globe"></i>
+            <div class="item-title">500MB Data</div>
+            <div class="item-cost">1,500 XP</div>
+            <button class="btn-ex" id="btnData" onclick="startExchange('Data', 1500, 150)">EXCHANGE</button>
+        </div>
+
+        <div class="item-box">
+            <i class="fas fa-money-bill-wave"></i>
+            <div class="item-title">₦1,000 Cash</div>
+            <div class="item-cost">10,000 XP</div>
+            <button class="btn-ex" id="btnCash" onclick="startExchange('Cash', 10000, 1000)">EXCHANGE</button>
+        </div>
+
+        <div class="item-box">
+            <i class="fas fa-crown"></i>
+            <div class="item-title">₦5,000 Cash</div>
+            <div class="item-cost">50,000 XP</div>
+            <button class="btn-ex" id="btnElite" onclick="startExchange('Elite Cash', 50000, 5000)">EXCHANGE</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const myName = localStorage.getItem('username') || "Elite_User";
+            let currentXP = 0;
+            let activeDays = 0; // Za mu rinka ajiye kwanakin aiki na user a nan
+
+            function startVaultSync() {
+                if (typeof db !== 'undefined') {
+                    db.ref('users/' + myName).on('value', snap => {
+                        const data = snap.val() || {};
+                        currentXP = parseInt(data.xp) || 0; 
+                        activeDays = parseInt(data.active_days) || 0; // Janyo kwanakin aiki daga Firebase
+                        
+                        // Format number with commas
+                        document.getElementById('xpDisplay').innerText = currentXP.toLocaleString() + " XP";
+
+                        // Update Buttons Eligibility
+                        updateBtn('btnAirtime', 2000);
+                        updateBtn('btnData', 1500);
+                        updateBtn('btnCash', 10000);
+                        updateBtn('btnElite', 50000);
+                    });
+                } else {
+                    setTimeout(startVaultSync, 200);
+                }
+            }
+
+            function updateBtn(id, cost) {
+                const btn = document.getElementById(id);
+                if(currentXP >= cost) {
+                    btn.classList.add('active-btn');
+                    btn.innerText = "EXCHANGE NOW";
+                    btn.disabled = false;
+                } else {
+                    btn.classList.remove('active-btn');
+                    btn.innerText = "NOT ENOUGH XP";
+                    btn.disabled = true;
+                }
+            }
+
+            // EXPOSE FUNCTIONS TO WINDOW FOR GLOBAL CLICK EVENTS
+            window.startExchange = function(name, cost, naira) {
+                if(currentXP < cost) return;
+
+                // DOKA: Duba ko kwanakin aiki sun kai 30
+                if (activeDays < 30) {
+                    const daysLeft = 30 - activeDays;
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Vault Is Locked! 🔒',
+                        html: `Dole sai ka cika <b>30 Days</b> kana aiki a wannan dandalin kafin ka iya yin musayar XP.<br><br>Kwanakinka na yanzu: <b>${activeDays} Days</b><br>Sauran kwanaki: <b>${daysLeft} Days</b>`,
+                        confirmButtonColor: '#FFD600',
+                        confirmButtonText: 'Na Fahimta'
+                    });
+                    return; // Kulle musayar, kar a bar shi ya wuce kwata-kwata!
+                }
+
+                // Idan ya cika kwanaki 30, a bashi damar tura transaction
+                Swal.fire({
+                    title: 'Confirm Vault Exchange',
+                    html: `Kuna son musayar <b>${cost.toLocaleString()} XP</b> zuwa <b>₦${naira}</b>?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#FFD600',
+                    confirmButtonText: 'Yes, Exchange!',
+                    cancelButtonColor: '#1d2d44',
+                    cancelButtonText: 'Soke'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        executeVaultTransaction(name, cost, naira);
+                    }
+                });
+            };
+
+            function executeVaultTransaction(name, cost, naira) {
+                db.ref('users/' + myName).transaction((user) => {
+                    if (user) {
+                        const userXP = parseInt(user.xp) || 0;
+                        if (userXP >= cost && (parseInt(user.active_days) || 0) >= 30) {
+                            user.xp = userXP - cost; 
+                            user.wallet = (parseFloat(user.wallet) || 0) + naira; 
+                        }
+                    }
+                    return user;
+                }).then(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Vault Success!',
+                        text: `An cire ${cost.toLocaleString()} XP. An saka ₦${naira} a cikin Wallet dinka!`,
+                        confirmButtonColor: '#FFD600'
+                    });
+                }).catch(err => {
+                    Swal.fire('Database Error', 'Canjin kudi bai kammala ba. Sake gwadawa.', 'error');
+                });
+            }
+
+            startVaultSync();
+        })();
+    </script>
+</body>
+</html>

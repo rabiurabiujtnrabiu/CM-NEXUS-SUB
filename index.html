@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Elite Arena Hub | Professional</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root {
+            --primary: #0062ff;
+            --dark: #0f172a;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: var(--text-main); padding-bottom: 120px; overflow-x: hidden; }
+
+        /* --- GYARARREN PRELOADER --- */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff; z-index: 9999; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; transition: 0.5s;
+        }
+
+        /* LOGO ANIMATION */
+        .animate-logo {
+            filter: drop-shadow(0 0 20px rgba(0, 98, 255, 0.25));
+            animation: logoPulse 2.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes logoPulse {
+            0% { transform: scale(1); opacity: 0.9; filter: drop-shadow(0 0 10px rgba(0, 98, 255, 0.1)); }
+            50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 30px rgba(0, 98, 255, 0.4)); }
+            100% { transform: scale(1); opacity: 0.9; filter: drop-shadow(0 0 10px rgba(0, 98, 255, 0.1)); }
+        }
+
+        /* --- TOP BAR --- */
+        .top-bar {
+            background: #ffffff; padding: 20px 16px; display: flex;
+            justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000;
+        }
+
+        .user-section { display: flex; align-items: center; gap: 12px; }
+        .avatar {
+            width: 45px; height: 45px; border-radius: 12px;
+            background: #3b82f6; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; color: white; font-size: 18px;
+        }
+        .username-text { font-weight: 800; font-size: 16px; color: var(--text-main); }
+
+        .header-stats { text-align: right; }
+        .bal-text { font-size: 18px; font-weight: 800; color: var(--dark); }
+        .xp-text { font-size: 11px; font-weight: 800; color: #f59e0b; text-transform: uppercase; margin-top: 2px; }
+
+        .feed-wrapper { padding: 15px; }
+        .section-title { 
+            font-size: 14px; font-weight: 800; color: var(--text-muted); 
+            text-transform: uppercase; letter-spacing: 1px; margin: 10px 0 30px;
+            border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;
+        }
+
+        #feedArea { min-height: 200px; display: flex; flex-direction: column; align-items: center; }
+        .no-updates { text-align: center; margin-top: 50px; opacity: 0.4; }
+
+        .post-card {
+            width: 100%; background: white; border-radius: 20px; margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02); overflow: hidden;
+        }
+        .post-header { padding: 15px; display: flex; align-items: center; gap: 10px; }
+        .post-content { padding: 0 15px 15px; font-size: 14px; line-height: 1.5; color: #475569; }
+
+        .float-btns { position: fixed; right: 20px; bottom: 130px; z-index: 999; }
+        .f-btn {
+            width: 55px; height: 55px; border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 24px; margin-top: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1); text-decoration: none;
+        }
+
+        .nav-bar {
+            position: fixed; bottom: 25px; left: 20px; right: 20px;
+            background: #0f172a; height: 80px; border-radius: 30px;
+            display: flex; justify-content: space-around; align-items: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); z-index: 1000;
+        }
+        .nav-link { 
+            text-decoration: none; color: #94a3b8; 
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+        }
+        .nav-link.active { color: #38bdf8; }
+        .nav-link i { font-size: 22px; }
+        .nav-link span { font-size: 10px; font-weight: 800; text-transform: uppercase; }
+
+        #adminPostTrigger {
+            position: fixed; bottom: 120px; left: 25px; background: #f59e0b;
+            color: white; padding: 12px 20px; border-radius: 15px; font-size: 12px;
+            font-weight: 800; display: none; z-index: 998;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <svg width="280" height="280" viewBox="0 0 500 500" class="animate-logo">
+            <polygon points="250,45 425,146 425,348 250,449 75,348 75,146" fill="#0f172a" stroke="#0062ff" stroke-width="15"/>
+            <text x="135" y="290" fill="#0062ff" font-size="140" font-weight="900">C</text>
+            <text x="245" y="290" fill="#0062ff" font-size="140" font-weight="900">M</text>
+        </svg>
+        <p style="margin-top: 20px; font-weight: 800; color: #0f172a; font-size: 14px; letter-spacing: 2px;">ELITE ARENA PRO</p>
+    </div>
+
+    <header class="top-bar">
+        <div class="user-section">
+            <div class="avatar" id="headerAvatar">U</div>
+            <div class="username-text" id="usernameDisplay">@Elite_User</div>
+        </div>
+        <div class="header-stats">
+            <div class="bal-text" id="balance">₦0.00</div>
+            <div class="xp-text" id="xp">0 XP ELITE</div>
+        </div>
+    </header>
+
+    <div class="feed-wrapper">
+        <h2 class="section-title">Official Feed</h2>
+        <div id="feedArea">
+            <div class="no-updates">
+                <i class="fas fa-layer-group" style="font-size: 40px; color: #cbd5e1;"></i>
+                <p style="font-weight: 700; color: #94a3b8; margin-top: 10px;">No updates from Admin...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="float-btns">
+        <a href="https://wa.me/2349168696552" class="f-btn" style="background:#22c55e;"><i class="fab fa-whatsapp"></i></a>
+        <a href="Support.html" class="f-btn" style="background:#0062ff;"><i class="fas fa-headset"></i></a>
+    </div>
+
+    <div id="adminPostTrigger" onclick="openAdminPostModal()">
+        <i class="fas fa-bullhorn"></i> NEW POST
+    </div>
+
+    <nav class="nav-bar">
+        <a href="CM-ARENA.html" class="nav-link">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Arena</span>
+        </a>
+        <a href="Wallet.html" class="nav-link active">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Wallet</span>
+        </a>
+        <a href="Settings.html" class="nav-link">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Settings</span>
+        </a>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = { databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com" };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const myName = localStorage.getItem('username') || "Elite_User";
+
+        // Preloader timeout
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('preloader').style.opacity = '0';
+                setTimeout(() => document.getElementById('preloader').style.display='none', 500);
+            }, 2000);
+        };
+
+        if(myName === "Commander") document.getElementById('adminPostTrigger').style.display='block';
+
+        db.ref('users/' + myName).on('value', snap => {
+            const u = snap.val();
+            if(u) {
+                document.getElementById('usernameDisplay').innerText = "@" + myName;
+                document.getElementById('headerAvatar').innerText = myName.charAt(0).toUpperCase();
+                document.getElementById('balance').innerText = "₦" + (parseFloat(u.wallet) || 0).toLocaleString();
+                document.getElementById('xp').innerText = (parseInt(u.xp) || 0) + " XP ELITE";
+            }
+        });
+
+        db.ref('admin_feed/').on('value', snap => {
+            const area = document.getElementById('feedArea');
+            if(snap.exists()) {
+                area.innerHTML = "";
+                snap.forEach(child => {
+                    const p = child.val();
+                    area.innerHTML = `
+                        <div class="post-card animate__animated animate__fadeIn">
+                            <div class="post-header">
+                                <div style="width:30px; height:30px; border-radius:50%; background:#0062ff; color:white; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px;">A</div>
+                                <b style="font-size:13px;">Admin Update <i class="fas fa-check-circle" style="color:#0062ff;"></i></b>
+                            </div>
+                            <div class="post-content">${p.message}</div>
+                        </div>
+                    ` + area.innerHTML;
+                });
+            }
+        });
+
+        function openAdminPostModal() {
+            Swal.fire({
+                title: 'New Post',
+                input: 'textarea',
+                inputPlaceholder: 'Write something...',
+                confirmButtonText: 'Publish',
+                confirmButtonColor: '#0062ff'
+            }).then(r => {
+                if(r.value) db.ref('admin_feed/').push({ message: r.value, timestamp: Date.now() });
+            });
+        }
+    </script>
+</body>
+</html>

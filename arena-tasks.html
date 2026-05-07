@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Arena Tasks & Contests</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { 
+            --bg: #0A192F; 
+            --card: #112240; 
+            --gold: #FFD600; 
+            --cyan: #64FFDA; 
+            --text-muted: #8892B0;
+        }
+        body { margin: 0; background: var(--bg); font-family: 'Inter', sans-serif; color: white; padding-bottom: 50px; }
+
+        .container { padding: 15px; }
+        
+        /* BANNER */
+        .section-title { font-size: 13px; font-weight: 800; color: var(--cyan); text-transform: uppercase; letter-spacing: 1px; margin: 20px 5px 12px; display: flex; align-items: center; gap: 8px; }
+
+        /* TASK CARD STYLE */
+        .task-card {
+            background: var(--card); border-radius: 20px; padding: 18px; border: 1px solid rgba(255,255,255,0.03);
+            margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: 0.3s;
+        }
+        .task-info { display: flex; align-items: center; gap: 14px; min-width: 0; }
+        .task-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(100, 255, 218, 0.08); display: flex; align-items: center; justify-content: center; color: var(--cyan); font-size: 18px; flex-shrink: 0; }
+        .task-details { min-width: 0; }
+        .task-name { font-size: 13px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .task-reward { font-size: 11px; color: var(--gold); font-weight: 700; margin-top: 3px; display: flex; align-items: center; gap: 4px; }
+        
+        .btn-go { background: rgba(100, 255, 218, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 8px 16px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn-go:active { transform: scale(0.95); }
+        .btn-done { background: #1d2d44; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); cursor: not-allowed; }
+
+        /* CONTEST / GASA CARD */
+        .contest-card {
+            background: linear-gradient(135deg, #1d3557 0%, #112240 100%);
+            border-radius: 24px; padding: 22px; border: 1px dashed var(--gold);
+            text-align: center; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden;
+        }
+        .contest-badge { background: var(--gold); color: #0a192f; font-size: 9px; font-weight: 900; padding: 4px 12px; border-radius: 20px; display: inline-block; text-transform: uppercase; margin-bottom: 12px; }
+        .contest-title { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+        .contest-desc { font-size: 11px; color: #ccd6f6; line-height: 1.5; margin-bottom: 18px; }
+        .btn-contest { width: 100%; padding: 14px; background: var(--gold); color: #0a192f; border: none; border-radius: 14px; font-weight: 800; font-size: 12px; cursor: pointer; text-transform: uppercase; box-shadow: 0 6px 15px rgba(255, 214, 0, 0.25); }
+
+        /* POPUP FOR AD WALL AND CONTEST QUESTION */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 25, 47, 0.95); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-box { background: var(--card); border-radius: 24px; padding: 25px; width: 100%; max-width: 360px; border: 1px solid rgba(255,255,255,0.08); text-align: center; }
+        .timer-circle { width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--gold); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: var(--gold); margin: 0 auto 20px; }
+        
+        .question-text { font-size: 14px; font-weight: 800; line-height: 1.5; margin-bottom: 20px; }
+        .option-btn { width: 100%; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; color: white; font-weight: 700; margin-bottom: 10px; text-align: left; padding-left: 15px; cursor: pointer; font-size: 12px; }
+        .option-btn:active { background: rgba(100,255,218,0.05); border-color: var(--cyan); }
+
+        .loading-shimmer { color: var(--text-muted); text-align: center; padding: 30px; font-size: 13px; opacity: 0.6; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="section-title"><i class="fas fa-trophy" style="color:var(--gold);"></i> Live Arena Contest</div>
+        <div id="contestContainer">
+            <div class="loading-shimmer">Checking active contests...</div>
+        </div>
+
+        <div class="section-title"><i class="fas fa-tasks"></i> Daily Tasks</div>
+        <div id="tasksContainer">
+            <div class="loading-shimmer">Loading available tasks...</div>
+        </div>
+
+    </div>
+
+    <div class="modal-overlay" id="adWallModal">
+        <div class="modal-box">
+            <i class="fas fa-tv" style="font-size:32px; color:var(--gold); margin-bottom:15px;"></i>
+            <h3 style="margin-bottom:8px; font-size:16px;">Sponsorship Video Ad</h3>
+            <p style="font-size:11px; color:var(--text-muted); line-height:1.4; margin-bottom:20px;">Dole sai ka gama kallon tallan nan baki daya don bude gurin wannan gasar!</p>
+            <div class="timer-circle" id="adTimerVal">15</div>
+            <p style="font-size:10px; color:#ff9f1c; font-weight:700;">Loading contest grid...</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="contestModal">
+        <div class="modal-box" style="text-align: left;">
+            <div style="text-align: center; margin-bottom: 15px;">
+                <span class="contest-badge" style="margin-bottom:0;">Brain Power</span>
+            </div>
+            <div class="question-text" id="contestQuestion">Loading question...</div>
+            <div id="contestOptions"></div>
+        </div>
+    </div>
+
+    <script>
+        // Muna amfani da babban "db" na Firebase dake kan CM-ARENA.html
+        (function() {
+            const currentUsername = localStorage.getItem('username') || "Elite_User";
+
+            function loadTasksAndContest() {
+                if (typeof db !== 'undefined') {
+                    
+                    // A. DOWNLOAD DAILY TASKS
+                    db.ref('arena_tasks').on('value', snap => {
+                        const container = document.getElementById('tasksContainer');
+                        container.innerHTML = "";
+                        
+                        if(!snap.exists()) {
+                            container.innerHTML = `<p style="text-align:center; font-size:12px; color:var(--text-muted); padding:20px;">No tasks available today.</p>`;
+                            return;
+                        }
+
+                        snap.forEach(child => {
+                            const task = child.val();
+                            const taskKey = child.key;
+
+                            // Duba ko user ya riga ya gama wannan task din
+                            db.ref(`users/${currentUsername}/completed_tasks/${taskKey}`).once('value', compSnap => {
+                                const isCompleted = compSnap.exists();
+                                
+                                const card = `
+                                    <div class="task-card">
+                                        <div class="task-info">
+                                            <div class="task-icon">
+                                                <i class="${task.icon || 'fab fa-youtube'}"></i>
+                                            </div>
+                                            <div class="task-details">
+                                                <div class="task-name">${task.title}</div>
+                                                <div class="task-reward"><i class="fas fa-bolt"></i> +${task.reward || 50} PENDING XP</div>
+                                            </div>
+                                        </div>
+                                        ${isCompleted ? 
+                                            `<button class="btn-go btn-done" disabled>Done <i class="fas fa-check"></i></button>` : 
+                                            `<button class="btn-go" onclick="startTask('${taskKey}', '${task.link}', ${task.reward || 50})">Start</button>`
+                                        }
+                                    </div>
+                                `;
+                                container.innerHTML += card;
+                            });
+                        });
+                    });
+
+                    // B. DOWNLOAD LIVE CONTEST (GASA)
+                    db.ref('arena_contest').on('value', snap => {
+                        const container = document.getElementById('contestContainer');
+                        
+                        if(!snap.exists()) {
+                            container.innerHTML = `<p style="text-align:center; font-size:12px; color:var(--text-muted); padding:15px; background:var(--card); border-radius:15px;">No active contest at the moment.</p>`;
+                            return;
+                        }
+
+                        const contest = snap.val();
+                        
+                        container.innerHTML = `
+                            <div class="contest-card">
+                                <span class="contest-badge"><i class="fas fa-star"></i> WINNER TAKES ALL</span>
+                                <div class="contest-title">${contest.title || 'Elite Giveaway!'}</div>
+                                <div class="contest-desc">Win +${Number(contest.prize || 1000).toLocaleString()} XP instantly! First person to answer the question correctly wins and the contest disappears.</div>
+                                <button class="btn-contest" onclick="unlockContestWithAd()">Enter Contest</button>
+                            </div>
+                        `;
+                    });
+
+                } else {
+                    setTimeout(loadTasksAndContest, 250);
+                }
+            }
+
+            loadTasksAndContest();
+        })();
+
+        // ACTION 1: START DAILY SOCIAL MEDIA TASK
+        function startTask(taskKey, link, reward) {
+            const currentUsername = localStorage.getItem('username') || "Elite_User";
+            
+            // Bude link din YouTube ko TikTok a waje
+            window.open(link, '_blank');
+
+            // Jira sannan a sanya XP a matsayin Pending
+            setTimeout(() => {
+                db.ref('users/' + currentUsername).once('value', snap => {
+                    const userData = snap.val();
+                    if(userData) {
+                        const currentPending = parseInt(userData.pending_xp) || 0;
+                        
+                        // 1. Kara XP a matsayin Pending
+                        db.ref('users/' + currentUsername).update({
+                            pending_xp: currentPending + reward
+                        }).then(() => {
+                            // 2. Mark task as completed na wannan user din
+                            db.ref(`users/${currentUsername}/completed_tasks/${taskKey}`).set(true).then(() => {
+                                alert(`Task completed! +${reward} XP has been sent to your dashboard as PENDING. Go to Dashboard and CLAIM to watch an ad and unlock it!`);
+                            });
+                        });
+                    }
+                });
+            }, 3000); // 3 seconds verification shortcut timer
+        }
+
+        // ACTION 2: UNLOCK CONTEST WITH AD TIMER (Kariya daga zamba)
+        function unlockContestWithAd() {
+            const adWall = document.getElementById('adWallModal');
+            const timerVal = document.getElementById('adTimerVal');
+            
+            adWall.style.display = 'flex';
+            let timeLeft = 15; // 15 seconds compulsory interstitial ad timer
+            
+            const interval = setInterval(() => {
+                timeLeft--;
+                timerVal.innerText = timeLeft;
+                
+                if(timeLeft <= 0) {
+                    clearInterval(interval);
+                    adWall.style.display = 'none';
+                    openContestQuestion(); // Bude gasar bayan tallan ya gama
+                }
+            }, 1000);
+        }
+
+        // ACTION 3: SHOW CONTEST QUESTION
+        function openContestQuestion() {
+            db.ref('arena_contest').once('value', snap => {
+                if(!snap.exists()) {
+                    alert("This contest has just been won by someone else and closed!");
+                    return;
+                }
+
+                const contest = snap.val();
+                const contestModal = document.getElementById('contestModal');
+                
+                document.getElementById('contestQuestion').innerText = contest.question;
+                
+                const optionsArea = document.getElementById('contestOptions');
+                optionsArea.innerHTML = "";
+
+                contest.options.forEach((opt, idx) => {
+                    optionsArea.innerHTML += `
+                        <button class="option-btn" onclick="submitContestAnswer(${idx})">${idx + 1}. ${opt}</button>
+                    `;
+                });
+
+                contestModal.style.display = 'flex';
+            });
+        }
+
+        // ACTION 4: SUBMIT ANSWER & AUTO DESTRUCT IF CORRECT (Mutum daya kacal)
+        function submitContestAnswer(chosenIdx) {
+            const currentUsername = localStorage.getItem('username') || "Elite_User";
+            const contestModal = document.getElementById('contestModal');
+
+            db.ref('arena_contest').once('value', snap => {
+                if(!snap.exists()) {
+                    contestModal.style.display = 'none';
+                    alert("Too late! Someone else already answered correctly and won the prize.");
+                    return;
+                }
+
+                const contest = snap.val();
+                
+                if(chosenIdx === parseInt(contest.correct_index)) {
+                    // USER YA CI NASARA!
+                    const prize = parseInt(contest.prize) || 1000;
+
+                    // 1. Goge gasar a Firebase nan take (Auto-destruct so nobody else can see it)
+                    db.ref('arena_contest').remove().then(() => {
+                        
+                        // 2. Kara kudi ko XP a asusun wannan user din da ya ci nasara
+                        db.ref('users/' + currentUsername).once('value', userSnap => {
+                            const userData = userSnap.val();
+                            const currentXP = parseInt(userData.xp) || 0;
+
+                            db.ref('users/' + currentUsername).update({
+                                xp: currentXP + prize
+                            }).then(() => {
+                                contestModal.style.display = 'none';
+                                alert(`CONGRATULATIONS!!! You answered correctly first and won +${prize} XP! The contest is now closed.`);
+                            });
+                        });
+                    });
+
+                } else {
+                    contestModal.style.display = 'none';
+                    alert("Wrong Answer! Better luck next time.");
+                }
+            });
+        }
+    </script>
+</body>
+</html>

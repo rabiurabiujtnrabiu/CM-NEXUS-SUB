@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Withdraw Salary | Elite Arena Pro</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --primary: #1A237E; --accent: #FFD600; --bg: #F4F7FE;
+            --white: #ffffff; --text-main: #1e293b; --text-dim: #64748b;
+            --danger: #ef4444; --success: #10b981;
+        }
+
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg); color: var(--text-main); padding-bottom: 50px; overflow-x: hidden; }
+
+        header { 
+            padding: 20px; display: flex; align-items: center; gap: 15px; 
+            background: var(--white); border-bottom: 1px solid rgba(0,0,0,0.02);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .back-btn { font-size: 20px; color: var(--primary); cursor: pointer; }
+        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--primary); }
+
+        .balance-badge {
+            background: var(--white); margin: 20px; padding: 18px 24px; 
+            border-radius: 24px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 30px rgba(26, 35, 126, 0.03);
+        }
+        .balance-badge b { font-size: 17px; color: var(--primary); font-weight: 800; }
+
+        .status-screen {
+            background: var(--white); margin: 0 20px; padding: 40px 24px; 
+            border-radius: 32px; text-align: center; display: none; flex-direction: column; align-items: center;
+            animation: fadeInUp 0.5s ease;
+        }
+        .status-icon { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 24px; }
+        .icon-lock { background: #fee2e2; color: var(--danger); }
+        .icon-pending { background: #fef3c7; color: #d97706; }
+
+        .form-container { 
+            background: var(--white); margin: 0 20px; padding: 30px 24px; 
+            border-radius: 32px; box-shadow: 0 15px 35px rgba(0,0,0,0.02); display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .warning-banner {
+            background: #fff5f5; border: 1px solid #fee2e2; border-radius: 20px;
+            padding: 16px 20px; color: var(--danger); font-size: 11px; font-weight: 700;
+            line-height: 1.6; margin-bottom: 24px; display: flex; gap: 12px;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 10px; }
+
+        select, input {
+            width: 100%; padding: 16px 20px; border-radius: 20px; border: 2px solid #e2e8f0;
+            outline: none; font-size: 14px; font-weight: 700; background: #f8fafc;
+        }
+        .btn-submit {
+            width: 100%; padding: 18px; border: none; border-radius: 20px;
+            background: var(--primary); color: var(--white); font-weight: 800; font-size: 15px;
+            box-shadow: 0 10px 25px rgba(26, 35, 126, 0.25); margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="back-btn" onclick="location.href='Wallet.html'"><i class="fas fa-arrow-left"></i></div>
+        <h1>Withdraw Salary</h1>
+    </header>
+
+    <div class="balance-badge">
+        <span style="font-size:11px; font-weight:800; color:#999;">EARNING BALANCE</span>
+        <b id="walletBal">₦0.00</b>
+    </div>
+
+    <div id="contentArea">
+        <div style="text-align: center; padding: 100px 0;" id="loadingScreen">
+            <i class="fas fa-spinner fa-spin fa-2x" style="color:var(--primary);"></i>
+        </div>
+
+        <div class="status-screen" id="lockedScreen">
+            <div class="status-icon icon-lock"><i class="fas fa-lock"></i></div>
+            <h2>Page Locked</h2>
+            <p style="font-size:13px; color:#666;">Salary withdrawal is currently closed. The Commander will open this portal during the designated payment period.</p>
+        </div>
+
+        <div class="status-screen" id="pendingScreen">
+            <div class="status-icon icon-pending"><i class="fas fa-history"></i></div>
+            <h2>Request Pending</h2>
+            <p style="font-size:13px; color:#666;">Your salary request has been submitted. Please wait for manual verification and bank transfer from the Commander.</p>
+        </div>
+
+        <div class="form-container" id="unlockedForm">
+            <div class="warning-banner">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div><b>NOTICE:</b> You can only submit ONCE. This page locks automatically after submission. Verify your details carefully.</div>
+            </div>
+
+            <div class="form-group">
+                <label>Select Bank</label>
+                <select id="bankName">
+                    <option value="">-- Choose Bank --</option>
+                    <option value="OPay">OPay</option>
+                    <option value="PalmPay">PalmPay</option>
+                    <option value="Moniepoint">Moniepoint</option>
+                    <option value="Access">Access Bank</option>
+                    <option value="GTBank">GTBank</option>
+                    <option value="UBA">UBA</option>
+                    <option value="Zenith">Zenith Bank</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Account Number</label>
+                <input type="number" id="accNo" placeholder="10-digit number">
+            </div>
+
+            <div class="form-group">
+                <label>Account Name</label>
+                <input type="text" id="accName" placeholder="Full Bank Name">
+            </div>
+
+            <div class="form-group">
+                <label>Salary Amount (₦)</label>
+                <input type="number" id="withdrawAmt" placeholder="Minimum ₦5,000">
+            </div>
+
+            <button class="btn-submit" onclick="processSalaryRequest()">SUBMIT REQUEST</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // MATAKI NA 1: Sabon Firebase
+        const firebaseConfig = { databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com" };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const myName = localStorage.getItem('username') || "Elite_User";
+
+        let currentBal = 0;
+
+        db.ref('users/' + myName + '/wallet').on('value', snap => {
+            currentBal = parseFloat(snap.val()) || 0;
+            document.getElementById('walletBal').innerText = "₦" + currentBal.toLocaleString();
+        });
+
+        // CONTROL PAGE STATE
+        db.ref('users/' + myName + '/withdrawStatus').on('value', snap => {
+            const status = snap.val() || "locked"; 
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('lockedScreen').style.display = 'none';
+            document.getElementById('pendingScreen').style.display = 'none';
+            document.getElementById('unlockedForm').style.display = 'none';
+
+            if (status === "locked") document.getElementById('lockedScreen').style.display = 'flex';
+            else if (status === "pending") document.getElementById('pendingScreen').style.display = 'flex';
+            else if (status === "unlocked") document.getElementById('unlockedForm').style.display = 'block';
+        });
+
+        function processSalaryRequest() {
+            const bank = document.getElementById('bankName').value;
+            const acc = document.getElementById('accNo').value;
+            const name = document.getElementById('accName').value;
+            const amt = parseFloat(document.getElementById('withdrawAmt').value);
+
+            if (!bank || acc.length < 10 || !name || amt < 5000) {
+                return Swal.fire('Error', 'Please fill all details correctly. Min ₦5,000.', 'error');
+            }
+            if (currentBal < amt) return Swal.fire('Error', 'Insufficient Balance', 'error');
+
+            Swal.fire({
+                title: 'Final Check',
+                text: `Submit ₦${amt.toLocaleString()} request to ${bank}? Page will LOCK after this.`,
+                icon: 'warning', showCancelButton: true, confirmButtonText: 'Submit & Lock'
+            }).then(res => { if(res.isConfirmed) executeRequest(bank, acc, name, amt); });
+        }
+
+        function executeRequest(bank, acc, name, amt) {
+            Swal.showLoading();
+            const data = { username: myName, bank, acc, name, amt, time: Date.now(), status: "Pending" };
+            
+            // 1. Tura request zuwa ga Admin
+            db.ref('salary_requests/' + myName).set(data).then(() => {
+                // 2. Rage kudi
+                db.ref('users/' + myName + '/wallet').set(currentBal - amt).then(() => {
+                    // 3. Kulle shafin (Lock)
+                    db.ref('users/' + myName + '/withdrawStatus').set("pending").then(() => {
+                        Swal.fire('Submitted!', 'Your request is now pending approval.', 'success');
+                    });
+                });
+            });
+        }
+    </script>
+</body>
+</html>

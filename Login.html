@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Access Portal | CM Nexus Sub</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --primary: #0062ff;
+            --dark: #0b0f19;
+            --surface: #111827;
+            --border: #1f2937;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --success: #10b981;
+            --gold: #f59e0b;
+        }
+
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        body { background: var(--dark); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+
+        .wrapper { width: 100%; max-width: 420px; height: 100%; padding: 30px 24px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+
+        /* --- SLIDES STYLE (ONBOARDING) --- */
+        .onboarding-box { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        
+        /* BRAND LOGO INTERMEDIATE (CM HEXAGON) */
+        .brand-logo {
+            width: 140px; height: 140px; margin-bottom: 30px;
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0); } }
+
+        .slide { display: none; animation: fadeIn 0.6s ease-in-out; }
+        .slide.active { display: block; }
+        .slide h2 { font-size: 24px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px; background: linear-gradient(135deg, #00f2fe, #0062ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .slide p { font-size: 14px; color: var(--text-muted); line-height: 1.6; padding: 0 10px; }
+
+        /* Slide dots indicator */
+        .dots-container { display: flex; gap: 8px; justify-content: center; margin: 25px 0; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #374151; transition: 0.3s; }
+        .dot.active { width: 24px; border-radius: 10px; background: var(--primary); }
+
+        /* --- FORM STYLING (LOGIN/REGISTER) --- */
+        .form-box { display: none; flex-direction: column; justify-content: center; height: 100%; animation: slideUp 0.5s ease-out; }
+        .form-box.active { display: flex; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .form-header { text-align: center; margin-bottom: 30px; }
+        .form-header h2 { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+        .form-header p { font-size: 13px; color: var(--text-muted); }
+
+        .form-group { margin-bottom: 18px; position: relative; }
+        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+        
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-wrapper i { position: absolute; left: 18px; color: var(--text-muted); font-size: 16px; }
+        
+        input {
+            width: 100%; padding: 15px 18px 15px 48px; border-radius: 16px; border: 2px solid var(--border);
+            outline: none; font-size: 14px; font-weight: 700; color: var(--text-main); background: var(--surface);
+            transition: all 0.3s ease;
+        }
+        input:focus { border-color: var(--primary); background: var(--dark); }
+
+        /* BUTTONS */
+        .btn-action {
+            width: 100%; padding: 16px; border: none; border-radius: 18px;
+            background: var(--primary); color: white; font-weight: 800; font-size: 15px;
+            cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 0.5px;
+            box-shadow: 0 10px 20px rgba(0, 98, 255, 0.2);
+            margin-top: 10px;
+        }
+        .btn-action:active { transform: scale(0.97); }
+
+        /* BIOMETRIC LOGOUT ACTION */
+        .fingerprint-btn {
+            background: rgba(255,255,255,0.02); border: 2px dashed var(--border);
+            padding: 15px; border-radius: 18px; display: none; align-items: center;
+            justify-content: center; gap: 12px; margin-top: 15px; cursor: pointer;
+            color: var(--text-muted); font-weight: 700; font-size: 13px; transition: 0.3s;
+        }
+        .fingerprint-btn:active { background: rgba(0, 98, 255, 0.05); border-color: var(--primary); color: white; }
+        .fingerprint-btn i { font-size: 20px; color: var(--primary); }
+
+        .switch-text { text-align: center; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-top: 25px; }
+        .switch-text span { color: var(--primary); cursor: pointer; }
+
+        /* SWEETALERT POPUP CUSTOM STYLES */
+        .swal2-popup { border-radius: 28px !important; background: var(--surface) !important; color: white !important; font-family: 'Plus Jakarta Sans', sans-serif !important; }
+        .swal2-title { color: white !important; font-weight: 800 !important; }
+        .swal2-html-container { color: var(--text-muted) !important; }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+
+        <div id="onboardingScreen" class="onboarding-box">
+            <div class="brand-logo">
+                <svg viewBox="0 0 500 500" width="100%" height="100%">
+                  <polygon points="250,45 425,146 425,348 250,449 75,348 75,146" fill="#111827" stroke="#0062ff" stroke-width="8" />
+                  <text x="135" y="290" fill="#00f2fe" font-family="sans-serif" font-size="130" font-weight="900">C</text>
+                  <text x="245" y="290" fill="#00f2fe" font-family="sans-serif" font-size="130" font-weight="900">M</text>
+                  <path d="M 215,190 L 290,310" stroke="#ff9900" stroke-width="24" stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <div class="slide active">
+                <h2>Fast & Cheap Subscriptions</h2>
+                <p>Enjoy blazing fast and extremely affordable internet data and airtime delivery on all Nigerian networks.</p>
+            </div>
+
+            <div class="slide">
+                <h2>Secure Wallet System</h2>
+                <p>CM Nexus Sub secures your funds with double transaction PIN security. Auto-funding and withdrawals active.</p>
+            </div>
+
+            <div class="slide">
+                <h2>Join Arena & Earn</h2>
+                <p>Participate in the Nexus Arena, gather XP coins, refer friends, and swap your earnings into cash wallet!</p>
+            </div>
+
+            <div class="dots-container">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+
+            <button class="btn-action" onclick="nextSlide()" id="onboardBtn">Next</button>
+        </div>
+
+
+        <div id="loginScreen" class="form-box">
+            <div class="form-header">
+                <h2>Welcome Back</h2>
+                <p>Log in to access your CM Nexus Sub dashboard</p>
+            </div>
+
+            <div class="form-group">
+                <label>Username</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="loginUser" placeholder="Enter username">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="loginPass" placeholder="Enter account password">
+                </div>
+            </div>
+
+            <button class="btn-action" onclick="executeLogin()">Log In</button>
+
+            <div class="fingerprint-btn" id="fingerprintLoginBtn" onclick="executeBiometricLogin()">
+                <i class="fas fa-fingerprint"></i>
+                <span>Use Fingerprint to Sign In</span>
+            </div>
+
+            <p class="switch-text">New to Nexus? <span onclick="switchForm('register')">Register Account</span></p>
+        </div>
+
+
+        <div id="registerScreen" class="form-box">
+            <div class="form-header">
+                <h2>Create Account</h2>
+                <p>Register once to join CM Nexus Sub secure grid</p>
+            </div>
+
+            <div class="form-group">
+                <label>Full Name</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-id-card"></i>
+                    <input type="text" id="regFullName" placeholder="e.g. Aliyu Ibrahim">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Username</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user-tag"></i>
+                    <input type="text" id="regUsername" placeholder="Create unique username">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="regEmail" placeholder="e.g. aliyu@gmail.com">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-phone"></i>
+                    <input type="number" id="regPhone" placeholder="e.g. 08076784616">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="regPass" placeholder="Create strong password">
+                </div>
+            </div>
+
+            <button class="btn-action" onclick="executeRegistration()">Register Now</button>
+
+            <p class="switch-text">Already registered? <span onclick="switchForm('login')">Log In</span></p>
+        </div>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // GWANIN FIREBASE CONFIGURATION NA CM NEXUS SUB
+        const firebaseConfig = {
+            apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+            authDomain: "cm-nexus-sub.firebaseapp.com",
+            projectId: "cm-nexus-sub",
+            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+            storageBucket: "cm-nexus-sub.firebasestorage.app",
+            messagingSenderId: "22010501991",
+            appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
+        };
+
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.database();
+
+        let currentSlideIdx = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+
+        // DEVICE UNIQUE ID GENERATOR (Doka na One Account Per Device)
+        function getDeviceUUID() {
+            let uuid = localStorage.getItem('device_uuid');
+            if (!uuid) {
+                // Kirkiri sabon ID na wayar baki daya
+                uuid = 'CN-' + Math.random().toString(36).substring(2, 15) + '-' + Date.now();
+                localStorage.setItem('device_uuid', uuid);
+            }
+            return uuid;
+        }
+
+        const deviceID = getDeviceUUID();
+
+        // Duba ko biometric login an riga an tsara shi a cikin wayar
+        const hasBiometrics = localStorage.getItem('useFingerprint') === 'true';
+        const savedUser = localStorage.getItem('saved_username');
+        const savedPass = localStorage.getItem('saved_password');
+
+        if (hasBiometrics && savedUser && savedPass) {
+            document.getElementById('fingerprintLoginBtn').style.display = 'flex';
+        }
+
+        // Onboarding slide switcher
+        function nextSlide() {
+            slides[currentSlideIdx].classList.remove('active');
+            dots[currentSlideIdx].classList.remove('active');
+
+            currentSlideIdx++;
+
+            if (currentSlideIdx < slides.length) {
+                slides[currentSlideIdx].classList.add('active');
+                dots[currentSlideIdx].classList.add('active');
+                if (currentSlideIdx === slides.length - 1) {
+                    document.getElementById('onboardBtn').innerText = "Get Started";
+                }
+            } else {
+                document.getElementById('onboardingScreen').style.display = 'none';
+                document.getElementById('loginScreen').classList.add('active');
+            }
+        }
+
+        // Switch forms
+        function switchForm(formName) {
+            document.querySelectorAll('.form-box').forEach(box => box.classList.remove('active'));
+            if (formName === 'login') {
+                document.getElementById('loginScreen').classList.add('active');
+            } else {
+                document.getElementById('registerScreen').classList.add('active');
+            }
+        }
+
+        // 1. REGISTER WITH SINGLE DEVICE LOCK SECURITY
+        function executeRegistration() {
+            const fullName = document.getElementById('regFullName').value.trim();
+            const username = document.getElementById('regUsername').value.trim().toLowerCase();
+            const email = document.getElementById('regEmail').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const password = document.getElementById('regPass').value.trim();
+
+            if (!fullName || !username || !email || !phone || !password) {
+                return Swal.fire('Error', 'Please fill out all registration fields.', 'error');
+            }
+
+            Swal.fire({
+                title: 'Verifying Security...',
+                html: 'Tabbatarda tsarin device dinka...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            // DOKA 1: Duba Firebase ko akwai wani account da aka yi amfani da wannan Device UUID din
+            db.ref('users/').orderByChild('registered_device').equalTo(deviceID).once('value', snapshot => {
+                if (snapshot.exists()) {
+                    Swal.fire('Device Blocked!', 'Multiple account creation is disabled! Only one registration allowed per mobile device to secure referral system.', 'error');
+                    return;
+                }
+
+                // DOKA 2: Tabbatar username bai riga ya kasance a database ba
+                db.ref('users/' + username).once('value', userSnap => {
+                    if (userSnap.exists()) {
+                        Swal.fire('Taken!', 'This username is already registered. Try another one.', 'warning');
+                        return;
+                    }
+
+                    // Tura sabon account zuwa Firebase dinka
+                    const newUserPayload = {
+                        fullName: fullName,
+                        username: username,
+                        email: email,
+                        phone: phone,
+                        password: password,
+                        wallet: 0,
+                        xp: 0,
+                        registered_device: deviceID, // Adana lambar wayar don kariya
+                        registered_time: Date.now()
+                    };
+
+                    db.ref('users/' + username).set(newUserPayload).then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Register Successful!',
+                            text: 'Your single device account is now active. Please log in.',
+                            confirmButtonColor: '#0062ff'
+                        }).then(() => {
+                            switchForm('login');
+                        });
+                    }).catch(err => {
+                        Swal.fire('Database Error', 'Failed to save register payload.', 'error');
+                    });
+                });
+            });
+        }
+
+        // 2. NATIVE LOGIN WITH PASSWORD
+        function executeLogin() {
+            const username = document.getElementById('loginUser').value.trim().toLowerCase();
+            const password = document.getElementById('loginPass').value.trim();
+
+            if (!username || !password) {
+                return Swal.fire('Required', 'Please input both username and password.', 'warning');
+            }
+
+            Swal.fire({
+                title: 'Authenticating...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            db.ref('users/' + username).once('value', snap => {
+                const userData = snap.val();
+                if (!userData || userData.password !== password) {
+                    Swal.fire('Failed', 'Incorrect username or password combination.', 'error');
+                    return;
+                }
+
+                // Adana sunan user na gida (localStorage)
+                localStorage.setItem('username', username);
+                localStorage.setItem('saved_username', username);
+                localStorage.setItem('saved_password', password); // Adana don biometric quick access
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Welcome Back!',
+                    text: 'Authorization successful. Opening gateway...',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    // Shiga babban Dashboard na App dinka
+                    window.location.href = "Wallet.html"; 
+                });
+            });
+        }
+
+        // 3. BIOMETRIC QUICK ACCESS (FINGERPRINT)
+        function executeBiometricLogin() {
+            if (!hasBiometrics || !savedUser || !savedPass) return;
+
+            Swal.fire({
+                title: 'Biometric Access',
+                text: 'Place your registered finger on the sensor to log in.',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Scan Fingerprint',
+                confirmButtonColor: '#0062ff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.setItem('username', savedUser);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Authenticated!',
+                        text: 'Biometric lock bypassed. Opening gateway...',
+                        showConfirmButton: false,
+                        timer: 1200
+                    }).then(() => {
+                        window.location.href = "Wallet.html";
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

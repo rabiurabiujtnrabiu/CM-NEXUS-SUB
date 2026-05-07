@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Support Desk | CM Nexus Sub</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --primary: #0062ff;
+            --dark: #0f172a;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --glow: rgba(0, 98, 255, 0.15);
+            --success: #10b981;
+        }
+
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        body { margin: 0; background: var(--bg); color: var(--text-main); padding-bottom: 50px; overflow-x: hidden; }
+
+        /* HEADER */
+        header { 
+            padding: 20px; display: flex; align-items: center; gap: 15px; 
+            background: var(--surface); border-bottom: 1px solid rgba(0,0,0,0.02);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .back-btn { font-size: 20px; color: var(--primary); cursor: pointer; transition: 0.2s; }
+        .back-btn:active { transform: scale(0.85); }
+        header h1 { font-size: 18px; font-weight: 800; color: var(--dark); letter-spacing: -0.5px; }
+
+        /* AI CHAT WRAPPER */
+        .chat-container {
+            background: var(--surface); margin: 20px; border-radius: 32px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.015); border: 1px solid #f1f5f9;
+            display: flex; flex-direction: column; height: 380px; overflow: hidden;
+        }
+        
+        /* CHAT BOX AREA */
+        .chat-box {
+            flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;
+            background: #fafafa;
+        }
+        .chat-box::-webkit-scrollbar { width: 4px; }
+        .chat-box::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* CHAT BUBBLES */
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; line-height: 1.5; }
+        .msg.ai {
+            background: var(--surface); color: var(--text-main); align-self: flex-start;
+            border-bottom-left-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            border: 1px solid #f1f5f9;
+        }
+        .msg.user {
+            background: var(--primary); color: white; align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        /* CHAT INPUT */
+        .chat-input-area {
+            padding: 12px; display: flex; gap: 10px; background: var(--surface);
+            border-top: 1px solid #f1f5f9;
+        }
+        .chat-input-area input {
+            flex: 1; padding: 14px 18px; border-radius: 16px; border: 2px solid #e2e8f0;
+            outline: none; font-size: 13px; font-weight: 700; background: #f8fafc;
+        }
+        .chat-input-area input:focus { border-color: var(--primary); background: var(--surface); }
+        
+        .send-btn {
+            width: 48px; height: 48px; border-radius: 16px; background: var(--primary);
+            color: white; border: none; display: flex; align-items: center; justify-content: center;
+            font-size: 16px; cursor: pointer; transition: 0.3s;
+        }
+        .send-btn:active { transform: scale(0.9); }
+
+        /* BRAND ANIMATED LOGO FOR SWEETALERT */
+        .animated-logo {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: 900; color: white;
+            box-shadow: 0 10px 25px rgba(0, 98, 255, 0.3);
+            border: 2.5px solid white;
+            margin: 0 auto;
+            animation: pulseRotate 3s infinite ease-in-out;
+        }
+
+        @keyframes pulseRotate {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.08) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); }
+        }
+
+        /* MANUAL COMPLAINT BUTTON */
+        .ticket-btn-wrapper { margin: 0 20px 25px; text-align: center; }
+        .btn-ticket {
+            width: 100%; padding: 18px; border: 2px dashed #0062ff; border-radius: 20px;
+            background: rgba(0, 98, 255, 0.03); color: var(--primary); font-weight: 800; font-size: 13px;
+            cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .btn-ticket:active { transform: scale(0.97); }
+
+        /* QUICK CONTACT GRID */
+        .contact-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 0 20px 25px;
+        }
+        .contact-card {
+            background: var(--surface); padding: 18px 15px; border-radius: 24px;
+            border: 1px solid #f1f5f9; box-shadow: 0 8px 25px rgba(0,0,0,0.01);
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            text-decoration: none; color: var(--text-main); transition: 0.3s;
+            cursor: pointer;
+        }
+        .contact-card:active { transform: scale(0.95); }
+        .contact-card i { font-size: 20px; }
+        .contact-card span { font-size: 11px; font-weight: 800; }
+
+        /* SWEETALERT POPUP CUSTOM STYLES */
+        .swal2-popup { border-radius: 32px !important; font-family: 'Plus Jakarta Sans', sans-serif !important; padding: 25px !important; }
+        .swal2-title { font-weight: 800 !important; color: var(--dark) !important; font-size: 18px !important; }
+        .swal2-html-container { font-weight: 600 !important; color: var(--text-muted) !important; font-size: 13px !important; }
+        .swal2-input, .swal2-textarea { border-radius: 16px !important; border: 2px solid #e2e8f0 !important; font-size: 14px !important; font-weight: 700 !important; }
+        .swal2-input:focus, .swal2-textarea:focus { border-color: var(--primary) !important; box-shadow: none !important; }
+        .swal2-confirm { border-radius: 16px !important; font-weight: 800 !important; padding: 12px 28px !important; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="back-btn" onclick="location.href='Wallet.html'"><i class="fas fa-arrow-left"></i></div>
+        <h1>AI Support Agent</h1>
+    </header>
+
+    <div class="chat-container">
+        <div class="chat-box" id="chatBox">
+            </div>
+        
+        <div class="chat-input-area">
+            <input type="text" id="userInput" placeholder="Ask CM Nexus AI a question..." onkeypress="handleKeyPress(event)">
+            <button class="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <div class="ticket-btn-wrapper">
+        <button class="btn-ticket" onclick="openManualTicketModal()">
+            <i class="fas fa-file-invoice-dollar"></i> File Manual Support Ticket
+        </button>
+    </div>
+
+    <div class="contact-grid">
+        <div onclick="dialSupportNumber('08076784616')" class="contact-card" style="border-left: 4px solid var(--primary);">
+            <i class="fas fa-phone-alt" style="color: var(--primary);"></i>
+            <span>Call Support</span>
+        </div>
+        <div onclick="openInAppEmailComposer()" class="contact-card" style="border-left: 4px solid var(--success);">
+            <i class="fas fa-envelope" style="color: var(--success);"></i>
+            <span>Email Support</span>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCnhd2Wo5KCeE33A50WPMbVBxkoqEzkwvY",
+            databaseURL: "https://cmchat-pro-default-rtdb.firebaseio.com",
+            projectId: "cmchat-pro"
+        };
+
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.database();
+        const myName = localStorage.getItem('username') || "Elite_User";
+
+        // AI TIMING & WELCOME ATTENDANCE
+        window.onload = function() {
+            const hour = new Date().getHours();
+            let greeting = "Good day";
+            if (hour < 12) greeting = "Good morning";
+            else if (hour < 17) greeting = "Good afternoon";
+            else greeting = "Good evening";
+
+            const welcomeMsg = `<b>Hello, ${greeting} @${myName}!</b> 🔵 Welcome to <b>CM Nexus Sub</b> help desk. I am your automated AI support assistant.<br><br>How can I help you today? You can ask me about: <b>funding, data, transaction security,</b> or <b>withdrawals</b>!`;
+            
+            showChatBubble(welcomeMsg, 'ai');
+        };
+
+        function showChatBubble(text, sender) {
+            const chatBox = document.getElementById('chatBox');
+            const bubble = document.createElement('div');
+            bubble.className = `msg ${sender} animate__animated animate__fadeInUp`;
+            bubble.innerHTML = text;
+            chatBox.appendChild(bubble);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+
+        // CHAT PROCESSOR
+        function sendMessage() {
+            const inputField = document.getElementById('userInput');
+            const query = inputField.value.trim();
+            if (!query) return;
+
+            showChatBubble(query, 'user');
+            inputField.value = "";
+
+            setTimeout(() => {
+                const response = getAiResponse(query.toLowerCase());
+                showChatBubble(response, 'ai');
+            }, 800);
+        }
+
+        function getAiResponse(query) {
+            if (query.includes('hello') || query.includes('hi') || query.includes('hey')) {
+                return `Hello @${myName}! How can I assist you in CM Nexus Sub today?`;
+            }
+            if (query.includes('data') || query.includes('internet') || query.includes('mb')) {
+                return `To buy cheap internet data, click on the <b>Wallet</b> tab in your navigation bar, and select the <b>Data Icon</b>. Ensure you have enough wallet balance!`;
+            }
+            if (query.includes('fund') || query.includes('deposit') || query.includes('wallet') || query.includes('pay')) {
+                return `You can fund your wallet via automatic bank accounts on your dashboard, or by transferring directly to the Admin. Contact the Commander for quick manual funding.`;
+            }
+            if (query.includes('pin') || query.includes('security') || query.includes('lock')) {
+                return `Go to the <b>Settings</b> tab (Sliders icon) on the Bottom Navigation Bar, input a secure 4-Digit number under "Transaction Security PIN" and save. This secures your funds.`;
+            }
+            if (query.includes('withdraw') || query.includes('salary') || query.includes('cash')) {
+                return `Withdrawals are processed manually. Once you meet the minimum requirements, your Withdrawal page will be Unlocked. You can request payout there once.`;
+            }
+            if (query.includes('swap') || query.includes('airtime to cash')) {
+                return `Airtime Swap lets you convert excess airtime to wallet cash. Select the Swap icon, transfer the airtime to the displayed Admin number, and submit your ticket for verification.`;
+            }
+            
+            return `I am sorry @${myName}, I did not quite grasp that query. Please make sure it relates to: <b>funding, data plans, security PIN,</b> or <b>withdrawals</b>.<br><br>If it's urgent, click <b>"File Manual Support Ticket"</b> below to send a direct report to the Commander.`;
+        }
+
+        // PREMIUM DIALING CARD WITH WHATSAPP FALLBACK (NO WEBVIEW ERRORS)
+        function dialSupportNumber(phone) {
+            Swal.fire({
+                title: 'Place Phone Call',
+                html: `
+                    <p style="font-size:13px; margin-bottom:15px; color:var(--text-muted);">Would you like to place a phone call or chat with support directly on WhatsApp?</p>
+                    <b style="font-size:22px; color:var(--primary); letter-spacing:1px;">0807 678 4616</b>
+                `,
+                icon: 'phone',
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonColor: '#0062ff',
+                denyButtonColor: '#25D366',
+                confirmButtonText: '<i class="fas fa-phone-alt"></i> Call Line',
+                denyButtonText: '<i class="fab fa-whatsapp"></i> WhatsApp',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Gwada kiran dialer na asali
+                    try {
+                        window.location.href = "tel:" + phone;
+                    } catch(e) {
+                        // Idan WebView ya ki kiran, tura su WhatsApp
+                        openWhatsAppSupport();
+                    }
+                } else if (result.isDenied) {
+                    openWhatsAppSupport();
+                }
+            });
+        }
+
+        // Direct WhatsApp trigger
+        function openWhatsAppSupport() {
+            const whatsappUrl = "https://wa.me/2348076784616";
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // IN-APP EMAIL COMPOSER
+        function openInAppEmailComposer() {
+            Swal.fire({
+                title: 'Email Support Desk',
+                html: `
+                    <p style="font-size:11px; font-weight:800; color:var(--success); text-align:left; margin-bottom:10px; text-transform:uppercase;">To: cmnexussub@gmail.com</p>
+                    <input id="emailSubject" class="swal2-input" placeholder="Subject (e.g. Wallet Funding Help)">
+                    <textarea id="emailBody" class="swal2-textarea" rows="4" placeholder="Write your message to support here..."></textarea>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Send Email',
+                confirmButtonColor: '#10b981',
+                preConfirm: () => {
+                    const subject = document.getElementById('emailSubject').value.trim();
+                    const body = document.getElementById('emailBody').value.trim();
+                    if (!subject || !body) {
+                        Swal.showValidationMessage('Both subject and email content are required.');
+                        return false;
+                    }
+                    return { subject: subject, message: body };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const data = result.value;
+
+                    Swal.fire({
+                        title: 'Sending Message',
+                        html: `
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:15px; padding:20px 0;">
+                                <div class="animated-logo">CN</div>
+                                <p style="font-weight:700; color:#64748b; font-size:13px;">Broadcasting to secure mailnode...</p>
+                            </div>
+                        `,
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+
+                    db.ref('support_tickets/').push({
+                        username: myName,
+                        subject: "[EMAIL] " + data.subject,
+                        message: data.message,
+                        status: "Email Received",
+                        timestamp: Date.now()
+                    }).then(() => {
+                        const gmailAppUrl = "mailto:cmnexussub@gmail.com?subject=" + encodeURIComponent(data.subject) + "&body=" + encodeURIComponent(data.message);
+                        window.location.href = gmailAppUrl;
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Message Sent!',
+                            text: 'Your email draft was successfully dispatched. Please complete the action if your phone prompt appears.',
+                            confirmButtonColor: '#10b981'
+                        });
+                    });
+                }
+            });
+        }
+
+        // TICKET MODAL FOR GENERAL COMPLAINTS
+        function openManualTicketModal() {
+            Swal.fire({
+                title: 'Open Support Ticket',
+                html: `
+                    <input id="ticketSubject" class="swal2-input" placeholder="Subject (e.g. Failed Funding)">
+                    <textarea id="ticketMsg" class="swal2-textarea" placeholder="Explain your complaint in detail..."></textarea>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Submit Ticket',
+                confirmButtonColor: '#0062ff',
+                preConfirm: () => {
+                    const subject = document.getElementById('ticketSubject').value.trim();
+                    const msg = document.getElementById('ticketMsg').value.trim();
+                    if (!subject || !msg) {
+                        Swal.showValidationMessage('Both subject and details are required.');
+                        return false;
+                    }
+                    return { subject: subject, message: msg };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const data = result.value;
+                    
+                    Swal.fire({
+                        title: 'Publishing Ticket',
+                        html: `
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:15px; padding:20px 0;">
+                                <div class="animated-logo">CN</div>
+                                <p style="font-weight:700; color:#64748b; font-size:13px;">Transmitting secure payload...</p>
+                            </div>
+                        `,
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+
+                    db.ref('support_tickets/').push({
+                        username: myName,
+                        subject: data.subject,
+                        message: data.message,
+                        status: "Pending Investigation",
+                        timestamp: Date.now()
+                    }).then(() => {
+                        Swal.fire('Submitted!', 'The Commander has received your manual ticket and will process it shortly.', 'success');
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

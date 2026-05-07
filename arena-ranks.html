@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Arena Hierarchy | CM Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg: #0A192F; --card: #112240; --gold: #FFD600; --cyan: #64FFDA; --silver: #c0c0c0; --bronze: #cd7f32; }
+        body { margin: 0; background: var(--bg); font-family: 'Inter', sans-serif; color: white; padding-bottom: 50px; }
+
+        header { padding: 25px; display: flex; align-items: center; gap: 15px; background: rgba(10,25,47,0.9); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        /* PROMO BANNER FOR REWARDS */
+        .promo-banner {
+            background: linear-gradient(135deg, #1d3557 0%, #112240 100%);
+            margin: 15px 20px 5px;
+            padding: 16px;
+            border-radius: 20px;
+            border: 1px solid var(--gold);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .promo-icon {
+            font-size: 28px;
+            color: var(--gold);
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .promo-text h4 { margin: 0 0 4px; font-size: 13px; font-weight: 800; color: #fff; text-transform: uppercase; }
+        .promo-text p { margin: 0; font-size: 11px; color: #ccd6f6; opacity: 0.8; line-height: 1.4; }
+
+        .section-title { padding: 20px 20px 10px; font-size: 13px; font-weight: 800; color: var(--cyan); text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* TOP 10 SCROLL */
+        .top-ten-scroll { display: flex; overflow-x: auto; padding: 10px 20px 20px; gap: 15px; scrollbar-width: none; }
+        .top-ten-scroll::-webkit-scrollbar { display: none; }
+        .top-card { min-width: 130px; background: var(--card); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid rgba(255, 214, 0, 0.2); transition: 0.3s; position: relative; }
+        
+        /* Photo & Crown Styles */
+        .avatar-container { position: relative; display: inline-block; margin-bottom: 10px; }
+        .top-card img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
+        .crown-icon { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 16px; }
+
+        .top-card b { font-size: 13px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px; }
+        .top-card span { font-size: 10px; color: var(--gold); font-weight: 700; display: block; margin-top: 4px; }
+        .top-card .xp-badge { font-size: 9px; color: var(--cyan); font-weight: 800; margin-top: 2px; }
+
+        /* LEVEL LIST */
+        .level-list { padding: 0 20px; }
+        .level-item { 
+            background: rgba(255,255,255,0.02); padding: 16px 20px; border-radius: 22px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.04);
+        }
+        .level-info { display: flex; align-items: center; gap: 15px; }
+        .level-num { width: 38px; height: 38px; background: #1d2d44; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--gold); font-size: 13px; border: 1px solid rgba(255,214,0,0.2); }
+        .level-name { font-weight: 700; font-size: 14px; letter-spacing: 0.3px; }
+        .user-count { font-size: 11px; font-weight: 800; color: var(--cyan); background: rgba(100, 255, 218, 0.08); padding: 5px 12px; border-radius: 10px; border: 1px solid rgba(100,255,218,0.1); }
+
+        .level-20 { background: linear-gradient(90deg, #1d2d44, #112240); border: 1px solid var(--gold); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .loading-shimmer { color: #8892B0; text-align: center; padding: 40px; font-size: 14px; opacity: 0.5; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <i class="fas fa-crown" style="color: var(--gold);"></i>
+        <b style="font-size: 18px;">Arena Hierarchy</b>
+    </header>
+
+    <div class="promo-banner">
+        <div class="promo-icon">
+            <i class="fas fa-gift"></i>
+        </div>
+        <div class="promo-text">
+            <h4>Top 10 Weekly Rewards</h4>
+            <p>Maintain your position in the top 10 influencers to automatically win cash bonuses or high-speed data rewards!</p>
+        </div>
+    </div>
+
+    <div class="section-title">Weekly Top Influencers (XP Champions)</div>
+    <div class="top-ten-scroll" id="topTenContainer">
+        <div class="loading-shimmer">Loading Champions...</div>
+    </div>
+
+    <div class="section-title">Rank Distribution (Levels 1-20)</div>
+    <div class="level-list" id="levelContainer">
+        </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // 1. SABON FIREBASE INITIALIZATION NA CM NEXUS SUB
+        const firebaseConfig = {
+            apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+            authDomain: "cm-nexus-sub.firebaseapp.com",
+            projectId: "cm-nexus-sub",
+            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+            storageBucket: "cm-nexus-sub.firebasestorage.app",
+            messagingSenderId: "22010501991",
+            appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
+        };
+        
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const titles = [
+            "Rookie Gladiator", "Brave Warrior", "Skilled Knight", "Arena Veteran", 
+            "Squad Leader", "Master Tactician", "Elite Guardian", "Combat General", 
+            "Arena Baron", "Noble Lord", "Grand Commander", "Elite Governor", 
+            "Silver Prince", "Golden Duke", "Royal Ambassador", "Grand Vizier", 
+            "Supreme Regent", "Kingdom Legend", "Imperial Majesty", "Supreme Emperor"
+        ];
+
+        // 2. FETCH ALL USERS & SORT BY XP
+        db.ref('users').on('value', (snapshot) => {
+            const usersData = snapshot.val();
+            if (!usersData) {
+                document.getElementById('topTenContainer').innerHTML = `<div class="loading-shimmer">No players registered yet...</div>`;
+                return;
+            }
+
+            const allUsers = Object.values(usersData);
+            const levelCounts = new Array(20).fill(0);
+            
+            // Jera Users ta yawan XP (highest to lowest)
+            const sortedUsersByXP = allUsers.sort((a, b) => (parseInt(b.xp) || 0) - (parseInt(a.xp) || 0));
+
+            // Populate Top 10 Live Champions
+            renderTopTen(sortedUsersByXP.slice(0, 10));
+
+            // Calculate how many users are in each level based on Referral Count
+            allUsers.forEach(user => {
+                const refs = parseInt(user.referral_count) || 0;
+                let lv = Math.floor(refs / 10) + 1; // 10 refs per level don hawa 1-20 cikin sauƙi
+                if(lv > 20) lv = 20;
+                levelCounts[lv - 1]++;
+            });
+
+            renderLevels(levelCounts);
+        });
+
+        // 3. RENDER TOP 10 WITH MEDAL CROWNS
+        function renderTopTen(topUsers) {
+            const container = document.getElementById('topTenContainer');
+            container.innerHTML = '';
+            
+            topUsers.forEach((user, index) => {
+                const photo = user.profilePhoto || "https://ui-avatars.com/api/?background=112240&color=64FFDA&bold=true&name=" + user.username;
+                const rank = index + 1;
+                
+                // Designate crown colors for Rank 1, 2, and 3
+                let crownColor = "";
+                let crownHtml = "";
+                
+                if (rank === 1) {
+                    crownHtml = `<i class="fas fa-crown crown-icon" style="color: var(--gold);"></i>`;
+                } else if (rank === 2) {
+                    crownHtml = `<i class="fas fa-crown crown-icon" style="color: var(--silver);"></i>`;
+                } else if (rank === 3) {
+                    crownHtml = `<i class="fas fa-crown crown-icon" style="color: var(--bronze);"></i>`;
+                } else {
+                    crownHtml = `<i class="fas fa-medal crown-icon" style="color: var(--cyan); font-size:12px; top:-8px;"></i>`;
+                }
+
+                container.innerHTML += `
+                    <div class="top-card">
+                        <div class="avatar-container">
+                            ${crownHtml}
+                            <img src="${photo}" style="border-color: ${rank === 1 ? 'var(--gold)' : rank === 2 ? 'var(--silver)' : rank === 3 ? 'var(--bronze)' : 'var(--cyan)'};">
+                        </div>
+                        <b>${user.username || 'User'}</b>
+                        <span>Rank #${rank}</span>
+                        <div class="xp-badge"><i class="fas fa-bolt"></i> ${Number(user.xp || 0).toLocaleString()} XP</div>
+                    </div>
+                `;
+            });
+        }
+
+        // 4. RENDER LEVEL HIERARCHY
+        function renderLevels(counts) {
+            const container = document.getElementById('levelContainer');
+            container.innerHTML = '';
+            titles.forEach((title, index) => {
+                const lv = index + 1;
+                const isMax = lv === 20;
+                container.innerHTML += `
+                    <div class="level-item ${isMax ? 'level-20' : ''}">
+                        <div class="level-info">
+                            <div class="level-num">${lv}</div>
+                            <div>
+                                <div class="level-name">${title}</div>
+                                <div style="font-size: 10px; opacity: 0.5;">Required: ${lv * 10} Refs</div>
+                            </div>
+                        </div>
+                        <div class="user-count"><i class="fas fa-users"></i> ${counts[index]}</div>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

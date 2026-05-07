@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Buy Airtime | Elite Arena Pro</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* ASALIN STYLE DIN KA - BAN TABA KOMAI BA */
+        :root {
+            --primary: #1A237E;
+            --accent: #FFD600;
+            --bg: #F4F7FE;
+            --white: #ffffff;
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+            --border: #e2e8f0;
+            --glow: rgba(26, 35, 126, 0.15);
+        }
+
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg); color: var(--text-main); padding-bottom: 50px; overflow-x: hidden; }
+
+        header { 
+            padding: 20px; display: flex; align-items: center; gap: 15px; 
+            background: var(--white); border-bottom: 1px solid rgba(0,0,0,0.02);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .back-btn { font-size: 20px; color: var(--primary); cursor: pointer; transition: 0.2s; }
+        .back-btn:active { transform: scale(0.85); }
+        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--primary); letter-spacing: -0.5px; }
+
+        .balance-badge {
+            background: var(--white); margin: 20px; padding: 18px 24px; 
+            border-radius: 24px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 30px rgba(26, 35, 126, 0.03);
+            border: 1px solid rgba(26, 35, 126, 0.04);
+        }
+        .balance-badge span { font-size: 11px; color: var(--text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .balance-badge b { font-size: 17px; color: var(--primary); font-weight: 800; }
+
+        .form-container { 
+            background: var(--white); margin: 0 20px; padding: 30px 24px; 
+            border-radius: 32px; box-shadow: 0 15px 35px rgba(0,0,0,0.02); 
+            border: 1px solid rgba(0,0,0,0.01);
+        }
+        .form-group { margin-bottom: 24px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
+
+        .network-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .network-btn {
+            background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 20px; padding: 14px 8px;
+            display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .network-logo {
+            width: 38px; height: 38px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 800; color: white;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+        }
+        
+        .logo-mtn { background: linear-gradient(135deg, #FFEB3B 0%, #FBC02D 100%); color: #000; }
+        .logo-airtel { background: linear-gradient(135deg, #FF1744 0%, #D50000 100%); }
+        .logo-glo { background: linear-gradient(135deg, #00E676 0%, #388E3C 100%); }
+        .logo-9mobile { background: linear-gradient(135deg, #004D40 0%, #00796B 100%); }
+
+        .network-btn span { font-size: 11px; font-weight: 700; color: var(--text-dim); transition: 0.3s; }
+        
+        .network-btn:active { transform: scale(0.95); }
+        .network-btn.selected {
+            background: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px var(--glow);
+        }
+        .network-btn.selected span { color: var(--primary); }
+
+        .input-wrapper { position: relative; }
+        input {
+            width: 100%; padding: 16px 20px; border-radius: 20px; border: 2px solid #e2e8f0;
+            outline: none; font-size: 14px; font-weight: 700; color: var(--text-main); background: #f8fafc;
+            transition: all 0.3s ease;
+        }
+        input:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 8px 20px var(--glow); }
+
+        .btn-purchase {
+            width: 100%; padding: 18px; border: none; border-radius: 20px;
+            background: var(--primary); color: var(--white); font-weight: 800; font-size: 15px;
+            box-shadow: 0 10px 25px rgba(26, 35, 126, 0.25); cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-top: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .btn-purchase:active { transform: scale(0.97); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="back-btn" onclick="location.href='Wallet.html'"><i class="fas fa-arrow-left"></i></div>
+        <h1>Buy Airtime</h1>
+    </header>
+
+    <div class="balance-badge">
+        <span>Available Balance</span>
+        <b id="walletBal">₦0.00</b>
+    </div>
+
+    <div class="form-container animate__animated animate__fadeInUp">
+        <div class="form-group">
+            <label>Select Network</label>
+            <div class="network-grid">
+                <div class="network-btn" id="net_mtn" onclick="selectNetwork('MTN', '1')">
+                    <div class="network-logo logo-mtn">MTN</div>
+                    <span>MTN</span>
+                </div>
+                <div class="network-btn" id="net_airtel" onclick="selectNetwork('Airtel', '2')">
+                    <div class="network-logo logo-airtel">AIR</div>
+                    <span>Airtel</span>
+                </div>
+                <div class="network-btn" id="net_glo" onclick="selectNetwork('Glo', '3')">
+                    <div class="network-logo logo-glo">GLO</div>
+                    <span>Glo</span>
+                </div>
+                <div class="network-btn" id="net_9mobile" onclick="selectNetwork('9mobile', '4')">
+                    <div class="network-logo logo-9mobile">9M</div>
+                    <span>9mobile</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Recipient Phone Number</label>
+            <div class="input-wrapper">
+                <input type="number" id="phoneNo" placeholder="e.g. 08034567812">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Amount (₦)</label>
+            <div class="input-wrapper">
+                <input type="number" id="amount" placeholder="e.g. 100" min="50" oninput="updateButtonLabel()">
+            </div>
+        </div>
+
+        <button class="btn-purchase" onclick="processAirtimeOrder()" id="buyBtn">PROCEED</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // GYARAN FIREBASE - ZUWA SABON ASUSU
+        const firebaseConfig = {
+            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com"
+        };
+
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.database();
+        const myName = localStorage.getItem('username') || "Elite_User";
+
+        let selectedNetworkId = "";
+        let selectedNetworkName = "";
+        let currentWalletBalance = 0;
+
+        // Gsubz API key dinka
+        const GSUBZ_KEY = "Ap_8fe29a8969a042bf6538b658112965fb";
+
+        db.ref('users/' + myName + '/wallet').on('value', snap => {
+            currentWalletBalance = parseFloat(snap.val()) || 0;
+            document.getElementById('walletBal').innerText = "₦" + currentWalletBalance.toLocaleString();
+        });
+
+        function selectNetwork(netName, netId) {
+            selectedNetworkName = netName;
+            selectedNetworkId = netId;
+            document.querySelectorAll('.network-btn').forEach(btn => btn.classList.remove('selected'));
+            document.getElementById('net_' + netName.toLowerCase()).classList.add('selected');
+            updateButtonLabel();
+        }
+
+        function updateButtonLabel() {
+            const amt = document.getElementById('amount').value.trim();
+            document.getElementById('buyBtn').innerText = (amt && !isNaN(amt)) ? `PAY ₦${parseFloat(amt).toLocaleString()}` : `PROCEED`;
+        }
+
+        function processAirtimeOrder() {
+            const phone = document.getElementById('phoneNo').value.trim();
+            const amt = parseFloat(document.getElementById('amount').value.trim());
+
+            if (!selectedNetworkId) return Swal.fire('Error', 'Please select a network.', 'warning');
+            if (phone.length < 10) return Swal.fire('Error', 'Invalid phone number.', 'warning');
+            if (isNaN(amt) || amt < 50) return Swal.fire('Error', 'Min airtime is ₦50.', 'warning');
+            if (currentWalletBalance < amt) return Swal.fire('Error', 'Insufficient Balance.', 'error');
+
+            Swal.fire({
+                title: 'Confirm',
+                text: `Send ₦${amt.toLocaleString()} airtime to ${phone}?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#1A237E'
+            }).then((res) => { if (res.isConfirmed) executeAirtime(phone, amt); });
+        }
+
+        async function executeAirtime(phone, amt) {
+            Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            // RAGE KUDI A WALLET
+            db.ref('users/' + myName).transaction(user => {
+                if (user && user.wallet >= amt) {
+                    user.wallet -= amt;
+                    return user;
+                }
+            }).then(async tx => {
+                if (tx.committed) {
+                    let fd = new FormData();
+                    fd.append('serviceID', selectedNetworkName.toLowerCase());
+                    fd.append('api', GSUBZ_KEY);
+                    fd.append('phone', phone);
+                    fd.append('amount', amt);
+                    fd.append('requestID', "AT-" + Date.now());
+
+                    try {
+                        const response = await fetch('https://gsubz.com/api/pay/', { method: 'POST', body: fd });
+                        const d = await response.json();
+
+                        if (d.code == 200 || d.status === "TRANSACTION_SUCCESSFUL") {
+                            db.ref('transactions/' + myName).push({
+                                type: 'debit', service: `Airtime: ${selectedNetworkName} (${phone})`, amount: amt, time: Date.now()
+                            });
+                            Swal.fire('Success!', 'Airtime sent successfully.', 'success');
+                        } else {
+                            db.ref('users/' + myName + '/wallet').transaction(w => (w || 0) + amt);
+                            Swal.fire('Failed', d.description || 'Provider error.', 'error');
+                        }
+                    } catch(e) {
+                        db.ref('users/' + myName + '/wallet').transaction(w => (w || 0) + amt);
+                        Swal.fire('Error', 'Connection timeout.', 'error');
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

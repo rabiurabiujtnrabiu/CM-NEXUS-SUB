@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Purchase Data | Elite Arena Pro</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --primary: #1A237E;
+            --accent: #00f2fe;
+            --bg: #F4F7FE;
+            --white: #ffffff;
+            --text-main: #1e293b;
+        }
+
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg); color: var(--text-main); padding-bottom: 50px; }
+
+        header { 
+            padding: 20px; display: flex; align-items: center; gap: 15px; 
+            background: var(--white); border-bottom: 1px solid rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--primary); }
+
+        /* CM LOGO PULSE AREA */
+        #researchingArea { display: none; text-align: center; padding: 20px; }
+        .logo-box { width: 90px; height: 90px; margin: 0 auto 10px; animation: cm-pulse 1.5s infinite ease-in-out; }
+        @keyframes cm-pulse {
+            0% { transform: scale(0.9); filter: drop-shadow(0 0 5px var(--accent)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 15px var(--accent)); }
+            100% { transform: scale(0.9); filter: drop-shadow(0 0 5px var(--accent)); }
+        }
+
+        .balance-badge { background: var(--white); margin: 15px; padding: 15px 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .balance-badge b { font-size: 16px; color: var(--primary); font-weight: 800; }
+
+        .form-container { background: var(--white); margin: 0 15px; padding: 25px 20px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); }
+        .label { display: block; font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 10px; }
+
+        .network-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .network-btn { background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 15px; padding: 10px 5px; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; transition: 0.3s; }
+        .network-btn.selected { border-color: var(--primary); background: #fff; box-shadow: 0 5px 15px rgba(26,35,126,0.1); }
+        .logo-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 9px; font-weight: 800; }
+
+        .service-tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .tab-btn { white-space: nowrap; padding: 10px 15px; border-radius: 10px; background: #f1f5f9; border: none; font-size: 10px; font-weight: 800; color: var(--primary); cursor: pointer; }
+        .tab-btn.active { background: #9C27B0; color: white; box-shadow: 0 4px 10px rgba(156,39,176,0.2); }
+
+        .input-box { width: 100%; padding: 14px; border-radius: 15px; border: 2px solid #e2e8f0; background: #f8fafc; font-weight: 700; outline: none; margin-bottom: 15px; font-size: 14px; }
+        .btn-purchase { width: 100%; padding: 16px; border-radius: 15px; border: none; background: var(--primary); color: white; font-weight: 800; font-size: 14px; box-shadow: 0 8px 20px rgba(26,35,126,0.2); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <i class="fas fa-arrow-left" style="color:var(--primary); cursor:pointer" onclick="history.back()"></i>
+        <h1 style="margin-left:15px">Elite Arena Pro</h1>
+    </header>
+
+    <div class="balance-badge">
+        <span style="font-size: 10px; font-weight: 800; color: #64748b;">LIVE BALANCE</span>
+        <b id="walletBal">₦0.00</b>
+    </div>
+
+    <div class="form-container">
+        <div id="mainForm">
+            <span class="label">Step 1: Select Network</span>
+            <div class="network-grid">
+                <div class="network-btn" id="net_mtn" onclick="changeNet('mtn')"><div style="background:#FFD600; color:#000;" class="logo-circle">MTN</div><span style="font-size:9px; font-weight:700">MTN</span></div>
+                <div class="network-btn" id="net_airtel" onclick="changeNet('airtel')"><div style="background:#FF1744; color:#fff;" class="logo-circle">AIR</div><span style="font-size:9px; font-weight:700">Airtel</span></div>
+                <div class="network-btn" id="net_glo" onclick="changeNet('glo')"><div style="background:#00E676; color:#fff;" class="logo-circle">GLO</div><span style="font-size:9px; font-weight:700">Glo</span></div>
+                <div class="network-btn" id="net_9mobile" onclick="changeNet('etisalat')"><div style="background:#004D40; color:#fff;" class="logo-circle">9M</div><span style="font-size:9px; font-weight:700">9mobile</span></div>
+            </div>
+
+            <div id="serviceTabArea" style="display:none;">
+                <span class="label">Step 2: Service Category</span>
+                <div class="service-tabs" id="tabList"></div>
+            </div>
+
+            <div id="researchingArea">
+                <div class="logo-box">
+                    <svg viewBox="0 0 500 500">
+                        <polygon points="250,45 425,146 425,348 250,449 75,348 75,146" fill="#111827" stroke="#4facfe" stroke-width="12" />
+                        <text x="135" y="290" fill="#00f2fe" font-family="sans-serif" font-size="140" font-weight="900">C</text>
+                        <text x="245" y="290" fill="#00f2fe" font-family="sans-serif" font-size="140" font-weight="900">M</text>
+                        <path d="M 215,190 L 290,310" fill="none" stroke="#ff9900" stroke-width="25" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <p style="font-size: 10px; font-weight: 800; color: var(--primary);">SYNCING LIVE PRICES...</p>
+            </div>
+
+            <div id="inputSection" style="margin-top: 15px;">
+                <span class="label">Recipient Number</span>
+                <input type="number" class="input-box" id="phoneNo" placeholder="e.g. 08144216361">
+
+                <span class="label">Select Plan</span>
+                <select class="input-box" id="planSelect" onchange="updateBtnLabel()">
+                    <option value="">-- Select Category First --</option>
+                </select>
+
+                <button class="btn-purchase" onclick="processOrder()" id="buyBtn">PROCEED</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const config = { databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com" };
+        if (!firebase.apps.length) firebase.initializeApp(config);
+        const db = firebase.database();
+        const username = localStorage.getItem('username') || "Elite_User";
+        const GSUBZ_KEY = "Ap_8fe29a8969a042bf6538b658112965fb";
+
+        let walletBal = 0; let activeService = "";
+
+        db.ref('users/'+username+'/wallet').on('value', s => {
+            walletBal = parseFloat(s.val()) || 0;
+            document.getElementById('walletBal').innerText = "₦" + walletBal.toLocaleString();
+        });
+
+        const netServices = {
+            "mtn": ["mtn_sme", "mtn_gifting", "mtn_cg_lite"],
+            "airtel": ["airtel_cg", "airtel_sme"],
+            "glo": ["glo_data", "glo_sme"],
+            "etisalat": ["etisalat_data"]
+        };
+
+        function changeNet(id) {
+            document.querySelectorAll('.network-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('net_'+(id==='etisalat'?'9mobile':id)).classList.add('selected');
+            let tabs = "";
+            netServices[id].forEach(srv => {
+                tabs += `<button class="tab-btn" id="t_${srv}" onclick="fetchPlans('${srv}')">${srv.replace('mtn_','').replace('airtel_','').replace('glo_','').replace('_',' ').toUpperCase()}</button>`;
+            });
+            document.getElementById('tabList').innerHTML = tabs;
+            document.getElementById('serviceTabArea').style.display = "block";
+        }
+
+        async function fetchPlans(service) {
+            activeService = service;
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById('t_'+service).classList.add('active');
+            document.getElementById('researchingArea').style.display = "block";
+            document.getElementById('planSelect').innerHTML = `<option value="">-- Loading Live Plans... --</option>`;
+
+            // LIVE PROXY TO BYPASS LOCALHOST CONNECTION ERRORS
+            const target = `https://api.gsubz.com/api/plans?service=${service}`;
+            const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(target)}`;
+
+            try {
+                const res = await fetch(proxy);
+                const json = await res.json();
+                const data = JSON.parse(json.contents);
+                
+                let options = `<option value="">-- Select Data Plan --</option>`;
+                data.plans.forEach(p => {
+                    let apiPrice = parseFloat(p.price);
+                    let finalPrice = apiPrice + 30; // Your Margin
+                    if(p.displayName.includes("1GB")) finalPrice = 450;
+                    
+                    options += `<option value="${p.value}" data-price="${finalPrice}" data-size="${p.displayName}">${p.displayName} (₦${finalPrice})</option>`;
+                });
+                document.getElementById('planSelect').innerHTML = options;
+                document.getElementById('researchingArea').style.display = "none";
+            } catch(e) {
+                document.getElementById('researchingArea').style.display = "none";
+                Swal.fire('Offline Error', 'Failed to fetch plans. Check internet.', 'error');
+            }
+        }
+
+        function updateBtnLabel() {
+            const sel = document.getElementById('planSelect');
+            const price = sel.options[sel.selectedIndex].getAttribute('data-price');
+            document.getElementById('buyBtn').innerText = price ? `PAY ₦${price} NOW` : "PROCEED";
+        }
+
+        function processOrder() {
+            const sel = document.getElementById('planSelect');
+            const planId = sel.value;
+            const price = parseFloat(sel.options[sel.selectedIndex].getAttribute('data-price'));
+            const size = sel.options[sel.selectedIndex].getAttribute('data-size');
+            const phone = document.getElementById('phoneNo').value;
+
+            if(!planId || phone.length < 10) return Swal.fire('Incomplete', 'Enter phone & select plan.', 'warning');
+            if(walletBal < price) return Swal.fire('Low Balance', 'Fund your wallet.', 'error');
+
+            Swal.fire({
+                title: 'Confirm Purchase',
+                text: `Send ${size} to ${phone}?`,
+                icon: 'question', showCancelButton: true, confirmButtonColor: '#1A237E'
+            }).then(r => { if(r.isConfirmed) executePurchase(planId, phone, price, size); });
+        }
+
+        async function executePurchase(id, ph, pr, sz) {
+            Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            
+            db.ref('users/'+username).transaction(user => {
+                if(user && user.wallet >= pr) { user.wallet -= pr; return user; }
+            }).then(async tx => {
+                if(tx.committed) {
+                    let fd = new FormData();
+                    fd.append('serviceID', activeService); fd.append('plan', id);
+                    fd.append('api', GSUBZ_KEY); fd.append('phone', ph);
+                    fd.append('requestID', "EP-" + Date.now());
+
+                    try {
+                        const response = await fetch('https://gsubz.com/api/pay/', { method: 'POST', body: fd });
+                        const resData = await response.json();
+                        if(resData.code == 200 || resData.status === "TRANSACTION_SUCCESSFUL") {
+                            Swal.fire('Success!', `Data sent to ${ph}`, 'success'); grantRewards(sz);
+                        } else {
+                            db.ref('users/'+username+'/wallet').transaction(w => (w || 0) + pr);
+                            Swal.fire('Failed', resData.description || 'Provider error.', 'error');
+                        }
+                    } catch(e) {
+                        db.ref('users/'+username+'/wallet').transaction(w => (w || 0) + pr);
+                        Swal.fire('Network Timeout', 'Order failed. Wallet refunded.', 'error');
+                    }
+                }
+            });
+        }
+
+        function grantRewards(sz) {
+            if(!sz.includes('GB')) return;
+            db.ref('users/'+username+'/pending_xp').transaction(p => (p || 0) + 50);
+            db.ref('users/'+username+'/referred_by').once('value', sn => {
+                const up = sn.val(); if(up && up !== 'none') db.ref('users/'+up+'/pending_xp').transaction(xp => (xp || 0) + 20);
+            });
+        }
+    </script>
+</body>
+</html>

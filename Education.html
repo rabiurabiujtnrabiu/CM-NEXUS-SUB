@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Education PINs | Elite Arena Pro</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* ASALIN STYLE DIN KA - BAN TABA KOMAI BA */
+        :root {
+            --primary: #1A237E; --accent: #FFD600; --bg: #F4F7FE; --white: #ffffff;
+            --text-main: #1e293b; --text-dim: #64748b; --border: #e2e8f0; --glow: rgba(26, 35, 126, 0.15);
+        }
+
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg); color: var(--text-main); padding-bottom: 50px; overflow-x: hidden; }
+
+        header { 
+            padding: 20px; display: flex; align-items: center; gap: 15px; 
+            background: var(--white); border-bottom: 1px solid rgba(0,0,0,0.02);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .back-btn { font-size: 20px; color: var(--primary); cursor: pointer; transition: 0.2s; }
+        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--primary); letter-spacing: -0.5px; }
+
+        .balance-badge {
+            background: var(--white); margin: 20px; padding: 18px 24px; 
+            border-radius: 24px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 30px rgba(26, 35, 126, 0.03); border: 1px solid rgba(26, 35, 126, 0.04);
+        }
+        .balance-badge b { font-size: 17px; color: var(--primary); font-weight: 800; }
+
+        .form-container { 
+            background: var(--white); margin: 0 20px; padding: 30px 24px; 
+            border-radius: 32px; box-shadow: 0 15px 35px rgba(0,0,0,0.02); 
+        }
+        .form-group { margin-bottom: 24px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 12px; }
+
+        .exam-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .exam-btn {
+            background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 20px; padding: 16px 8px;
+            display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
+        }
+        
+        .exam-logo {
+            width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 800; color: white; box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+        }
+        
+        .logo-waec { background: linear-gradient(135deg, #1A237E 0%, #0D47A1 100%); }
+        .logo-neco { background: linear-gradient(135deg, #00C853 0%, #00C853 100%); }
+        .logo-jamb { background: linear-gradient(135deg, #D50000 0%, #C51162 100%); }
+
+        .exam-btn span { font-size: 11px; font-weight: 800; color: var(--text-dim); }
+        .exam-btn.selected { background: #fff; border-color: var(--primary); box-shadow: 0 8px 20px var(--glow); }
+
+        select { width: 100%; padding: 16px 20px; border-radius: 20px; border: 2px solid #e2e8f0; font-size: 14px; font-weight: 700; background: #f8fafc; outline: none; -webkit-appearance: none; }
+        
+        .btn-purchase {
+            width: 100%; padding: 18px; border: none; border-radius: 20px;
+            background: var(--primary); color: var(--white); font-weight: 800; font-size: 15px;
+            box-shadow: 0 10px 25px rgba(26, 35, 126, 0.25); cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="back-btn" onclick="location.href='Wallet.html'"><i class="fas fa-arrow-left"></i></div>
+        <h1>Education PINs</h1>
+    </header>
+
+    <div class="balance-badge">
+        <span>Available Balance</span>
+        <b id="walletBal">₦0.00</b>
+    </div>
+
+    <div class="form-container animate__animated animate__fadeInUp">
+        <div class="form-group">
+            <label>Select Examination</label>
+            <div class="exam-grid">
+                <div class="exam-btn" id="exam_waec" onclick="selectExam('WAEC', '1')">
+                    <div class="exam-logo logo-waec"><i class="fas fa-graduation-cap"></i></div>
+                    <span>WAEC</span>
+                </div>
+                <div class="exam-btn" id="exam_neco" onclick="selectExam('NECO', '2')">
+                    <div class="exam-logo logo-neco"><i class="fas fa-book-reader"></i></div>
+                    <span>NECO</span>
+                </div>
+                <div class="exam-btn" id="exam_jamb" onclick="selectExam('JAMB', '3')">
+                    <div class="exam-logo logo-jamb"><i class="fas fa-university"></i></div>
+                    <span>JAMB</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Select Card Package</label>
+            <select id="eduPlan" onchange="updatePriceLabel()">
+                <option value="">-- Choose Exam Body First --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Quantity</label>
+            <select id="quantity" onchange="updatePriceLabel()">
+                <option value="1">1 PIN</option>
+                <option value="2">2 PINs</option>
+            </select>
+        </div>
+
+        <button class="btn-purchase" onclick="processEduOrder()" id="buyBtn">PROCEED</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // NEW FIREBASE - CM-NEXUS-SUB
+        const firebaseConfig = { databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com" };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const myName = localStorage.getItem('username') || "Elite_User";
+
+        let currentWalletBalance = 0;
+        let selectedExamName = "";
+        const MY_MARGIN = 150; // Ribarka a kowane kati
+
+        const eduPackages = {
+            "WAEC": [{ name: "WAEC Result Checker", price: 3450 }],
+            "NECO": [{ name: "NECO Result Token", price: 1100 }],
+            "JAMB": [{ name: "JAMB Profile Code", price: 4700 }]
+        };
+
+        db.ref('users/' + myName + '/wallet').on('value', snap => {
+            currentWalletBalance = parseFloat(snap.val()) || 0;
+            document.getElementById('walletBal').innerText = "₦" + currentWalletBalance.toLocaleString();
+        });
+
+        function selectExam(name, id) {
+            selectedExamName = name;
+            document.querySelectorAll('.exam-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('exam_' + name.toLowerCase()).classList.add('selected');
+            
+            let opts = '<option value="">-- Choose Package --</option>';
+            eduPackages[name].forEach(p => {
+                let finalPrice = p.price + MY_MARGIN;
+                opts += `<option value="${p.price}" data-final="${finalPrice}">${p.name} (₦${finalPrice})</option>`;
+            });
+            document.getElementById('eduPlan').innerHTML = opts;
+            updatePriceLabel();
+        }
+
+        function updatePriceLabel() {
+            const sel = document.getElementById('eduPlan');
+            const qty = parseInt(document.getElementById('quantity').value);
+            const price = sel.options[sel.selectedIndex].getAttribute('data-final');
+            document.getElementById('buyBtn').innerText = price ? `PAY ₦${(price * qty).toLocaleString()}` : "PROCEED";
+        }
+
+        function processEduOrder() {
+            const sel = document.getElementById('eduPlan');
+            const qty = parseInt(document.getElementById('quantity').value);
+            const total = parseFloat(sel.options[sel.selectedIndex].getAttribute('data-final')) * qty;
+
+            if (!selectedExamName || isNaN(total)) return Swal.fire('Error', 'Please select a package.', 'warning');
+            if (currentWalletBalance < total) return Swal.fire('Error', 'Low Balance', 'error');
+
+            Swal.fire({
+                title: 'Confirm', text: `Buy ${qty} ${selectedExamName} PIN(s) for ₦${total.toLocaleString()}?`,
+                showCancelButton: true, confirmButtonColor: '#1A237E'
+            }).then(r => { if(r.isConfirmed) executeEdu(total, qty); });
+        }
+
+        function executeEdu(total, qty) {
+            Swal.showLoading();
+            db.ref('users/' + myName + '/wallet').transaction(w => (w || 0) - total).then(() => {
+                const pin = "SERIAL: CM-" + Math.floor(Math.random()*100000) + " | PIN: " + Math.floor(Math.random()*10000000000);
+                db.ref('transactions/' + myName).push({ type: 'debit', service: `Edu PIN: ${selectedExamName}`, amount: total, time: Date.now() });
+                
+                Swal.fire({
+                    icon: 'success', title: 'Successful!',
+                    html: `<div style="background:#f0f9ff; padding:15px; border-radius:10px; font-family:monospace;">${pin}</div>`,
+                    confirmButtonText: 'Done'
+                });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Profile & Settings | Elite Arena Pro</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* ASALIN STYLE DIN KA - BAN TABA KOMAI BA */
+        :root {
+            --primary: #0062ff; --dark: #0f172a; --bg: #f8fafc; --surface: #ffffff;
+            --text-main: #1e293b; --text-muted: #64748b; --border: #f1f5f9;
+            --success: #10b981; --warning: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: var(--text-main); padding-bottom: 120px; overflow-x: hidden; }
+
+        header { 
+            padding: 20px; display: flex; align-items: center; gap: 15px; 
+            background: var(--surface); border-bottom: 1px solid rgba(0,0,0,0.02);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .back-btn { font-size: 20px; color: var(--primary); cursor: pointer; }
+        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--dark); }
+
+        .profile-hero {
+            background: var(--surface); margin: 20px; padding: 30px 20px;
+            border-radius: 32px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.015);
+            border: 1px solid var(--border); animation: fadeInDown 0.5s ease;
+        }
+        .profile-avatar {
+            width: 90px; height: 90px;
+            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+            border-radius: 30px; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 15px; color: white; font-size: 36px; font-weight: 800;
+            box-shadow: 0 10px 25px rgba(0, 98, 255, 0.2); border: 3px solid white;
+        }
+        
+        .level-badge { background: rgba(245, 158, 11, 0.08); color: var(--warning); padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; display: inline-block; }
+        .progress-container { width: 80%; background: #e2e8f0; height: 8px; border-radius: 10px; margin: 0 auto; overflow: hidden; }
+        .progress-bar { background: var(--warning); height: 100%; width: 0%; transition: width 0.5s ease; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 0 20px 25px; }
+        .stat-box { background: var(--surface); padding: 18px; border-radius: 24px; border: 1px solid var(--border); }
+        .stat-box span { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
+        .stat-box b { font-size: 16px; font-weight: 800; color: var(--dark); }
+
+        .menu-section { margin: 0 20px 25px; }
+        .menu-title { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; padding-left: 5px; }
+        .menu-list { background: var(--surface); border-radius: 28px; overflow: hidden; border: 1px solid var(--border); }
+        .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; text-decoration: none; color: var(--text-main); border-bottom: 1px solid var(--border); cursor: pointer; }
+        .menu-item:last-child { border-bottom: none; }
+        
+        .menu-left { display: flex; align-items: center; gap: 15px; }
+        .menu-icon { width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+        .icon-blue { background: #eff6ff; color: var(--primary); }
+        .icon-orange { background: #fffbeb; color: var(--warning); }
+        .icon-green { background: #ecfdf5; color: var(--success); }
+        .icon-red { background: #fff5f5; color: #ef4444; }
+
+        .footer-credit { text-align: center; margin: 30px 20px 10px; color: var(--text-muted); font-size: 11px; }
+
+        .nav-bar {
+            position: fixed; bottom: 25px; left: 20px; right: 20px;
+            background: var(--dark); height: 75px; border-radius: 24px;
+            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+        }
+        .nav-link { text-decoration: none; color: #64748b; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 70px; }
+        .nav-link.active { color: #38bdf8; transform: translateY(-8px); }
+        .nav-link i { font-size: 24px; }
+        .nav-link span { font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="back-btn" onclick="history.back()"><i class="fas fa-arrow-left"></i></div>
+        <h1>Settings Dashboard</h1>
+    </header>
+
+    <div class="profile-hero">
+        <div class="profile-avatar" id="heroAvatar">U</div>
+        <h2 id="heroUsername">@Loading...</h2>
+        <p id="heroEmail">loading@user.com</p>
+        
+        <div class="level-badge" id="levelName">Elite Ambassador</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="xpProgressBar"></div>
+        </div>
+        <div style="font-size:10px; font-weight:800; color:var(--text-muted); margin-top:8px;" id="xpPercent">0% Progress</div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-box">
+            <span>Wallet balance</span>
+            <b id="walletBalance">₦0.00</b>
+        </div>
+        <div class="stat-box">
+            <span>Total XP Points</span>
+            <b id="xpPoints">0 XP</b>
+        </div>
+    </div>
+
+    <div class="menu-section">
+        <h3 class="menu-title">Account Customization</h3>
+        <div class="menu-list">
+            <div class="menu-item" onclick="location.href='EditProfile.html'">
+                <div class="menu-left">
+                    <div class="menu-icon icon-blue"><i class="fas fa-user-edit"></i></div>
+                    <span>Edit Profile Details</span>
+                </div>
+                <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
+            </div>
+            <div class="menu-item" onclick="location.href='SecurityPIN.html'">
+                <div class="menu-left">
+                    <div class="menu-icon icon-orange"><i class="fas fa-key"></i></div>
+                    <span>Transaction security PIN</span>
+                </div>
+                <div class="menu-right" id="pinStatus">Not Set <i class="fas fa-chevron-right"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-section">
+        <h3 class="menu-title">Financial Records</h3>
+        <div class="menu-list">
+            <div class="menu-item" onclick="location.href='History.html'">
+                <div class="menu-left">
+                    <div class="menu-icon icon-green"><i class="fas fa-history"></i></div>
+                    <span>Transaction History</span>
+                </div>
+                <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
+            </div>
+            <div class="menu-item" onclick="location.href='WithdrawalRecords.html'">
+                <div class="menu-left">
+                    <div class="menu-icon icon-blue"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <span>Withdrawal & Swaps</span>
+                </div>
+                <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-section">
+        <h3 class="menu-title">System & Security</h3>
+        <div class="menu-list">
+            <div class="menu-item" onclick="location.href='Support.html'">
+                <div class="menu-left">
+                    <div class="menu-icon icon-blue"><i class="fas fa-headset"></i></div>
+                    <span>Support Desk</span>
+                </div>
+                <div class="menu-right">24/7 Live <i class="fas fa-chevron-right"></i></div>
+            </div>
+            <div class="menu-item" onclick="logoutUser()">
+                <div class="menu-left">
+                    <div class="menu-icon icon-red"><i class="fas fa-sign-out-alt"></i></div>
+                    <span style="color:#ef4444;">Sign Out Account</span>
+                </div>
+                <div class="menu-right">Securely <i class="fas fa-chevron-right"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-credit">
+        <p>Elite Arena Hub • Version 3.5.0</p>
+        <p style="margin-top:4px;">Maintained by the <b>Commander</b> 🔵</p>
+    </div>
+
+    <nav class="nav-bar">
+        <a href="CM-ARENA.html" class="nav-link">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Arena</span>
+        </a>
+        <a href="Wallet.html" class="nav-link">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Wallet</span>
+        </a>
+        <a href="Profile.html" class="nav-link active">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Settings</span>
+        </a>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // NEW FIREBASE SYNC - CM-NEXUS-SUB
+        const firebaseConfig = { databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com" };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const myName = localStorage.getItem('username') || "Elite_User";
+
+        // Live Realtime Listener
+        db.ref('users/' + myName).on('value', snap => {
+            const userData = snap.val();
+            if (userData) {
+                document.getElementById('heroUsername').innerText = "@" + myName;
+                document.getElementById('heroEmail').innerText = userData.email || "no-email@elite.com";
+                document.getElementById('heroAvatar').innerText = myName.charAt(0).toUpperCase();
+
+                const balance = parseFloat(userData.wallet) || 0;
+                document.getElementById('walletBalance').innerText = "₦" + balance.toLocaleString();
+
+                const xp = parseInt(userData.xp) || 0;
+                document.getElementById('xpPoints').innerText = xp.toLocaleString() + " XP";
+
+                const maxXp = 5000;
+                const progressPercent = Math.min(100, Math.floor((xp / maxXp) * 100));
+                document.getElementById('xpProgressBar').style.width = progressPercent + "%";
+                document.getElementById('xpPercent').innerText = progressPercent + "% Progress to Next Rank";
+
+                document.getElementById('pinStatus').innerHTML = userData.transactionPin ? 
+                    'Active <i class="fas fa-lock" style="color:var(--success);"></i>' : 
+                    'Not Set <i class="fas fa-unlock" style="color:red;"></i>';
+            }
+        });
+
+        function logoutUser() {
+            Swal.fire({
+                title: 'Sign Out?',
+                text: 'Are you sure you want to sign out from Elite Arena Pro?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Yes, Sign Out'
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    localStorage.clear();
+                    window.location.href = "Login.html";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
