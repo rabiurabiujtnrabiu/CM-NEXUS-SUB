@@ -112,50 +112,40 @@
 
         document.getElementById('accName').innerText = "Account Name: CM-PRO-" + myName.toUpperCase();
 
-        // 1. DYNAMIC BANK ACCOUNT SYNC & GENERATION
-        db.ref('users/' + myName + '/bankAccount').on('value', snap => {
+        // GYARA: Mun yi amfani da 'once' domin bincika database sau daya kacal don dakatar da canza lambobi (Loop)
+        db.ref('users/' + myName + '/bankAccount').once('value', snap => {
             const data = snap.val();
             if(data && data.accountNumber) {
-                // Idan account din yana nan a sabon Firebase din, nuna shi nan take
+                // Idan account din yana nan, nuna shi kawai sau daya
                 document.getElementById('accNum').innerText = data.accountNumber;
                 document.getElementById('bankName').innerText = (data.bankName || "Wema Bank") + " / Monnify";
                 document.getElementById('copyIcon').style.display = "block";
             } else {
-                // IDAN BABU NODE DIN A SABON FIREBASE, GENERATE SHI LIVE OTA-PILLOT!
+                // Idan babu, a kera shi sau daya kacal kuma a adana shi
                 generateLiveReservedAccount();
             }
         });
 
-        // CALL MONNIFY API DIRECTLY TO GENERATE ACCOUNT AND SAVE TO FIREBASE
+        // Kera lambar asusu sau daya rigis
         async function generateLiveReservedAccount() {
             document.getElementById('bankName').innerText = "Generating Your Live Bank Account...";
             
-            // Muna amfani da GSubz proxy system don kaucewa CORS block yayin kiran Monnify daga browser
-            const requestBody = {
-                accountReference: "REF-" + myName.toUpperCase() + "-" + Date.now(),
-                accountName: "CM-PRO-" + myName.toUpperCase(),
-                currencyCode: "NGN",
-                contractCode: CONTRACT_CODE,
-                customerEmail: myName.toLowerCase() + "@cmnexussub.com",
-                customerName: myName,
-                getAllAvailableBanks: true
-            };
-
-            const url = "https://api.monnify.com/api/v2/bank-transfer/reserved-accounts";
-            const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`;
-
             try {
-                // Tunda muna bukatar Bearer Token na Monnify, za mu fara samun Token din kafin mu kira Reserved Account.
-                // Domin nuna maka hanya mafi sauki da sauri, idan baka da server backend, GSubz zai iya yi maka wannan.
-                // A yanzu, bari mu baka lambar "Wema Bank" din da za ta ajiye a Firebase dinka idan Monnify SDK dinka ya fara live transaction:
+                // Kera simulator lamba guda daya kacal
+                const generatedNumber = "522" + Math.floor(1000000 + Math.random() * 9000000);
                 
                 const dummyAccount = {
-                    accountNumber: "522" + Math.floor(1000000 + Math.random() * 9000000), // Random Dynamic Wema Simulator
+                    accountNumber: generatedNumber,
                     bankName: "Wema Bank"
                 };
 
-                // Adana account din otomatik a asusun user a sabon Firebase
-                db.ref('users/' + myName + '/bankAccount').set(dummyAccount);
+                // Adana a Firebase
+                await db.ref('users/' + myName + '/bankAccount').set(dummyAccount);
+
+                // Bayyana a fuskar shafin nan take
+                document.getElementById('accNum').innerText = generatedNumber;
+                document.getElementById('bankName').innerText = "Wema Bank / Monnify";
+                document.getElementById('copyIcon').style.display = "block";
 
             } catch (e) {
                 console.error("Error generating account:", e);
@@ -171,7 +161,7 @@
             });
         }
 
-        // 2. LIVE CARD & USSD PAYMENT PROCESS (Automated Credit)
+        // CARD & USSD PAYMENT PROCESS
         function payWithMonnify() {
             const amt = parseFloat(document.getElementById('fundAmt').value);
             if(!amt || amt < 100) return Swal.fire('Warning', 'Minimum funding is ₦100', 'warning');
@@ -187,7 +177,7 @@
                 apiKey: API_KEY,
                 contractCode: CONTRACT_CODE,
                 paymentDescription: "Wallet Top-up for " + myName,
-                isTestMode: false, // LIVE MODE ACTIVE!
+                isTestMode: false,
                 onComplete: function(response) {
                     if(response.status === "SUCCESS") {
                         creditWallet(amt, response.transactionReference);
