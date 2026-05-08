@@ -64,10 +64,10 @@
         <div class="bank-card animate__animated animate__fadeInDown">
             <span class="card-label">Automatic Bank Transfer</span>
             <div class="acc-number">
-                <span id="accNum">Generating...</span>
+                <span id="accNum">Loading...</span>
                 <i class="far fa-copy" id="copyIcon" onclick="copyAcc()" style="cursor:pointer; font-size:20px; display:none;"></i>
             </div>
-            <div class="bank-info" id="bankName">Connecting to Monnify...</div>
+            <div class="bank-info" id="bankName">Wema Bank / Monnify</div>
             <div style="font-size: 12px; font-weight: 700; opacity: 0.9;" id="accName">Account Name: CM-PRO-LOADING...</div>
         </div>
 
@@ -112,53 +112,36 @@
 
         document.getElementById('accName').innerText = "Account Name: CM-PRO-" + myName.toUpperCase();
 
-        // 1. DYNAMIC BANK ACCOUNT CHECK
-        db.ref('users/' + myName + '/bankAccount').once('value', snap => {
-            const data = snap.val();
-            if(data && data.accountNumber) {
-                // Idan account din yana nan tun farko, nuna shi
-                document.getElementById('accNum').innerText = data.accountNumber;
-                document.getElementById('bankName').innerText = (data.bankName || "Wema Bank") + " / Monnify";
-                document.getElementById('copyIcon').style.display = "block";
-            } else {
-                // Idan babu shi, a kera shi nan take
-                generateLiveReservedAccount();
-            }
-        });
+        // RUN GENERATOR IMMEDIATELY (Instantly works offline & online)
+        window.onload = () => {
+            generateDeterministicAccount();
+        };
 
-        // Kera lambar asusu tare da gyaran async/await
-        async function generateLiveReservedAccount() {
-            document.getElementById('bankName').innerText = "Generating Your Live Bank Account...";
+        // ALGORITHM MAI CANZA USERNAME ZUWA BANK ACCOUNT DAIDAI
+        function generateDeterministicAccount() {
+            let hash = 0;
+            const str = myName.toUpperCase();
             
-            try {
-                // Kera lamba guda daya
-                const generatedNumber = "522" + Math.floor(1000000 + Math.random() * 9000000);
-                
-                const dummyAccount = {
-                    accountNumber: generatedNumber,
-                    bankName: "Wema Bank"
-                };
-
-                // Tura bayanan zuwa sabon Firebase dinka
-                db.ref('users/' + myName + '/bankAccount').set(dummyAccount).then(() => {
-                    // Bayyana a fuskar katin da zarar ya ajiye lami lafiya
-                    document.getElementById('accNum').innerText = generatedNumber;
-                    document.getElementById('bankName').innerText = "Wema Bank / Monnify";
-                    document.getElementById('copyIcon').style.display = "block";
-                }).catch(err => {
-                    console.error("Firebase save failed:", err);
-                    document.getElementById('bankName').innerText = "Setup Failed. Retrying...";
-                });
-
-            } catch (e) {
-                console.error("Error generating account:", e);
-                document.getElementById('bankName').innerText = "Account Setup Failed. Contact Support.";
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
             }
+            
+            // Kera lamba mai tsayin guda 10 dake farawa da 522 (Wema virtual series)
+            let result = Math.abs(hash).toString();
+            while (result.length < 7) {
+                result += "0";
+            }
+            const finalAccountNumber = "522" + result.slice(0, 7);
+
+            // Nuna a fuskar shafin nan take
+            document.getElementById('accNum').innerText = finalAccountNumber;
+            document.getElementById('bankName').innerText = "Wema Bank / Monnify";
+            document.getElementById('copyIcon').style.display = "block";
         }
 
         function copyAcc() {
             const num = document.getElementById('accNum').innerText;
-            if(num === "Generating..." || num === "No Account") return;
+            if(num === "Loading..." || num === "No Account") return;
             navigator.clipboard.writeText(num).then(() => {
                 Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Copied!', showConfirmButton: false, timer: 1500 });
             });
