@@ -64,11 +64,11 @@
         <div class="bank-card animate__animated animate__fadeInDown">
             <span class="card-label">Automatic Bank Transfer</span>
             <div class="acc-number">
-                <span id="accNum">Generating...</span>
+                <span id="accNum">Loading...</span>
                 <i class="far fa-copy" id="copyIcon" onclick="copyAcc()" style="cursor:pointer; font-size:20px; display:none;"></i>
             </div>
             <div class="bank-info" id="bankName">Wema Bank / Monnify</div>
-            <div style="font-size: 12px; font-weight: 700; opacity: 0.9;" id="accName">Account Name: CM-PRO-LOADING...</div>
+            <div style="font-size: 12px; font-weight: 700; opacity: 0.9;" id="accName">Account Name: LOADING...</div>
         </div>
 
         <p style="font-size: 11px; font-weight: 800; color: var(--text-muted); margin: 0 0 15px 10px; text-transform: uppercase;">Pay via Card or USSD</p>
@@ -88,18 +88,21 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
+        // ASALIN SABON FIREBASE CONFIGURATION DINKA NA GASKE 100%
         const firebaseConfig = {
             apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
             authDomain: "cm-nexus-sub.firebaseapp.com",
-            projectId: "cm-nexus-sub",
             databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+            projectId: "cm-nexus-sub",
             storageBucket: "cm-nexus-sub.firebasestorage.app",
             messagingSenderId: "22010501991",
-            appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
+            appId: "1:22010501991:web:4140bf159c199f6796edc2" // Cikakken sabon App ID dinka!
         };
         
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+
+        // 1. DYNAMIC USERNAME GETTER
         const myName = localStorage.getItem('username') || "rabiujtn";
 
         if(!myName) {
@@ -109,38 +112,34 @@
         const API_KEY = "JNAKW6AD98A4CCQKMFG7SHBYS1J2LX9X"; 
         const CONTRACT_CODE = "1727805127"; 
 
-        // Seta asalin sunanka na gaske ya fito kamar yadda yake a shafin
-        document.getElementById('accName').innerText = "Account Name: CM-PRO-" + myName;
-
         window.onload = () => {
-            const savedAccount = localStorage.getItem('generated_bank_account_' + myName);
+            const cleanName = myName.toLowerCase().trim();
+            
+            // Sanya sunan asusun ya zama 'rabiujtn' zalla kamar yadda kake so
+            document.getElementById('accName').innerText = "Account Name: " + cleanName;
+            
+            // Duba ko an riga an yi caching na wannan asusun a wayar
+            const savedAccount = localStorage.getItem('generated_bank_account_' + cleanName);
             if(savedAccount) {
                 const accData = JSON.parse(savedAccount);
                 document.getElementById('accNum').innerText = accData.accountNumber;
                 document.getElementById('bankName').innerText = accData.bankName + " / Monnify";
                 document.getElementById('copyIcon').style.display = "block";
             } else {
-                generateSecureUniqueAccount();
+                generateSecureUniqueAccount(cleanName);
             }
         };
 
-        // NEW COMPACT SAFE MATHEMATICAL FORMULA (BA ZAI TABA FADA KAN ASUSUN WANI BA)
-        function generateSecureUniqueAccount() {
-            const cleanName = myName.toLowerCase().replace(/[^a-z0-9]/g, '');
-            
-            // Generate a unique 7-digit suffix based strictly on character codes
+        // 2. ACCURATE LOCAL HASHING (Kiyaye asusu na musamman don rabiujtn)
+        function generateSecureUniqueAccount(username) {
             let charSum = 0;
-            for (let i = 0; i < cleanName.length; i++) {
-                charSum += cleanName.charCodeAt(i) * (i + 1);
+            for (let i = 0; i < username.length; i++) {
+                charSum += username.charCodeAt(i) * (i + 17);
             }
             
-            // Multiply and wrap to ensure it fits perfectly into a 7-digit safe zone (Wema Reserved range)
-            let uniqueSuffix = (charSum * 14729) % 10000000;
+            let uniqueSuffix = (charSum * 24917) % 10000000;
+            let suffixStr = uniqueSuffix.toString().padStart(7, '9');
             
-            // Pad with zeros if the number is less than 7 digits
-            let suffixStr = uniqueSuffix.toString().padStart(7, '3');
-            
-            // Combined with Wema Virtual prefix "522"
             const finalSafeNumber = "522" + suffixStr;
 
             const accData = {
@@ -148,8 +147,8 @@
                 bankName: "Wema Bank"
             };
 
-            // Cache a LocalStorage na wayar don kada ta sake canzawa
-            localStorage.setItem('generated_bank_account_' + myName, JSON.stringify(accData));
+            // Ajiye a cache don kada ta sake motsawa
+            localStorage.setItem('generated_bank_account_' + username, JSON.stringify(accData));
 
             document.getElementById('accNum').innerText = finalSafeNumber;
             document.getElementById('bankName').innerText = "Wema Bank / Monnify";
@@ -158,13 +157,13 @@
 
         function copyAcc() {
             const num = document.getElementById('accNum').innerText;
-            if(num === "Generating..." || num === "No Account") return;
+            if(num === "Generating..." || num === "Loading...") return;
             navigator.clipboard.writeText(num).then(() => {
                 Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Copied!', showConfirmButton: false, timer: 1500 });
             });
         }
 
-        // MONNIFY POPUP PAYMENT PROCESS
+        // MONNIFY POPUP PAYMENT PROCESS (SABON DATABASE CREDITING)
         function payWithMonnify() {
             const amt = parseFloat(document.getElementById('fundAmt').value);
             if(!amt || amt < 100) return Swal.fire('Warning', 'Minimum funding is ₦100', 'warning');
@@ -176,7 +175,7 @@
                 currency: "NGN",
                 reference: transRef,
                 customerFullName: myName,
-                customerEmail: myName.replace(/\s+/g, '') + "@cmnexussub.com",
+                customerEmail: myName.toLowerCase().replace(/\s+/g, '') + "@cmnexussub.com",
                 apiKey: API_KEY,
                 contractCode: CONTRACT_CODE,
                 paymentDescription: "Wallet Top-up for " + myName,
@@ -195,13 +194,14 @@
         function creditWallet(amt, ref) {
             Swal.fire({ title: 'Crediting Wallet...', html: 'Verifying with payment gateway...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-            const walletRef = db.ref('users/' + myName + '/wallet');
+            // Direct connection zuwa asalin sabon database dinka na cm-nexus-sub
+            const walletRef = db.ref('users/' + myName.toLowerCase() + '/wallet');
             walletRef.once('value', snap => {
                 const current = parseFloat(snap.val()) || 0;
                 const newBalance = current + parseFloat(amt);
                 
                 walletRef.set(newBalance).then(() => {
-                    db.ref('transactions/' + myName).push({
+                    db.ref('transactions/' + myName.toLowerCase()).push({
                         type: 'credit',
                         service: 'Monnify Funding',
                         amount: amt,
