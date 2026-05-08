@@ -86,30 +86,64 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Active username session placeholder (Replace dynamically in your app if needed)
+        // Active username session placeholder
         const currentUsername = "rab_lujtn"; 
 
+        // Default Fallback Details (If Firebase fetch fails or times out)
+        const fallbackDetails = {
+            account_number: "5227958615",
+            bank_name: "Wema Bank / Monnify",
+            account_name: "CM-PRO-rab_lujtn"
+        };
+
+        // Function to apply bank details to the UI
+        function updateBankUI(accountNumber, bankName, accountName) {
+            document.getElementById('account-number').innerText = accountNumber;
+            document.getElementById('bank-name').innerText = bankName;
+            document.getElementById('account-name').innerText = accountName;
+        }
+
+        // Safety Timeout: If Firebase doesn't load within 4 seconds, show fallback details automatically
+        const safetyTimeout = setTimeout(() => {
+            console.warn("Firebase took too long to respond. Loading fallback bank details.");
+            updateBankUI(fallbackDetails.account_number, fallbackDetails.bank_name, fallbackDetails.account_name);
+        }, 4000);
+
         // 1. Listen for Live bank details from Firebase Realtime Database
-        const bankRef = ref(db, 'bank_details/' + currentUsername);
-        
-        onValue(bankRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                document.getElementById('account-number').innerText = data.account_number || "5227958615";
-                document.getElementById('bank-name').innerText = data.bank_name || "Wema Bank / Monnify";
-                document.getElementById('account-name').innerText = data.account_name || "CM-PRO-rab_lujtn";
-            } else {
-                // Fallback default details if database path is empty
-                document.getElementById('account-number').innerText = "5227958615";
-                document.getElementById('bank-name').innerText = "Wema Bank / Monnify";
-                document.getElementById('account-name').innerText = "CM-PRO-rab_lujtn";
-            }
-        });
+        try {
+            const bankRef = ref(db, 'bank_details/' + currentUsername);
+            
+            onValue(bankRef, (snapshot) => {
+                clearTimeout(safetyTimeout); // Clear safety timeout since we got a response
+                const data = snapshot.val();
+                
+                if (data && data.account_number) {
+                    console.log("Firebase Data Loaded Successfully:", data);
+                    updateBankUI(
+                        data.account_number, 
+                        data.bank_name || fallbackDetails.bank_name, 
+                        data.account_name || fallbackDetails.account_name
+                    );
+                } else {
+                    console.log("No data found at path 'bank_details/" + currentUsername + "'. Using default details.");
+                    updateBankUI(fallbackDetails.account_number, fallbackDetails.bank_name, fallbackDetails.account_name);
+                }
+            }, (error) => {
+                clearTimeout(safetyTimeout);
+                console.error("Firebase Database Read Failed: ", error);
+                // Force fallback UI if permission is denied or connection failed
+                updateBankUI(fallbackDetails.account_number, fallbackDetails.bank_name, fallbackDetails.account_name);
+            });
+        } catch (err) {
+            clearTimeout(safetyTimeout);
+            console.error("Initialization Error: ", err);
+            updateBankUI(fallbackDetails.account_number, fallbackDetails.bank_name, fallbackDetails.account_name);
+        }
 
         // Expose helper function to window context for module access
         window.copyAccountNumber = function() {
             const accountNumber = document.getElementById('account-number').innerText;
-            if(accountNumber === "Loading...") return;
+            if (accountNumber === "Loading...") return;
 
             navigator.clipboard.writeText(accountNumber).then(() => {
                 const toast = document.getElementById('toast');
@@ -141,10 +175,10 @@
                 reference: "TX-" + Date.now(), 
                 customerName: currentUsername, 
                 customerEmail: currentUsername + "@cmnexus.com", 
-                apiKey: "JNAKW6AD98A4CCQKMFG7SHBYS1J2LX9X", // Your Live Monnify API Key
-                contractCode: "1727805127", // Your Live Monnify Contract Code
+                apiKey: "JNAKW6AD98A4CCQKMFG7SHBYS1J2LX9X", 
+                contractCode: "1727805127", 
                 paymentDescription: "Wallet Funding via CM-Nexus",
-                isTestMode: false, // Set to false for live production transactions
+                isTestMode: false, 
                 metadata: {
                     "username": currentUsername
                 },
@@ -152,7 +186,6 @@
                     if (response.status === "SUCCESSFUL") {
                         alert("Payment successful! Your wallet request has been submitted.");
                         
-                        // Push transaction success history records to Firebase Realtime Database
                         const paymentRef = ref(db, 'payment_requests/' + currentUsername);
                         const newPaymentRef = push(paymentRef);
                         set(newPaymentRef, {
