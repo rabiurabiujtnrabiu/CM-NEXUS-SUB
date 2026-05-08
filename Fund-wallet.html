@@ -2,217 +2,179 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elite Funding | CM Nexus Sub</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Funding - Add Funds</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://sdk.monnify.com/plugin/monnify.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
-    <style>
-        :root { 
-            --primary: #0062ff; 
-            --accent: #00f2fe; 
-            --bg: #0b0f19; 
-            --surface: #111827; 
-            --border: #1f2937;
-            --white: #111827; 
-            --text-main: #f9fafb;
-            --text-muted: #9ca3af;
-            --gold: #f59e0b;
-        }
-        body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); }
-
-        header { background: var(--surface); padding: 25px 20px; display: flex; align-items: center; color: var(--text-main); border-bottom: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        header i { font-size: 20px; cursor: pointer; margin-right: 15px; }
-
-        .container { padding: 20px; max-width: 500px; margin: 0 auto; }
-
-        /* VIRTUAL BANK CARD */
-        .bank-card {
-            background: linear-gradient(135deg, #0062ff 0%, #00f2fe 100%);
-            color: white; padding: 30px 25px; border-radius: 35px;
-            margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0, 98, 255, 0.25);
-            position: relative; overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .bank-card::after { content: ''; position: absolute; bottom: -30px; right: -30px; width: 120px; height: 120px; background: rgba(255,255,255,0.15); border-radius: 50%; }
-
-        .card-label { font-size: 11px; font-weight: 600; opacity: 0.9; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 15px; display: block; }
-        .acc-number { font-size: 30px; font-weight: 800; letter-spacing: 2px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
-        .bank-info { font-size: 15px; font-weight: 700; color: #ffeb3b; margin-bottom: 20px; }
-
-        .card { background: var(--surface); border-radius: 30px; padding: 25px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-        input { width: 100%; padding: 20px; border-radius: 20px; border: 2px solid var(--border); outline: none; font-size: 18px; font-weight: 800; color: var(--text-main); background: var(--bg); box-sizing: border-box; transition: 0.3s; }
-        input:focus { border-color: var(--primary); }
-        
-        .btn-pay { width: 100%; padding: 20px; border: none; border-radius: 22px; background: var(--primary); color: white; font-weight: 800; font-size: 16px; margin-top: 15px; cursor: pointer; box-shadow: 0 10px 25px rgba(0, 98, 255, 0.2); transition: 0.3s; }
-        .btn-pay:active { transform: scale(0.97); }
-    </style>
+    <script type="text/javascript" src="https://sdk.monnify.com/v1/sdk.js"></script>
 </head>
-<body>
+<body class="bg-[#0b132b] text-white font-sans min-h-screen flex items-center justify-center p-4">
 
-    <header>
-        <i class="fas fa-arrow-left" onclick="history.back()"></i>
-        <b>Add Funds</b>
-    </header>
-
-    <div class="container">
+    <div class="w-full max-w-md bg-[#111a36] rounded-3xl p-6 shadow-2xl border border-gray-800 animate__animated animate__fadeInUp">
         
-        <div class="bank-card animate__animated animate__fadeInDown">
-            <span class="card-label">Automatic Bank Transfer</span>
-            <div class="acc-number">
-                <span id="accNum">Loading...</span>
-                <i class="far fa-copy" id="copyIcon" onclick="copyAcc()" style="cursor:pointer; font-size:20px; display:none;"></i>
-            </div>
-            <div class="bank-info" id="bankName">Wema Bank / Monnify</div>
-            <div style="font-size: 12px; font-weight: 700; opacity: 0.9;" id="accName">Account Name: LOADING...</div>
+        <div class="flex items-center mb-6">
+            <button onclick="history.back()" class="text-white hover:text-gray-300 mr-4 text-xl transition-all hover:scale-110">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <h1 class="text-xl font-bold tracking-wide">Add Funds</h1>
         </div>
 
-        <p style="font-size: 11px; font-weight: 800; color: var(--text-muted); margin: 0 0 15px 10px; text-transform: uppercase;">Pay via Card or USSD</p>
-        <div class="card animate__animated animate__fadeInUp">
-            <input type="number" id="fundAmt" placeholder="Enter Amount (₦)">
-            <button class="btn-pay" onclick="payWithMonnify()">
-                <i class="fas fa-shield-alt" style="margin-right:8px;"></i> INITIALIZE SECURE PAYMENT
+        <div class="bg-gradient-to-r from-[#00b4db] to-[#0083b0] rounded-3xl p-6 mb-6 relative overflow-hidden shadow-lg border border-cyan-500/30">
+            <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full"></div>
+            
+            <p class="text-xs font-semibold tracking-wider text-cyan-100 uppercase mb-2">Automatic Bank Transfer</p>
+            
+            <div class="flex justify-between items-center mb-3">
+                <span id="account-number" class="text-3xl font-extrabold tracking-widest text-white">Loading...</span>
+                <button onclick="copyAccountNumber()" class="text-white/80 hover:text-white transition-all text-xl p-2 rounded-lg hover:bg-white/10 active:scale-90" title="Copy Account Number">
+                    <i class="fa-regular fa-copy"></i>
+                </button>
+            </div>
+            
+            <p id="bank-name" class="text-yellow-300 font-bold text-lg mb-4">Loading...</p>
+            
+            <p class="text-xs text-cyan-50">Account Name: <span id="account-name" class="font-mono bg-black/20 px-2 py-1 rounded">Loading...</span></p>
+        </div>
+
+        <div id="toast" class="hidden fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50 transition-all duration-300 animate__animated animate__fadeInDown">
+            Account number copied successfully!
+        </div>
+
+        <div class="mb-6">
+            <p class="text-xs font-semibold text-gray-400 tracking-wider uppercase mb-3">Pay Via Card or USSD</p>
+            
+            <div class="relative mb-4">
+                <input type="number" id="amount" placeholder="Enter Amount (₦)" 
+                    class="w-full bg-[#1b264f] border border-gray-700 rounded-2xl py-4 px-5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium transition-all"
+                    required>
+            </div>
+
+            <button id="pay-btn" onclick="initializePayment()" 
+                class="w-full bg-[#1a73e8] hover:bg-blue-600 text-white font-semibold py-4 px-5 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>INITIALIZE SECURE PAYMENT</span>
             </button>
         </div>
 
-        <div style="background: rgba(0, 98, 255, 0.05); padding: 20px; border-radius: 20px; font-size: 12px; color: var(--text-muted); margin-top: 25px; border: 1px dashed var(--primary); line-height: 1.6;">
-            <i class="fas fa-info-circle" style="color: var(--primary);"></i> Wallet funding is instant. Ensure you transfer only to the generated accounts assigned to your username.
+        <div class="border border-dashed border-blue-900/50 bg-blue-950/20 rounded-2xl p-4 flex items-start gap-3">
+            <i class="fa-solid fa-circle-info text-blue-400 mt-1 animate-pulse"></i>
+            <p class="text-xs text-gray-400 leading-relaxed">
+                Wallet funding is instant. Ensure you transfer only to the generated accounts assigned to your username.
+            </p>
         </div>
+
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    <script>
-        // ASALIN SABON FIREBASE CONFIGURATION DINKA NA GASKE 100%
+        // Your Web App's Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
-            authDomain: "cm-nexus-sub.firebaseapp.com",
-            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
-            projectId: "cm-nexus-sub",
-            storageBucket: "cm-nexus-sub.firebasestorage.app",
-            messagingSenderId: "22010501991",
-            appId: "1:22010501991:web:4140bf159c199f6796edc2" // Cikakken sabon App ID dinka!
+          apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+          authDomain: "cm-nexus-sub.firebaseapp.com",
+          databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+          projectId: "cm-nexus-sub",
+          storageBucket: "cm-nexus-sub.firebasestorage.app",
+          messagingSenderId: "22010501991",
+          appId: "1:22010501991:web:4140bf159c199f6796edc2"
         };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Active username session placeholder (Replace dynamically in your app if needed)
+        const currentUsername = "rab_lujtn"; 
+
+        // 1. Listen for Live bank details from Firebase Realtime Database
+        const bankRef = ref(db, 'bank_details/' + currentUsername);
         
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        // 1. DYNAMIC USERNAME GETTER
-        const myName = localStorage.getItem('username') || "rabiujtn";
-
-        if(!myName) {
-            window.location.href = "index.html";
-        }
-
-        const API_KEY = "JNAKW6AD98A4CCQKMFG7SHBYS1J2LX9X"; 
-        const CONTRACT_CODE = "1727805127"; 
-
-        window.onload = () => {
-            const cleanName = myName.toLowerCase().trim();
-            
-            // Sanya sunan asusun ya zama 'rabiujtn' zalla kamar yadda kake so
-            document.getElementById('accName').innerText = "Account Name: " + cleanName;
-            
-            // Duba ko an riga an yi caching na wannan asusun a wayar
-            const savedAccount = localStorage.getItem('generated_bank_account_' + cleanName);
-            if(savedAccount) {
-                const accData = JSON.parse(savedAccount);
-                document.getElementById('accNum').innerText = accData.accountNumber;
-                document.getElementById('bankName').innerText = accData.bankName + " / Monnify";
-                document.getElementById('copyIcon').style.display = "block";
+        onValue(bankRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('account-number').innerText = data.account_number || "5227958615";
+                document.getElementById('bank-name').innerText = data.bank_name || "Wema Bank / Monnify";
+                document.getElementById('account-name').innerText = data.account_name || "CM-PRO-rab_lujtn";
             } else {
-                generateSecureUniqueAccount(cleanName);
+                // Fallback default details if database path is empty
+                document.getElementById('account-number').innerText = "5227958615";
+                document.getElementById('bank-name').innerText = "Wema Bank / Monnify";
+                document.getElementById('account-name').innerText = "CM-PRO-rab_lujtn";
             }
-        };
+        });
 
-        // 2. ACCURATE LOCAL HASHING (Kiyaye asusu na musamman don rabiujtn)
-        function generateSecureUniqueAccount(username) {
-            let charSum = 0;
-            for (let i = 0; i < username.length; i++) {
-                charSum += username.charCodeAt(i) * (i + 17);
-            }
-            
-            let uniqueSuffix = (charSum * 24917) % 10000000;
-            let suffixStr = uniqueSuffix.toString().padStart(7, '9');
-            
-            const finalSafeNumber = "522" + suffixStr;
+        // Expose helper function to window context for module access
+        window.copyAccountNumber = function() {
+            const accountNumber = document.getElementById('account-number').innerText;
+            if(accountNumber === "Loading...") return;
 
-            const accData = {
-                accountNumber: finalSafeNumber,
-                bankName: "Wema Bank"
-            };
-
-            // Ajiye a cache don kada ta sake motsawa
-            localStorage.setItem('generated_bank_account_' + username, JSON.stringify(accData));
-
-            document.getElementById('accNum').innerText = finalSafeNumber;
-            document.getElementById('bankName').innerText = "Wema Bank / Monnify";
-            document.getElementById('copyIcon').style.display = "block";
-        }
-
-        function copyAcc() {
-            const num = document.getElementById('accNum').innerText;
-            if(num === "Generating..." || num === "Loading...") return;
-            navigator.clipboard.writeText(num).then(() => {
-                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Copied!', showConfirmButton: false, timer: 1500 });
+            navigator.clipboard.writeText(accountNumber).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.remove('hidden');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 2500);
             });
         }
 
-        // MONNIFY POPUP PAYMENT PROCESS (SABON DATABASE CREDITING)
-        function payWithMonnify() {
-            const amt = parseFloat(document.getElementById('fundAmt').value);
-            if(!amt || amt < 100) return Swal.fire('Warning', 'Minimum funding is ₦100', 'warning');
+        // 2. Monnify Live Payment Handler
+        window.initializePayment = function() {
+            const amount = document.getElementById('amount').value;
+            const payBtn = document.getElementById('pay-btn');
 
-            const transRef = "CM-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid deposit amount!');
+                return;
+            }
 
+            // Disable button and show loader during process initiation
+            payBtn.disabled = true;
+            payBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Processing...`;
+
+            // Trigger Monnify Payment SDK
             MonnifySDK.initialize({
-                amount: amt,
+                amount: parseFloat(amount),
                 currency: "NGN",
-                reference: transRef,
-                customerFullName: myName,
-                customerEmail: myName.toLowerCase().replace(/\s+/g, '') + "@cmnexussub.com",
-                apiKey: API_KEY,
-                contractCode: CONTRACT_CODE,
-                paymentDescription: "Wallet Top-up for " + myName,
-                isTestMode: false,
-                onComplete: function(response) {
-                    if(response.status === "SUCCESS") {
-                        creditWallet(amt, response.transactionReference);
-                    } else {
-                        Swal.fire('Failed', 'Payment not successful', 'error');
-                    }
+                reference: "TX-" + Date.now(), 
+                customerName: currentUsername, 
+                customerEmail: currentUsername + "@cmnexus.com", 
+                apiKey: "JNAKW6AD98A4CCQKMFG7SHBYS1J2LX9X", // Your Live Monnify API Key
+                contractCode: "1727805127", // Your Live Monnify Contract Code
+                paymentDescription: "Wallet Funding via CM-Nexus",
+                isTestMode: false, // Set to false for live production transactions
+                metadata: {
+                    "username": currentUsername
                 },
-                onClose: function(data) { console.log("SDK Closed"); }
-            });
-        }
+                onComplete: function(response) {
+                    if (response.status === "SUCCESSFUL") {
+                        alert("Payment successful! Your wallet request has been submitted.");
+                        
+                        // Push transaction success history records to Firebase Realtime Database
+                        const paymentRef = ref(db, 'payment_requests/' + currentUsername);
+                        const newPaymentRef = push(paymentRef);
+                        set(newPaymentRef, {
+                            amount: parseFloat(amount),
+                            status: "success",
+                            reference: response.transactionReference,
+                            timestamp: Date.now(),
+                            method: "monnify_card"
+                        });
 
-        function creditWallet(amt, ref) {
-            Swal.fire({ title: 'Crediting Wallet...', html: 'Verifying with payment gateway...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-            // Direct connection zuwa asalin sabon database dinka na cm-nexus-sub
-            const walletRef = db.ref('users/' + myName.toLowerCase() + '/wallet');
-            walletRef.once('value', snap => {
-                const current = parseFloat(snap.val()) || 0;
-                const newBalance = current + parseFloat(amt);
-                
-                walletRef.set(newBalance).then(() => {
-                    db.ref('transactions/' + myName.toLowerCase()).push({
-                        type: 'credit',
-                        service: 'Monnify Funding',
-                        amount: amt,
-                        reference: ref,
-                        time: Date.now(),
-                        status: 'Verified'
-                    }).then(() => {
-                        Swal.fire('Success!', `₦${Number(amt).toLocaleString()} added to your wallet.`, 'success')
-                        .then(() => window.location.href = "Wallet.html");
-                    });
-                });
+                        document.getElementById('amount').value = '';
+                    } else {
+                        alert("Payment was not successful: " + response.status);
+                    }
+                    payBtn.disabled = false;
+                    payBtn.innerHTML = `<i class="fa-solid fa-shield-halved"></i> INITIALIZE SECURE PAYMENT`;
+                },
+                onClose: function(data) {
+                    alert("Payment window closed by user.");
+                    payBtn.disabled = false;
+                    payBtn.innerHTML = `<i class="fa-solid fa-shield-halved"></i> INITIALIZE SECURE PAYMENT`;
+                }
             });
         }
     </script>
