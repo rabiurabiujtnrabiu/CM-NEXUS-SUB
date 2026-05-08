@@ -12,31 +12,44 @@
     <script src="https://sdk.monnify.com/plugin/monnify.js"></script>
     
     <style>
-        :root { --primary: #1A237E; --accent: #FFD600; --bg: #F4F7FE; --white: #ffffff; }
-        body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #1c1c1e; }
+        :root { 
+            --primary: #0062ff; 
+            --accent: #00f2fe; 
+            --bg: #0b0f19; /* Canza background din ya dace da duhun dandalin duka */
+            --surface: #111827; 
+            --border: #1f2937;
+            --white: #111827; 
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --gold: #f59e0b;
+        }
+        body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); }
 
-        header { background: var(--primary); padding: 25px 20px; display: flex; align-items: center; color: white; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        header { background: var(--surface); padding: 25px 20px; display: flex; align-items: center; color: var(--text-main); border-bottom: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         header i { font-size: 20px; cursor: pointer; margin-right: 15px; }
 
         .container { padding: 20px; max-width: 500px; margin: 0 auto; }
 
         /* VIRTUAL BANK CARD */
         .bank-card {
-            background: linear-gradient(135deg, var(--primary) 0%, #3949AB 100%);
+            background: linear-gradient(135deg, #0062ff 0%, #00f2fe 100%);
             color: white; padding: 30px 25px; border-radius: 35px;
-            margin-bottom: 25px; box-shadow: 0 15px 35px rgba(26, 35, 126, 0.2);
+            margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0, 98, 255, 0.25);
             position: relative; overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .bank-card::after { content: ''; position: absolute; bottom: -30px; right: -30px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+        .bank-card::after { content: ''; position: absolute; bottom: -30px; right: -30px; width: 120px; height: 120px; background: rgba(255,255,255,0.15); border-radius: 50%; }
 
-        .card-label { font-size: 11px; font-weight: 600; opacity: 0.8; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 15px; display: block; }
+        .card-label { font-size: 11px; font-weight: 600; opacity: 0.9; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 15px; display: block; }
         .acc-number { font-size: 30px; font-weight: 800; letter-spacing: 2px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
-        .bank-info { font-size: 15px; font-weight: 700; color: var(--accent); margin-bottom: 20px; }
+        .bank-info { font-size: 15px; font-weight: 700; color: #ffeb3b; margin-bottom: 20px; }
 
-        .card { background: var(--white); border-radius: 30px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
-        input { width: 100%; padding: 20px; border-radius: 20px; border: 2px solid #F0F2F8; outline: none; font-size: 18px; font-weight: 800; background: #F9F9FB; box-sizing: border-box; }
+        .card { background: var(--surface); border-radius: 30px; padding: 25px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+        input { width: 100%; padding: 20px; border-radius: 20px; border: 2px solid var(--border); outline: none; font-size: 18px; font-weight: 800; color: var(--text-main); background: var(--bg); box-sizing: border-box; transition: 0.3s; }
+        input:focus { border-color: var(--primary); }
         
-        .btn-pay { width: 100%; padding: 20px; border: none; border-radius: 22px; background: var(--primary); color: white; font-weight: 800; font-size: 16px; margin-top: 15px; cursor: pointer; box-shadow: 0 10px 25px rgba(26, 35, 126, 0.2); }
+        .btn-pay { width: 100%; padding: 20px; border: none; border-radius: 22px; background: var(--primary); color: white; font-weight: 800; font-size: 16px; margin-top: 15px; cursor: pointer; box-shadow: 0 10px 25px rgba(0, 98, 255, 0.2); transition: 0.3s; }
+        .btn-pay:active { transform: scale(0.97); }
     </style>
 </head>
 <body>
@@ -54,11 +67,11 @@
                 <span id="accNum">9034567812</span>
                 <i class="far fa-copy" onclick="copyAcc()" style="cursor:pointer; font-size:20px;"></i>
             </div>
-            <div class="bank-info">Wema Bank / Monnify</div>
+            <div class="bank-info" id="bankName">Wema Bank / Monnify</div>
             <div style="font-size: 12px; font-weight: 700; opacity: 0.9;" id="accName">Account Name: CM-PRO-LOADING...</div>
         </div>
 
-        <p style="font-size: 11px; font-weight: 800; color: #8e8e93; margin: 0 0 15px 10px; text-transform: uppercase;">Pay via Card or USSD</p>
+        <p style="font-size: 11px; font-weight: 800; color: var(--text-muted); margin: 0 0 15px 10px; text-transform: uppercase;">Pay via Card or USSD</p>
         <div class="card animate__animated animate__fadeInUp">
             <input type="number" id="fundAmt" placeholder="Enter Amount (₦)">
             <button class="btn-pay" onclick="payWithMonnify()">
@@ -66,8 +79,8 @@
             </button>
         </div>
 
-        <div style="background: rgba(26, 35, 126, 0.05); padding: 20px; border-radius: 20px; font-size: 12px; color: var(--primary); margin-top: 25px; border: 1px dashed var(--primary); line-height: 1.6;">
-            <i class="fas fa-info-circle"></i> Wallet funding is instant. Ensure you use the provided reference for all manual transfers.
+        <div style="background: rgba(0, 98, 255, 0.05); padding: 20px; border-radius: 20px; font-size: 12px; color: var(--text-muted); margin-top: 25px; border: 1px dashed var(--primary); line-height: 1.6;">
+            <i class="fas fa-info-circle" style="color: var(--primary);"></i> Wallet funding is instant. Ensure you use the provided reference for all manual transfers.
         </div>
     </div>
 
@@ -75,20 +88,44 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
+        // CIKAKKEN LIVE CONFIG NA FIREBASE DLNKA NA GASKE
         const firebaseConfig = {
-            apiKey: "AIzaSyCnhd2Wo5KCeE33A50WPMbVBxkoqEzkwvY",
-            databaseURL: "https://cmchat-pro-default-rtdb.firebaseio.com",
-            projectId: "cmchat-pro"
+            apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+            authDomain: "cm-nexus-sub.firebaseapp.com",
+            projectId: "cm-nexus-sub",
+            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+            storageBucket: "cm-nexus-sub.firebasestorage.app",
+            messagingSenderId: "22010501991",
+            appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
         };
+        
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const myName = localStorage.getItem('username') || "Elite_User";
+        const myName = localStorage.getItem('username');
 
-        // Monnify Configs
-        const API_KEY = "MK_TEST_9F678K5DKM";
+        // Tsaro: Idan babu login, korar user baya
+        if(!myName) {
+            window.location.href = "index.html";
+        }
+
+        // Live Monnify Credentials
+        const API_KEY = "JNAKW6AD98A4CCQKMFG7SHBYS1J2LX9X";
         const CONTRACT_CODE = "1727805127";
 
         document.getElementById('accName').innerText = "Account Name: CM-PRO-" + myName.toUpperCase();
+
+        // 1. DYNAMIC BANK ACCOUNT SYNC (Daga asusun user na gaske)
+        db.ref('users/' + myName + '/bankAccount').on('value', snap => {
+            const data = snap.val();
+            if(data) {
+                document.getElementById('accNum').innerText = data.accountNumber;
+                document.getElementById('bankName').innerText = data.bankName + " / Monnify";
+            } else {
+                // Idan babu bankAccount, nuna loading ko nuna account na asali don tsaro
+                document.getElementById('accNum').innerText = "9034567812";
+                document.getElementById('bankName').innerText = "Wema Bank / Monnify";
+            }
+        });
 
         function copyAcc() {
             const num = document.getElementById('accNum').innerText;
@@ -97,8 +134,9 @@
             });
         }
 
+        // 2. LIVE CARD & USSD PAYMENT PROCESS (Automated Credit)
         function payWithMonnify() {
-            const amt = document.getElementById('fundAmt').value;
+            const amt = parseFloat(document.getElementById('fundAmt').value);
             if(!amt || amt < 100) return Swal.fire('Warning', 'Minimum funding is ₦100', 'warning');
 
             const transRef = "CM-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
@@ -108,11 +146,11 @@
                 currency: "NGN",
                 reference: transRef,
                 customerFullName: myName,
-                customerEmail: myName.replace(/\s+/g, '') + "@cmchat.pro",
+                customerEmail: myName.replace(/\s+/g, '') + "@cmnexussub.com",
                 apiKey: API_KEY,
                 contractCode: CONTRACT_CODE,
                 paymentDescription: "Wallet Top-up for " + myName,
-                isTestMode: true,
+                isTestMode: false, // LIVE MODE ACTIVE!
                 onComplete: function(response) {
                     if(response.status === "SUCCESS") {
                         creditWallet(amt, response.transactionReference);
@@ -125,12 +163,14 @@
         }
 
         function creditWallet(amt, ref) {
-            Swal.fire({ title: 'Verifying...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'Crediting Wallet...', html: 'Verifying with payment gateway...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
             const walletRef = db.ref('users/' + myName + '/wallet');
             walletRef.once('value', snap => {
                 const current = parseFloat(snap.val()) || 0;
-                walletRef.set(current + parseFloat(amt)).then(() => {
+                const newBalance = current + parseFloat(amt);
+                
+                walletRef.set(newBalance).then(() => {
                     db.ref('transactions/' + myName).push({
                         type: 'credit',
                         service: 'Monnify Funding',
@@ -138,10 +178,10 @@
                         reference: ref,
                         time: Date.now(),
                         status: 'Verified'
+                    }).then(() => {
+                        Swal.fire('Success!', `₦${Number(amt).toLocaleString()} added to your wallet.`, 'success')
+                        .then(() => window.location.href = "Wallet.html");
                     });
-                    
-                    Swal.fire('Success!', `₦${Number(amt).toLocaleString()} added to your wallet.`, 'success')
-                    .then(() => window.location.href = "Wallet.html");
                 });
             });
         }

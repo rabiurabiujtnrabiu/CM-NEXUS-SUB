@@ -12,13 +12,16 @@
 
     <style>
         :root {
-            --primary: #1A237E;
-            --accent: #FFD600;
-            --bg: #F4F7FE;
-            --white: #ffffff;
-            --text-main: #1e293b;
-            --text-dim: #64748b;
+            --primary: #0062ff;
+            --accent: #00f2fe;
+            --bg: #0b0f19; /* Canza background din ya dace da duhun dandalin duka */
+            --surface: #111827;
+            --border: #1f2937;
+            --white: #111827;
+            --text-main: #f9fafb;
+            --text-dim: #9ca3af;
             --success: #10b981;
+            --glow: rgba(0, 98, 255, 0.15);
         }
 
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -26,30 +29,32 @@
 
         header { 
             padding: 20px; display: flex; align-items: center; gap: 15px; 
-            background: var(--white); border-bottom: 1px solid rgba(0,0,0,0.02);
+            background: var(--surface); border-bottom: 1px solid var(--border);
             position: sticky; top: 0; z-index: 1000;
         }
-        .back-btn { font-size: 20px; color: var(--primary); cursor: pointer; transition: 0.2s; }
-        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--primary); letter-spacing: -0.5px; }
+        .back-btn { font-size: 20px; color: var(--text-main); cursor: pointer; transition: 0.2s; }
+        .back-btn:active { transform: scale(0.85); }
+        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--text-main); letter-spacing: -0.5px; }
 
         .balance-badge {
-            background: var(--white); margin: 20px; padding: 18px 24px; 
+            background: var(--surface); margin: 20px; padding: 18px 24px; 
             border-radius: 24px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 10px 30px rgba(26, 35, 126, 0.03); border: 1px solid rgba(26, 35, 126, 0.04);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); border: 1px solid var(--border);
         }
+        .balance-badge span { font-size: 11px; color: var(--text-dim); font-weight: 800; text-transform: uppercase; }
         .balance-badge b { font-size: 17px; color: var(--primary); font-weight: 800; }
 
         .form-container { 
-            background: var(--white); margin: 0 20px; padding: 30px 24px; 
-            border-radius: 32px; box-shadow: 0 15px 35px rgba(0,0,0,0.02); 
+            background: var(--surface); margin: 0 20px; padding: 30px 24px; 
+            border-radius: 32px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid var(--border);
         }
         .form-group { margin-bottom: 24px; }
-        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
 
         .network-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .network-btn {
-            background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 20px; padding: 14px 5px;
-            display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
+            background: var(--bg); border: 2px solid var(--border); border-radius: 20px; padding: 14px 5px;
+            display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: 0.3s;
         }
         .network-logo {
             width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -60,26 +65,28 @@
         .logo-glo { background: #00E676; }
         .logo-9mobile { background: #004D40; }
 
-        .network-btn.selected { border-color: var(--primary); background: #fff; box-shadow: 0 8px 20px rgba(26,35,126,0.1); }
+        .network-btn.selected { border-color: var(--primary); background: var(--surface); box-shadow: 0 8px 20px var(--glow); }
         .network-btn span { font-size: 10px; font-weight: 700; color: var(--text-dim); }
 
         .info-box {
-            background: #fffbeb; border: 1px solid #fef3c7; color: #b45309;
-            padding: 15px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 20px;
+            background: rgba(245, 158, 11, 0.1); border: 1px dashed rgba(245, 158, 11, 0.3); color: #ff9800;
+            padding: 15px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 25px; line-height: 1.6;
         }
 
-        input { width: 100%; padding: 16px 20px; border-radius: 20px; border: 2px solid #e2e8f0; font-size: 14px; font-weight: 700; background: #f8fafc; outline: none; }
+        input { width: 100%; padding: 16px 20px; border-radius: 20px; border: 2px solid var(--border); font-size: 14px; font-weight: 700; color: var(--text-main); background: var(--bg); outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); background: var(--surface); }
         
         .result-card {
-            background: #f0fdf4; padding: 15px; border-radius: 20px; margin-top: 15px;
+            background: rgba(16, 185, 129, 0.1); border: 1px dashed rgba(16, 185, 129, 0.3); padding: 15px; border-radius: 20px; margin-top: 15px;
             display: none; justify-content: space-between; align-items: center;
         }
 
         .btn-purchase {
             width: 100%; padding: 18px; border: none; border-radius: 20px;
-            background: var(--primary); color: var(--white); font-weight: 800; font-size: 15px;
-            box-shadow: 0 10px 25px rgba(26, 35, 126, 0.25); cursor: pointer; margin-top: 20px;
+            background: var(--primary); color: white; font-weight: 800; font-size: 15px;
+            box-shadow: 0 10px 25px rgba(0, 98, 255, 0.25); cursor: pointer; margin-top: 20px; transition: 0.3s;
         }
+        .btn-purchase:active { transform: scale(0.97); }
     </style>
 </head>
 <body>
@@ -123,9 +130,9 @@
 
         <div id="adminPhoneArea" style="display:none; margin-bottom:20px;">
             <label style="font-size:11px; font-weight:800; color:var(--primary);">TRANSFER AIRTIME TO:</label>
-            <div style="background:#f1f5f9; padding:15px; border-radius:15px; display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
-                <b id="adminPhone" style="font-size:16px; color:var(--primary);">09000000000</b>
-                <i class="far fa-copy" onclick="copyAdminPhone()" style="cursor:pointer; color:var(--primary);"></i>
+            <div style="background:var(--bg); border: 1px solid var(--border); padding:15px; border-radius:15px; display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                <b id="adminPhone" style="font-size:16px; color:var(--primary);">09168696552</b>
+                <i class="far fa-copy" onclick="copyAdminPhone()" style="cursor:pointer; color:var(--primary); font-size: 18px;"></i>
             </div>
         </div>
 
@@ -135,8 +142,8 @@
         </div>
 
         <div class="result-card" id="resultCard">
-            <span style="font-size:12px; font-weight:700; color:#15803d;">You will receive:</span>
-            <b id="receiveAmt" style="font-size:16px; color:#15803d;">₦0.00</b>
+            <span style="font-size:12px; font-weight:700; color:var(--success);">You will receive:</span>
+            <b id="receiveAmt" style="font-size:16px; color:var(--success);">₦0.00</b>
         </div>
 
         <div class="form-group" style="margin-top:20px;">
@@ -151,16 +158,32 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        const firebaseConfig = { databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com" };
+        // CIKAKKEN CONFIGURATION NA FIREBASE DLNKA NA GASKE
+        const firebaseConfig = {
+            apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+            authDomain: "cm-nexus-sub.firebaseapp.com",
+            projectId: "cm-nexus-sub",
+            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+            storageBucket: "cm-nexus-sub.firebasestorage.app",
+            messagingSenderId: "22010501991",
+            appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
+        };
+        
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const myName = localStorage.getItem('username') || "Elite_User";
+        const myName = localStorage.getItem('username');
+
+        // Tsaro: Idan babu login, korar user baya
+        if(!myName) {
+            window.location.href = "index.html";
+        }
 
         let selectedNet = "";
         const SWAP_RATE = 0.80; // 80% user gets
 
+        // SYNC BALANCE LIVE
         db.ref('users/' + myName + '/wallet').on('value', snap => {
-            document.getElementById('walletBal').innerText = "₦" + (parseFloat(snap.val()) || 0).toLocaleString();
+            document.getElementById('walletBal').innerText = "₦" + (parseFloat(snap.val()) || 0).toLocaleString('en-US', { minimumFractionDigits: 2 });
         });
 
         function selectNet(name, phone) {
@@ -168,14 +191,14 @@
             document.querySelectorAll('.network-btn').forEach(b => b.classList.remove('selected'));
             document.getElementById('net_' + name.toLowerCase()).classList.add('selected');
             document.getElementById('adminPhoneArea').style.display = 'block';
-            document.getElementById('adminPhone').innerText = "09168696552"; // Saita lambar Admin anan
+            document.getElementById('adminPhone').innerText = "09168696552"; // Lambar Admin dinka
         }
 
         function calculateSwap() {
             const amt = parseFloat(document.getElementById('swapAmt').value);
             if (amt >= 500) {
                 document.getElementById('resultCard').style.display = 'flex';
-                document.getElementById('receiveAmt').innerText = "₦" + (amt * SWAP_RATE).toLocaleString();
+                document.getElementById('receiveAmt').innerText = "₦" + (amt * SWAP_RATE).toLocaleString('en-US', { minimumFractionDigits: 2 });
             } else {
                 document.getElementById('resultCard').style.display = 'none';
             }
@@ -190,19 +213,29 @@
 
         function submitSwapRequest() {
             const amt = parseFloat(document.getElementById('swapAmt').value);
-            const phone = document.getElementById('userPhone').value;
+            const phone = document.getElementById('userPhone').value.trim();
 
-            if (!selectedNet || !amt || phone.length < 10) {
-                return Swal.fire('Error', 'Please fill all details correctly.', 'warning');
+            if (!selectedNet) {
+                return Swal.fire('Required', 'Please select a network cibiyar sadarwa.', 'warning');
+            }
+            if (isNaN(amt) || amt < 500) {
+                return Swal.fire('Required', 'Minimum swap amount is ₦500.', 'warning');
+            }
+            if (phone.length < 10) {
+                return Swal.fire('Required', 'Please enter a valid phone number you sent from.', 'warning');
             }
 
             Swal.fire({
-                title: 'Confirm Transfer',
-                text: `Have you successfully transferred ₦${amt} ${selectedNet} airtime to 09168696552?`,
-                icon: 'question', showCancelButton: true, confirmButtonColor: '#1A237E'
+                title: 'Confirm Swap Request',
+                html: `Have you successfully transferred <b>₦${amt}</b> worth of <b>${selectedNet}</b> airtime to <b>09168696552</b>?`,
+                icon: 'question', 
+                showCancelButton: true, 
+                confirmButtonColor: '#0062ff',
+                cancelButtonColor: '#1f2937'
             }).then(r => {
                 if(r.isConfirmed) {
-                    Swal.showLoading();
+                    Swal.fire({ title: 'Submitting Request...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                    
                     const request = {
                         username: myName,
                         network: selectedNet,
@@ -212,10 +245,14 @@
                         status: "Pending",
                         time: Date.now()
                     };
+
                     db.ref('airtime_swaps/').push(request).then(() => {
-                        Swal.fire('Submitted!', 'Commander will verify and credit your wallet soon.', 'success');
+                        Swal.fire('Submitted Successful!', 'Your swap request has been received. Commander will verify and credit your wallet soon.', 'success');
                         document.getElementById('swapAmt').value = "";
                         document.getElementById('userPhone').value = "";
+                        document.getElementById('resultCard').style.display = 'none';
+                    }).catch(err => {
+                        Swal.fire('Failed', 'Database write error. Try again.', 'error');
                     });
                 }
             });

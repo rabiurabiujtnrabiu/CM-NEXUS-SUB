@@ -8,12 +8,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         :root {
-            --primary: #1A237E; --accent: #FFD600; --bg: #F4F7FE;
-            --white: #ffffff; --text-main: #1e293b; --text-dim: #64748b;
-            --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+            --primary: #0062ff; 
+            --accent: #00f2fe; 
+            --bg: #0b0f19; /* Duhun gaba daya dandalin */
+            --surface: #111827; 
+            --border: #1f2937;
+            --white: #111827; 
+            --text-main: #f9fafb; 
+            --text-dim: #9ca3af;
+            --success: #10b981; 
+            --danger: #ef4444; 
+            --warning: #f59e0b;
+            --glow: rgba(0, 98, 255, 0.15);
         }
 
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -21,62 +31,73 @@
 
         header { 
             padding: 20px; display: flex; align-items: center; gap: 15px; 
-            background: var(--white); border-bottom: 1px solid rgba(0,0,0,0.02);
+            background: var(--surface); border-bottom: 1px solid var(--border);
             position: sticky; top: 0; z-index: 1000;
         }
-        .back-btn { font-size: 20px; color: var(--primary); cursor: pointer; transition: 0.2s; }
-        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--primary); }
+        .back-btn { font-size: 20px; color: var(--text-main); cursor: pointer; transition: 0.2s; }
+        .back-btn:active { transform: scale(0.85); }
+        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--text-main); }
 
         .tab-container {
             display: flex; gap: 10px; padding: 15px 20px; overflow-x: auto;
-            background: var(--white); box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
         .tab-container::-webkit-scrollbar { display: none; }
         
         .tab-btn {
-            background: #f1f5f9; border: none; padding: 12px 20px; border-radius: 16px;
+            background: var(--bg); border: 1px solid var(--border); padding: 12px 20px; border-radius: 16px;
             font-size: 11px; font-weight: 800; color: var(--text-dim); cursor: pointer;
-            white-space: nowrap; text-transform: uppercase;
+            white-space: nowrap; text-transform: uppercase; transition: 0.3s;
         }
         .tab-btn.active {
-            background: var(--primary); color: var(--white);
-            box-shadow: 0 6px 15px rgba(26, 35, 126, 0.2);
+            background: var(--primary); color: white; border-color: var(--primary);
+            box-shadow: 0 6px 15px var(--glow);
         }
 
         .history-container { padding: 20px; }
         
         .history-card {
-            background: var(--white); padding: 18px 20px; border-radius: 24px;
+            background: var(--surface); padding: 18px 20px; border-radius: 24px;
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.015);
+            margin-bottom: 15px; border: 1px solid var(--border);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
             animation: fadeInUp 0.4s ease;
+            cursor: pointer;
+            transition: 0.3s;
         }
+        .history-card:active { transform: scale(0.97); background: var(--border); }
         
         .left-section { display: flex; align-items: center; gap: 15px; }
         .history-icon {
             width: 46px; height: 46px; border-radius: 50%; display: flex;
             align-items: center; justify-content: center; font-size: 16px;
         }
-        .icon-debit { background: #fee2e2; color: var(--danger); }
-        .icon-credit { background: #d1fae5; color: var(--success); }
-        .icon-pending { background: #fef3c7; color: var(--warning); }
+        .icon-debit { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .icon-credit { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .icon-pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
 
         .details .service-title { font-size: 13px; font-weight: 800; color: var(--text-main); display: block; }
-        .details .timestamp { font-size: 11px; font-weight: 600; color: var(--text-dim); }
+        .details .timestamp { font-size: 11px; font-weight: 600; color: var(--text-dim); margin-top: 2px; display: block; }
 
         .right-section { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
         .amount { font-size: 14px; font-weight: 800; }
         .amount.plus { color: var(--success); }
+        .amount.minus { color: var(--danger); }
         
         .status-badge {
             font-size: 9px; font-weight: 800; padding: 4px 8px; border-radius: 8px;
             text-transform: uppercase;
         }
-        .badge-pending { background: #fffbeb; color: #b45309; }
-        .badge-completed { background: #ecfdf5; color: #047857; }
+        .badge-pending { background: rgba(245, 158, 11, 0.15); color: #ff9800; }
+        .badge-completed { background: rgba(16, 185, 129, 0.15); color: var(--success); }
 
         .empty-state { text-align: center; padding: 80px 20px; display: none; }
-        .empty-state i { font-size: 48px; color: #cbd5e1; margin-bottom: 20px; }
+        .empty-state i { font-size: 48px; color: var(--border); margin-bottom: 20px; }
+        .empty-state h3 { color: var(--text-main); margin-bottom: 6px; }
+
+        .swal2-popup { border-radius: 28px !important; background: var(--surface) !important; color: white !important; }
+        .swal2-title { color: white !important; font-weight: 800 !important; }
     </style>
 </head>
 <body>
@@ -98,18 +119,32 @@
     <div class="empty-state" id="emptyState">
         <i class="fa-solid fa-folder-open"></i>
         <h3>No Records Found</h3>
-        <p style="font-size:12px; color:#999;">Your activity in this category will appear here.</p>
+        <p style="font-size:12px; color:var(--text-dim);">Your activity in this category will appear here.</p>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        // MATAKI NA 1: NEW FIREBASE SYNC (CM-NEXUS-SUB)
-        const firebaseConfig = { databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com" };
+        // CIKAKKEN LIVE CONFIG NA FIREBASE DLNKA NA GASKE
+        const firebaseConfig = {
+            apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+            authDomain: "cm-nexus-sub.firebaseapp.com",
+            projectId: "cm-nexus-sub",
+            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+            storageBucket: "cm-nexus-sub.firebasestorage.app",
+            messagingSenderId: "22010501991",
+            appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
+        };
+        
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const myName = localStorage.getItem('username') || "Elite_User";
+        const myName = localStorage.getItem('username');
+
+        // Tsaro: Idan babu login, korar user baya
+        if(!myName) {
+            window.location.href = "index.html";
+        }
 
         let allTransactions = [];
         let currentTab = "all";
@@ -123,17 +158,33 @@
             db.ref('transactions/' + myName).once('value', snap => {
                 snap.forEach(child => {
                     const data = child.val();
-                    allTransactions.push({ category: 'purchases', type: data.type || 'debit', service: data.service, amount: data.amount, time: data.time || Date.now(), status: 'completed' });
+                    allTransactions.push({ 
+                        category: 'purchases', 
+                        type: data.type || 'debit', 
+                        service: data.service, 
+                        amount: data.amount, 
+                        time: data.time || Date.now(), 
+                        status: 'completed',
+                        pin_details: data.pin_details || null,
+                        token_details: data.token_details || null
+                    });
                 });
                 checkFinished(++loadedCount);
             });
 
             // 2. Load salary/withdraw requests
             db.ref('salary_requests/' + myName).once('value', snap => {
-                const data = snap.val();
-                if (data) {
-                    allTransactions.push({ category: 'withdraws', type: 'debit', service: `Salary Withdraw: ${data.bank}`, amount: data.amt, time: data.time || Date.now(), status: data.status.toLowerCase() });
-                }
+                snap.forEach(child => {
+                    const data = child.val();
+                    allTransactions.push({ 
+                        category: 'withdraws', 
+                        type: 'debit', 
+                        service: `Salary Withdraw: ${data.bank || 'Bank Transfer'}`, 
+                        amount: data.amt || data.amount || 0, 
+                        time: data.time || Date.now(), 
+                        status: (data.status || 'pending').toLowerCase() 
+                    });
+                });
                 checkFinished(++loadedCount);
             });
 
@@ -141,7 +192,14 @@
             db.ref('airtime_swaps/').orderByChild('username').equalTo(myName).once('value', snap => {
                 snap.forEach(child => {
                     const data = child.val();
-                    allTransactions.push({ category: 'swaps', type: 'credit', service: `Swap: ${data.network}`, amount: data.walletToCredit, time: data.time || Date.now(), status: data.status.toLowerCase() });
+                    allTransactions.push({ 
+                        category: 'swaps', 
+                        type: 'credit', 
+                        service: `Swap: ${data.network}`, 
+                        amount: data.walletToCredit, 
+                        time: data.time || Date.now(), 
+                        status: (data.status || 'pending').toLowerCase() 
+                    });
                 });
                 checkFinished(++loadedCount);
             });
@@ -167,7 +225,7 @@
             }
             emptyElement.style.display = "none";
 
-            filtered.forEach(tx => {
+            filtered.forEach((tx, index) => {
                 const date = new Date(tx.time).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
                 const isCredit = tx.type === "credit";
                 const iconClass = isCredit ? "icon-credit" : "icon-debit";
@@ -182,8 +240,11 @@
                     statusBadge = `<span class="status-badge badge-completed">Success</span>`;
                 }
 
+                // Saita idan akwai PIN ko Token don nuna alamar danna card din
+                const clickableAttr = (tx.pin_details || tx.token_details) ? `onclick="viewTransactionDetails(${index})"` : '';
+
                 listElement.innerHTML += `
-                    <div class="history-card">
+                    <div class="history-card" ${clickableAttr}>
                         <div class="left-section">
                             <div class="history-icon ${tx.status === 'pending' ? 'icon-pending' : iconClass}">
                                 ${tx.status === 'pending' ? '<i class="fa-solid fa-hourglass-half"></i>' : iconSymbol}
@@ -194,7 +255,7 @@
                             </div>
                         </div>
                         <div class="right-section">
-                            <span class="amount ${amtClass}">${amtSign}₦${parseFloat(tx.amount).toLocaleString()}</span>
+                            <span class="amount ${amtClass}">${amtSign}₦${parseFloat(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                             ${statusBadge}
                         </div>
                     </div>`;
@@ -206,6 +267,52 @@
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             element.classList.add('active');
             renderHistory();
+        }
+
+        // AKWAI POPUP DOMIN KOWAFAR PIN KO TOKEN NA MITA
+        function viewTransactionDetails(index) {
+            const tx = allTransactions.filter(t => (currentTab === "all" || t.category === currentTab))[index];
+            if (!tx) return;
+
+            let title = "Transaction Details";
+            let details = "";
+
+            if (tx.pin_details) {
+                title = "Generated Edu PIN";
+                details = tx.pin_details;
+            } else if (tx.token_details) {
+                title = "Electricity Token Code";
+                details = tx.token_details;
+            } else {
+                return;
+            }
+
+            Swal.fire({
+                title: title,
+                html: `
+                    <p style="font-size:12px; color:var(--text-dim); margin-bottom:12px;">Tap below to copy your credentials:</p>
+                    <div id="copyTarget" style="background:#0b0f19; color:#00f2fe; padding:20px; border-radius:15px; font-family:monospace; font-size:16px; font-weight:800; border:1px solid #1f2937; cursor:pointer; word-break: break-all;" onclick="copyCodeText()">
+                        ${details}
+                    </div>
+                    <p style="font-size:11px; color:#ff9800; margin-top:10px;"><i class="fas fa-hand-pointer"></i> Tap box above to copy instantly.</p>
+                `,
+                confirmButtonText: 'Done',
+                confirmButtonColor: '#0062ff'
+            });
+        }
+
+        function copyCodeText() {
+            const codeText = document.getElementById('copyTarget').innerText.trim();
+            navigator.clipboard.writeText(codeText).then(() => {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Copied to Clipboard!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            });
         }
 
         loadAllHistory();

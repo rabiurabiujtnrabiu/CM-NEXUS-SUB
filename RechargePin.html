@@ -12,36 +12,46 @@
 
     <style>
         :root {
-            --primary: #1A237E; --accent: #FFD600; --bg: #F4F7FE; --white: #ffffff;
-            --text-main: #1e293b; --text-dim: #64748b;
+            --primary: #0062ff; 
+            --accent: #00f2fe; 
+            --bg: #0b0f19; /* Duhun gaba daya dandalin */
+            --surface: #111827; 
+            --border: #1f2937;
+            --white: #111827; 
+            --text-main: #f9fafb; 
+            --text-dim: #9ca3af;
+            --glow: rgba(0, 98, 255, 0.15);
+            --success: #10b981;
         }
 
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); color: var(--text-main); padding-bottom: 50px; }
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text-main); padding-bottom: 50px; overflow-x: hidden; }
 
         header { 
             padding: 20px; display: flex; align-items: center; gap: 15px; 
-            background: var(--white); border-bottom: 1px solid rgba(0,0,0,0.02);
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 1000;
         }
-        .back-btn { font-size: 20px; color: var(--primary); cursor: pointer; }
-        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--primary); }
+        .back-btn { font-size: 20px; color: var(--text-main); cursor: pointer; transition: 0.2s; }
+        .back-btn:active { transform: scale(0.85); }
+        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--text-main); }
 
         .balance-badge {
-            background: var(--white); margin: 20px; padding: 20px; 
+            background: var(--surface); margin: 20px; padding: 20px; 
             border-radius: 24px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 10px 30px rgba(26, 35, 126, 0.03);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); border: 1px solid var(--border);
         }
+        .balance-badge span { font-size: 11px; color: var(--text-dim); font-weight: 800; text-transform: uppercase; }
         .balance-badge b { font-size: 18px; color: var(--primary); font-weight: 800; }
 
-        .form-container { background: var(--white); margin: 0 20px; padding: 30px 24px; border-radius: 32px; box-shadow: 0 15px 35px rgba(0,0,0,0.02); }
+        .form-container { background: var(--surface); margin: 0 20px; padding: 30px 24px; border-radius: 32px; border: 1px solid var(--border); box-shadow: 0 15px 35px rgba(0,0,0,0.15); }
         .form-group { margin-bottom: 24px; }
-        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
 
-        /* GYARARREN NETWORK SELECTOR TARE DA LOGO DISPLAY */
         .network-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         
         .network-btn {
-            background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 20px; padding: 15px 5px;
+            background: var(--bg); border: 2px solid var(--border); border-radius: 20px; padding: 15px 5px;
             display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: 0.3s;
         }
         
@@ -49,37 +59,38 @@
             width: 42px; height: 42px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center;
             font-size: 11px; font-weight: 900; color: white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
         
-        /* LAUNUKAN LOGO */
         .mtn-bg { background: #FFCC00; color: #000; border: 2px solid #000; }
         .airtel-bg { background: #FF0000; }
         .glo-bg { background: #00FF00; color: #000; }
         .mobile-bg { background: #006600; }
 
         .network-btn span { font-size: 10px; font-weight: 800; color: var(--text-dim); }
-        .network-btn.selected { border-color: var(--primary); background: #fff; box-shadow: 0 8px 20px rgba(26,35,126,0.1); }
+        .network-btn.selected { border-color: var(--primary); background: var(--surface); box-shadow: 0 8px 20px var(--glow); }
         .network-btn.selected span { color: var(--primary); }
 
-        select { width: 100%; padding: 18px; border-radius: 20px; border: 2px solid #e2e8f0; font-size: 14px; font-weight: 700; background: #f8fafc; outline: none; -webkit-appearance: none; }
+        select { width: 100%; padding: 18px; border-radius: 20px; border: 2px solid var(--border); font-size: 14px; font-weight: 700; color: var(--text-main); background: var(--bg); outline: none; -webkit-appearance: none; transition: 0.3s; }
+        select:focus { border-color: var(--primary); }
         
         .btn-purchase {
             width: 100%; padding: 18px; border: none; border-radius: 22px;
-            background: var(--primary); color: var(--white); font-weight: 800; font-size: 16px;
-            box-shadow: 0 10px 25px rgba(26, 35, 126, 0.2); cursor: pointer; margin-top: 10px;
+            background: var(--primary); color: white; font-weight: 800; font-size: 16px;
+            box-shadow: 0 10px 25px rgba(0, 98, 255, 0.2); cursor: pointer; margin-top: 10px; transition: 0.3s;
         }
+        .btn-purchase:active { transform: scale(0.97); }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="back-btn" onclick="history.back()"><i class="fas fa-arrow-left"></i></div>
+        <div class="back-btn" onclick="location.href='Wallet.html'"><i class="fas fa-arrow-left"></i></div>
         <h1>Recharge Card PIN</h1>
     </header>
 
     <div class="balance-badge">
-        <span style="font-size: 12px; font-weight: 700; color: var(--text-dim);">Available Balance</span>
+        <span>Available Balance</span>
         <b id="walletBal">₦0.00</b>
     </div>
 
@@ -87,19 +98,19 @@
         <div class="form-group">
             <label>Select Network</label>
             <div class="network-grid">
-                <div class="network-btn" id="net_mtn" onclick="selectNet('MTN')">
+                <div class="network-btn" id="net_mtn" onclick="selectNet('MTN', 'mtn_pin')">
                     <div class="logo-circle mtn-bg">MTN</div>
                     <span>MTN</span>
                 </div>
-                <div class="network-btn" id="net_airtel" onclick="selectNet('Airtel')">
+                <div class="network-btn" id="net_airtel" onclick="selectNet('Airtel', 'airtel_pin')">
                     <div class="logo-circle airtel-bg">AIR</div>
                     <span>Airtel</span>
                 </div>
-                <div class="network-btn" id="net_glo" onclick="selectNet('Glo')">
+                <div class="network-btn" id="net_glo" onclick="selectNet('Glo', 'glo_pin')">
                     <div class="logo-circle glo-bg">GLO</div>
                     <span>Glo</span>
                 </div>
-                <div class="network-btn" id="net_9mobile" onclick="selectNet('9mobile')">
+                <div class="network-btn" id="net_9mobile" onclick="selectNet('9mobile', '9mobile_pin')">
                     <div class="logo-circle mobile-bg">9M</div>
                     <span>9Mobile</span>
                 </div>
@@ -124,23 +135,42 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        const firebaseConfig = { databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com" };
+        // CIKAKKEN LIVE CONFIG NA FIREBASE DLNKA NA GASKE
+        const firebaseConfig = {
+            apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+            authDomain: "cm-nexus-sub.firebaseapp.com",
+            projectId: "cm-nexus-sub",
+            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+            storageBucket: "cm-nexus-sub.firebasestorage.app",
+            messagingSenderId: "22010501991",
+            appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
+        };
+        
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const myName = localStorage.getItem('username') || "Elite_User";
+        const myName = localStorage.getItem('username');
+
+        // Tsaro: Idan babu login, korar user baya
+        if(!myName) {
+            window.location.href = "index.html";
+        }
+
         const GSUBZ_KEY = "Ap_8fe29a8969a042bf6538b658112965fb";
+        let currentBal = 0; 
+        let selectedNet = ""; 
+        let selectedServiceID = "";
 
-        let currentBal = 0; let selectedNet = "";
-
+        // SYNC BALANCE LIVE
         db.ref('users/' + myName + '/wallet').on('value', snap => {
             currentBal = parseFloat(snap.val()) || 0;
-            document.getElementById('walletBal').innerText = "₦" + currentBal.toLocaleString();
+            document.getElementById('walletBal').innerText = "₦" + currentBal.toLocaleString('en-US', { minimumFractionDigits: 2 });
         });
 
-        function selectNet(name) {
+        function selectNet(name, serviceID) {
             selectedNet = name;
+            selectedServiceID = serviceID;
             document.querySelectorAll('.network-btn').forEach(b => b.classList.remove('selected'));
-            document.getElementById('net_' + name.toLowerCase()).classList.add('selected');
+            document.getElementById('net_' + (name === '9mobile' ? '9mobile' : name.toLowerCase())).classList.add('selected');
         }
 
         function updateBtn() {
@@ -150,39 +180,82 @@
 
         function processOrder() {
             const amt = parseFloat(document.getElementById('pinAmt').value);
-            if (!selectedNet || !amt) return Swal.fire('Error', 'Please select network and amount.', 'warning');
-            if (currentBal < amt) return Swal.fire('Error', 'Insufficient Balance', 'error');
+            if (!selectedNet) return Swal.fire('Required', 'Please select a network provider first.', 'warning');
+            if (isNaN(amt) || !amt) return Swal.fire('Required', 'Please select a recharge amount.', 'warning');
+            if (currentBal < amt) return Swal.fire('Error', 'Insufficient wallet balance. Please fund your account.', 'error');
 
             Swal.fire({
-                title: 'Confirm', text: `Generate ${selectedNet} ₦${amt} PIN?`,
-                showCancelButton: true, confirmButtonColor: '#1A237E'
+                title: 'Confirm Purchase', 
+                html: `Are you sure you want to generate <b>${selectedNet} ₦${amt.toLocaleString()}</b> recharge card PIN?`,
+                icon: 'question',
+                showCancelButton: true, 
+                confirmButtonColor: '#0062ff',
+                cancelButtonColor: '#1f2937'
             }).then(r => { if(r.isConfirmed) executePin(amt); });
         }
 
         async function executePin(amt) {
-            Swal.showLoading();
+            Swal.fire({ title: 'Processing Transaction...', html: 'Charging wallet balance...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            // 1. DEBIT THE USER WALLET FIRST
             db.ref('users/' + myName).transaction(user => {
-                if (user && user.wallet >= amt) { user.wallet -= amt; return user; }
+                if (user && user.wallet >= amt) { 
+                    user.wallet -= amt; 
+                    return user; 
+                }
             }).then(async tx => {
                 if (tx.committed) {
+                    Swal.fire({ title: 'Generating PIN...', html: 'Fetching scratch card from GSubz API...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
                     let fd = new FormData();
-                    fd.append('api', GSUBZ_KEY); fd.append('serviceID', selectedNet.toLowerCase());
-                    fd.append('amount', amt); fd.append('requestID', "PIN-" + Date.now());
+                    fd.append('api', GSUBZ_KEY); 
+                    fd.append('serviceID', selectedServiceID);
+                    fd.append('amount', amt); 
+                    fd.append('requestID', "PIN-" + Date.now());
 
                     try {
                         const response = await fetch('https://gsubz.com/api/pay/', { method: 'POST', body: fd });
                         const d = await response.json();
-                        if (d.code == 200) {
-                            db.ref('transactions/' + myName).push({ type: 'debit', service: `Recharge PIN: ${selectedNet}`, amount: amt, time: Date.now() });
-                            Swal.fire({ icon: 'success', title: 'Successful!', html: `<div style="background:#f1f5f9; padding:20px; border-radius:15px; font-weight:800; font-size:20px;">${d.pin || '1234-5678-9012'}</div>` });
+                        
+                        if (d.code == 200 || d.status === "TRANSACTION_SUCCESSFUL") {
+                            const pinCode = d.pin || d.description || "Generated PIN Successful!";
+                            
+                            // 2. WRITE DEBIT TRANSACTION TO HISTORY WITH PIN DETAILS
+                            db.ref('transactions/' + myName).push({ 
+                                type: 'debit', 
+                                service: `Recharge PIN: ${selectedNet} (₦${amt})`, 
+                                amount: amt, 
+                                pin_details: pinCode,
+                                time: Date.now() 
+                            }).then(() => {
+                                Swal.fire({ 
+                                    icon: 'success', 
+                                    title: 'Purchase Successful!', 
+                                    html: `
+                                        <p style="font-size:12px; margin-bottom:10px;">Here is your recharge card PIN:</p>
+                                        <div style="background:#0b0f19; color:#00f2fe; padding:20px; border-radius:15px; font-family:monospace; font-size:18px; text-align:center; border:1px solid #1f2937; letter-spacing:1px;">
+                                            <b>${pinCode}</b>
+                                        </div>
+                                        <p style="font-size:11px; color:#ff9800; margin-top:10px;">This details has been stored in your Transactions History page.</p>
+                                    `,
+                                    confirmButtonText: 'Done',
+                                    confirmButtonColor: '#0062ff'
+                                });
+                                document.getElementById('pinAmt').value = "";
+                                document.getElementById('buyBtn').innerText = "PROCEED";
+                            });
                         } else {
+                            // Idan GSubz ya dawo da kuskure, mayar wa user da kudin wallet dinsa (Refund)
                             db.ref('users/' + myName + '/wallet').transaction(w => (w || 0) + amt);
-                            Swal.fire('Failed', d.description, 'error');
+                            Swal.fire('Failed', d.description || 'Provider gateway rejected order. Wallet refunded.', 'error');
                         }
                     } catch (e) {
+                        // Idan network ya katse, mayar wa user da kudin wallet dinsa (Refund)
                         db.ref('users/' + myName + '/wallet').transaction(w => (w || 0) + amt);
-                        Swal.fire('Error', 'Connection timeout.', 'error');
+                        Swal.fire('Network Timeout', 'API did not respond in time. Wallet has been safely auto-refunded.', 'error');
                     }
+                } else {
+                    Swal.fire('Error', 'Transaction rejected. Insufficient balance.', 'error');
                 }
             });
         }

@@ -11,11 +11,19 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* ASALIN STYLE DIN KA - BAN TABA KOMAI BA */
         :root {
-            --primary: #0062ff; --dark: #0f172a; --bg: #f8fafc; --surface: #ffffff;
-            --text-main: #1e293b; --text-muted: #64748b; --border: #f1f5f9;
-            --success: #10b981; --warning: #f59e0b;
+            --primary: #0062ff; 
+            --accent: #00f2fe; 
+            --bg: #0b0f19; /* Duhun gaba daya dandalin */
+            --surface: #111827; 
+            --border: #1f2937;
+            --white: #111827; 
+            --text-main: #f9fafb; 
+            --text-muted: #9ca3af;
+            --success: #10b981; 
+            --warning: #f59e0b;
+            --dark: #0f172a;
+            --glow: rgba(0, 98, 255, 0.2);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -23,58 +31,103 @@
 
         header { 
             padding: 20px; display: flex; align-items: center; gap: 15px; 
-            background: var(--surface); border-bottom: 1px solid rgba(0,0,0,0.02);
+            background: var(--surface); border-bottom: 1px solid var(--border);
             position: sticky; top: 0; z-index: 1000;
         }
-        .back-btn { font-size: 20px; color: var(--primary); cursor: pointer; }
-        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--dark); }
+        .back-btn { font-size: 20px; color: var(--text-main); cursor: pointer; transition: 0.2s; }
+        .back-btn:active { transform: scale(0.85); }
+        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--text-main); }
 
         .profile-hero {
             background: var(--surface); margin: 20px; padding: 30px 20px;
-            border-radius: 32px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.015);
+            border-radius: 32px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             border: 1px solid var(--border); animation: fadeInDown 0.5s ease;
         }
+        
+        /* SHAYIN DORA PROFILE PICTURE MAI TASIRI */
+        .avatar-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+            cursor: pointer;
+        }
         .profile-avatar {
-            width: 90px; height: 90px;
-            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
-            border-radius: 30px; display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 15px; color: white; font-size: 36px; font-weight: 800;
-            box-shadow: 0 10px 25px rgba(0, 98, 255, 0.2); border: 3px solid white;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, #00f2fe 100%);
+            border-radius: 32px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            color: white; 
+            font-size: 38px; 
+            font-weight: 800;
+            box-shadow: 0 10px 25px var(--glow); 
+            border: 3px solid var(--border);
+            object-fit: cover;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+        .avatar-container:active .profile-avatar { transform: scale(0.95); }
+        .upload-overlay {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border: 2px solid var(--surface);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         
-        .level-badge { background: rgba(245, 158, 11, 0.08); color: var(--warning); padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; display: inline-block; }
-        .progress-container { width: 80%; background: #e2e8f0; height: 8px; border-radius: 10px; margin: 0 auto; overflow: hidden; }
+        .level-badge { background: rgba(245, 158, 11, 0.1); color: var(--warning); padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; display: inline-block; }
+        .progress-container { width: 80%; background: var(--bg); height: 8px; border-radius: 10px; margin: 0 auto; overflow: hidden; border: 1px solid var(--border); }
         .progress-bar { background: var(--warning); height: 100%; width: 0%; transition: width 0.5s ease; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 0 20px 25px; }
-        .stat-box { background: var(--surface); padding: 18px; border-radius: 24px; border: 1px solid var(--border); }
-        .stat-box span { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
-        .stat-box b { font-size: 16px; font-weight: 800; color: var(--dark); }
+        .stat-box { background: var(--surface); padding: 18px; border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .stat-box span { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 6px; }
+        .stat-box b { font-size: 16px; font-weight: 800; color: var(--text-main); }
 
         .menu-section { margin: 0 20px 25px; }
-        .menu-title { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; padding-left: 5px; }
-        .menu-list { background: var(--surface); border-radius: 28px; overflow: hidden; border: 1px solid var(--border); }
-        .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; text-decoration: none; color: var(--text-main); border-bottom: 1px solid var(--border); cursor: pointer; }
+        .menu-title { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; padding-left: 5px; letter-spacing: 0.5px; }
+        .menu-list { background: var(--surface); border-radius: 28px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; text-decoration: none; color: var(--text-main); border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.3s; }
+        .menu-item:active { background: var(--border); }
         .menu-item:last-child { border-bottom: none; }
         
         .menu-left { display: flex; align-items: center; gap: 15px; }
+        .menu-left span { font-size: 13px; font-weight: 700; }
         .menu-icon { width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
-        .icon-blue { background: #eff6ff; color: var(--primary); }
-        .icon-orange { background: #fffbeb; color: var(--warning); }
-        .icon-green { background: #ecfdf5; color: var(--success); }
-        .icon-red { background: #fff5f5; color: #ef4444; }
+        .icon-blue { background: rgba(0, 98, 255, 0.15); color: var(--primary); }
+        .icon-orange { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .icon-green { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .icon-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .menu-right { font-size: 11px; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
 
-        .footer-credit { text-align: center; margin: 30px 20px 10px; color: var(--text-muted); font-size: 11px; }
+        .footer-credit { text-align: center; margin: 30px 20px 10px; color: var(--text-muted); font-size: 11px; line-height: 1.6; }
 
         .nav-bar {
             position: fixed; bottom: 25px; left: 20px; right: 20px;
-            background: var(--dark); height: 75px; border-radius: 24px;
+            background: var(--surface); height: 75px; border-radius: 24px;
             display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+            border: 1px solid var(--border);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
         }
         .nav-link { text-decoration: none; color: #64748b; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 70px; }
         .nav-link.active { color: #38bdf8; transform: translateY(-8px); }
         .nav-link i { font-size: 24px; }
         .nav-link span { font-size: 10px; font-weight: 800; text-transform: uppercase; }
+
+        .swal2-popup { border-radius: 28px !important; background: var(--surface) !important; color: white !important; }
+        .swal2-title { color: white !important; font-weight: 800 !important; }
     </style>
 </head>
 <body>
@@ -85,11 +138,19 @@
     </header>
 
     <div class="profile-hero">
-        <div class="profile-avatar" id="heroAvatar">U</div>
-        <h2 id="heroUsername">@Loading...</h2>
-        <p id="heroEmail">loading@user.com</p>
+        <div class="avatar-container" onclick="triggerFileInput()">
+            <img src="" class="profile-avatar" id="userImg" style="display:none;">
+            <div class="profile-avatar" id="heroAvatar">U</div>
+            <div class="upload-overlay">
+                <i class="fas fa-camera"></i>
+            </div>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="uploadProfilePic(event)">
+
+        <h2 id="heroUsername" style="font-weight: 800;">@Loading...</h2>
+        <p id="heroEmail" style="font-size:12px; color:var(--text-muted); margin-top:4px;">loading@user.com</p>
         
-        <div class="level-badge" id="levelName">Elite Ambassador</div>
+        <div class="level-badge" id="levelName" style="margin-top:12px;">Elite Ambassador</div>
         <div class="progress-container">
             <div class="progress-bar" id="xpProgressBar"></div>
         </div>
@@ -181,7 +242,7 @@
             <i class="fa-solid fa-wallet"></i>
             <span>Wallet</span>
         </a>
-        <a href="Profile.html" class="nav-link active">
+        <a href="Settings.html" class="nav-link active">
             <i class="fa-solid fa-sliders"></i>
             <span>Settings</span>
         </a>
@@ -191,11 +252,25 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        // NEW FIREBASE SYNC - CM-NEXUS-SUB
-        const firebaseConfig = { databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com" };
+        // CIKAKKEN LIVE CONFIG NA FIREBASE DLNKA NA GASKE
+        const firebaseConfig = {
+            apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+            authDomain: "cm-nexus-sub.firebaseapp.com",
+            projectId: "cm-nexus-sub",
+            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+            storageBucket: "cm-nexus-sub.firebasestorage.app",
+            messagingSenderId: "22010501991",
+            appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
+        };
+        
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const myName = localStorage.getItem('username') || "Elite_User";
+        const myName = localStorage.getItem('username');
+
+        // Tsaro: Idan babu login, korar user baya
+        if(!myName) {
+            window.location.href = "index.html";
+        }
 
         // Live Realtime Listener
         db.ref('users/' + myName).on('value', snap => {
@@ -203,10 +278,22 @@
             if (userData) {
                 document.getElementById('heroUsername').innerText = "@" + myName;
                 document.getElementById('heroEmail').innerText = userData.email || "no-email@elite.com";
-                document.getElementById('heroAvatar').innerText = myName.charAt(0).toUpperCase();
+
+                // Syncing Profile Picture (Base64)
+                const userImg = document.getElementById('userImg');
+                const heroAvatar = document.getElementById('heroAvatar');
+                if (userData.profilePic) {
+                    userImg.src = userData.profilePic;
+                    userImg.style.display = 'block';
+                    heroAvatar.style.display = 'none';
+                } else {
+                    userImg.style.display = 'none';
+                    heroAvatar.style.display = 'flex';
+                    heroAvatar.innerText = myName.charAt(0).toUpperCase();
+                }
 
                 const balance = parseFloat(userData.wallet) || 0;
-                document.getElementById('walletBalance').innerText = "₦" + balance.toLocaleString();
+                document.getElementById('walletBalance').innerText = "₦" + balance.toLocaleString('en-US', { minimumFractionDigits: 2 });
 
                 const xp = parseInt(userData.xp) || 0;
                 document.getElementById('xpPoints').innerText = xp.toLocaleString() + " XP";
@@ -217,10 +304,75 @@
                 document.getElementById('xpPercent').innerText = progressPercent + "% Progress to Next Rank";
 
                 document.getElementById('pinStatus').innerHTML = userData.transactionPin ? 
-                    'Active <i class="fas fa-lock" style="color:var(--success);"></i>' : 
-                    'Not Set <i class="fas fa-unlock" style="color:red;"></i>';
+                    'Active <i class="fas fa-lock" style="color:var(--success); margin-left:4px;"></i>' : 
+                    'Not Set <i class="fas fa-unlock" style="color:#ef4444; margin-left:4px;"></i>';
             }
         });
+
+        // TRIGGER FILE INPUT DON ZABAN HOTO
+        function triggerFileInput() {
+            document.getElementById('fileInput').click();
+        }
+
+        // UPLOAD DA KUMA COMPRESS HOTON PROFILE (Base64)
+        function uploadProfilePic(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Tabbatar ko hoto ne
+            if (!file.type.startsWith('image/')) {
+                return Swal.fire('Error', 'Please select a valid image file.', 'error');
+            }
+
+            Swal.fire({
+                title: 'Saving Photo...',
+                html: 'Compressing and syncing with Firebase...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function (e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function () {
+                    // Compress Image ta amfani da HTML5 Canvas (Max width 150px don ya yi sauri)
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const MAX_WIDTH = 150;
+                    const MAX_HEIGHT = 150;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Maida shi Base64 mai inganci da sauki (JPEG Quality 0.7)
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+
+                    // Adana a Firebase
+                    db.ref('users/' + myName + '/profilePic').set(dataUrl).then(() => {
+                        Swal.fire('Success!', 'Profile picture updated successfully!', 'success');
+                    }).catch(err => {
+                        Swal.fire('Failed', 'Database sync failed. Try again.', 'error');
+                    });
+                };
+            };
+        }
 
         function logoutUser() {
             Swal.fire({
@@ -229,11 +381,12 @@
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
-                confirmButtonText: 'Yes, Sign Out'
+                confirmButtonText: 'Yes, Sign Out',
+                cancelButtonColor: '#1f2937'
             }).then((res) => {
                 if (res.isConfirmed) {
                     localStorage.clear();
-                    window.location.href = "Login.html";
+                    window.location.href = "index.html";
                 }
             });
         }

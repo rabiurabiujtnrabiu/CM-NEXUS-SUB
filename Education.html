@@ -11,10 +11,16 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* ASALIN STYLE DIN KA - BAN TABA KOMAI BA */
         :root {
-            --primary: #1A237E; --accent: #FFD600; --bg: #F4F7FE; --white: #ffffff;
-            --text-main: #1e293b; --text-dim: #64748b; --border: #e2e8f0; --glow: rgba(26, 35, 126, 0.15);
+            --primary: #0062ff; 
+            --accent: #00f2fe; 
+            --bg: #0b0f19; /* Duhun gaba daya dandalin */
+            --surface: #111827; 
+            --border: #1f2937; 
+            --white: #111827;
+            --text-main: #f9fafb; 
+            --text-dim: #9ca3af; 
+            --glow: rgba(0, 98, 255, 0.15);
         }
 
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -22,30 +28,32 @@
 
         header { 
             padding: 20px; display: flex; align-items: center; gap: 15px; 
-            background: var(--white); border-bottom: 1px solid rgba(0,0,0,0.02);
+            background: var(--surface); border-bottom: 1px solid var(--border);
             position: sticky; top: 0; z-index: 1000;
         }
-        .back-btn { font-size: 20px; color: var(--primary); cursor: pointer; transition: 0.2s; }
-        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--primary); letter-spacing: -0.5px; }
+        .back-btn { font-size: 20px; color: var(--text-main); cursor: pointer; transition: 0.2s; }
+        .back-btn:active { transform: scale(0.85); }
+        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--text-main); letter-spacing: -0.5px; }
 
         .balance-badge {
-            background: var(--white); margin: 20px; padding: 18px 24px; 
+            background: var(--surface); margin: 20px; padding: 18px 24px; 
             border-radius: 24px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 10px 30px rgba(26, 35, 126, 0.03); border: 1px solid rgba(26, 35, 126, 0.04);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); border: 1px solid var(--border);
         }
+        .balance-badge span { font-size: 11px; color: var(--text-dim); font-weight: 800; text-transform: uppercase; }
         .balance-badge b { font-size: 17px; color: var(--primary); font-weight: 800; }
 
         .form-container { 
-            background: var(--white); margin: 0 20px; padding: 30px 24px; 
-            border-radius: 32px; box-shadow: 0 15px 35px rgba(0,0,0,0.02); 
+            background: var(--surface); margin: 0 20px; padding: 30px 24px; 
+            border-radius: 32px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid var(--border);
         }
         .form-group { margin-bottom: 24px; }
-        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
 
         .exam-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .exam-btn {
-            background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 20px; padding: 16px 8px;
-            display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
+            background: var(--bg); border: 2px solid var(--border); border-radius: 20px; padding: 16px 8px;
+            display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: 0.3s;
         }
         
         .exam-logo {
@@ -58,15 +66,16 @@
         .logo-jamb { background: linear-gradient(135deg, #D50000 0%, #C51162 100%); }
 
         .exam-btn span { font-size: 11px; font-weight: 800; color: var(--text-dim); }
-        .exam-btn.selected { background: #fff; border-color: var(--primary); box-shadow: 0 8px 20px var(--glow); }
+        .exam-btn.selected { background: var(--surface); border-color: var(--primary); box-shadow: 0 8px 20px var(--glow); }
 
-        select { width: 100%; padding: 16px 20px; border-radius: 20px; border: 2px solid #e2e8f0; font-size: 14px; font-weight: 700; background: #f8fafc; outline: none; -webkit-appearance: none; }
+        select { width: 100%; padding: 16px 20px; border-radius: 20px; border: 2px solid var(--border); font-size: 14px; font-weight: 700; color: var(--text-main); background: var(--bg); outline: none; -webkit-appearance: none; }
         
         .btn-purchase {
             width: 100%; padding: 18px; border: none; border-radius: 20px;
-            background: var(--primary); color: var(--white); font-weight: 800; font-size: 15px;
-            box-shadow: 0 10px 25px rgba(26, 35, 126, 0.25); cursor: pointer;
+            background: var(--primary); color: white; font-weight: 800; font-size: 15px;
+            box-shadow: 0 10px 25px rgba(0, 98, 255, 0.25); cursor: pointer; transition: 0.3s;
         }
+        .btn-purchase:active { transform: scale(0.97); }
     </style>
 </head>
 <body>
@@ -85,15 +94,15 @@
         <div class="form-group">
             <label>Select Examination</label>
             <div class="exam-grid">
-                <div class="exam-btn" id="exam_waec" onclick="selectExam('WAEC', '1')">
+                <div class="exam-btn" id="exam_waec" onclick="selectExam('WAEC', 'waec_pin')">
                     <div class="exam-logo logo-waec"><i class="fas fa-graduation-cap"></i></div>
                     <span>WAEC</span>
                 </div>
-                <div class="exam-btn" id="exam_neco" onclick="selectExam('NECO', '2')">
+                <div class="exam-btn" id="exam_neco" onclick="selectExam('NECO', 'neco_token')">
                     <div class="exam-logo logo-neco"><i class="fas fa-book-reader"></i></div>
                     <span>NECO</span>
                 </div>
-                <div class="exam-btn" id="exam_jamb" onclick="selectExam('JAMB', '3')">
+                <div class="exam-btn" id="exam_jamb" onclick="selectExam('JAMB', 'jamb_pin')">
                     <div class="exam-logo logo-jamb"><i class="fas fa-university"></i></div>
                     <span>JAMB</span>
                 </div>
@@ -122,29 +131,48 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        // NEW FIREBASE - CM-NEXUS-SUB
-        const firebaseConfig = { databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com" };
+        // CIKAKKEN LIVE CONFIG NA FIREBASE DLNKA NA GASKE
+        const firebaseConfig = {
+            apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+            authDomain: "cm-nexus-sub.firebaseapp.com",
+            projectId: "cm-nexus-sub",
+            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+            storageBucket: "cm-nexus-sub.firebasestorage.app",
+            messagingSenderId: "22010501991",
+            appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
+        };
+        
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const myName = localStorage.getItem('username') || "Elite_User";
+        const myName = localStorage.getItem('username');
+
+        // Tsaro: Idan babu login, korar user baya
+        if(!myName) {
+            window.location.href = "index.html";
+        }
 
         let currentWalletBalance = 0;
-        let selectedExamName = "";
+        let selectedExamName = ""; // WAEC, NECO...
+        let selectedServiceID = ""; // waec_pin, neco_token...
         const MY_MARGIN = 150; // Ribarka a kowane kati
+        const GSUBZ_KEY = "Ap_8fe29a8969a042bf6538b658112965fb";
 
+        // GSubz API original rates
         const eduPackages = {
             "WAEC": [{ name: "WAEC Result Checker", price: 3450 }],
             "NECO": [{ name: "NECO Result Token", price: 1100 }],
             "JAMB": [{ name: "JAMB Profile Code", price: 4700 }]
         };
 
+        // SYNC BALANCE
         db.ref('users/' + myName + '/wallet').on('value', snap => {
             currentWalletBalance = parseFloat(snap.val()) || 0;
-            document.getElementById('walletBal').innerText = "₦" + currentWalletBalance.toLocaleString();
+            document.getElementById('walletBal').innerText = "₦" + currentWalletBalance.toLocaleString('en-US', { minimumFractionDigits: 2 });
         });
 
-        function selectExam(name, id) {
+        function selectExam(name, serviceID) {
             selectedExamName = name;
+            selectedServiceID = serviceID;
             document.querySelectorAll('.exam-btn').forEach(b => b.classList.remove('selected'));
             document.getElementById('exam_' + name.toLowerCase()).classList.add('selected');
             
@@ -167,28 +195,95 @@
         function processEduOrder() {
             const sel = document.getElementById('eduPlan');
             const qty = parseInt(document.getElementById('quantity').value);
-            const total = parseFloat(sel.options[sel.selectedIndex].getAttribute('data-final')) * qty;
+            
+            if (!selectedExamName || sel.value === "") {
+                return Swal.fire('Required', 'Please select an examination package first.', 'warning');
+            }
 
-            if (!selectedExamName || isNaN(total)) return Swal.fire('Error', 'Please select a package.', 'warning');
-            if (currentWalletBalance < total) return Swal.fire('Error', 'Low Balance', 'error');
+            const finalPriceSingle = parseFloat(sel.options[sel.selectedIndex].getAttribute('data-final'));
+            const totalCost = finalPriceSingle * qty;
+
+            if (currentWalletBalance < totalCost) {
+                return Swal.fire('Error', 'Insufficient wallet balance. Please fund your account.', 'error');
+            }
 
             Swal.fire({
-                title: 'Confirm', text: `Buy ${qty} ${selectedExamName} PIN(s) for ₦${total.toLocaleString()}?`,
-                showCancelButton: true, confirmButtonColor: '#1A237E'
-            }).then(r => { if(r.isConfirmed) executeEdu(total, qty); });
+                title: 'Confirm Purchase',
+                html: `Are you sure you want to buy <b>${qty}</b> piece(s) of <b>${selectedExamName} PIN</b> for <b>₦${totalCost.toLocaleString()}</b>?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0062ff',
+                cancelButtonColor: '#1f2937'
+            }).then(r => { 
+                if(r.isConfirmed) {
+                    executeEdu(totalCost, qty, finalPriceSingle); 
+                } 
+            });
         }
 
-        function executeEdu(total, qty) {
-            Swal.showLoading();
-            db.ref('users/' + myName + '/wallet').transaction(w => (w || 0) - total).then(() => {
-                const pin = "SERIAL: CM-" + Math.floor(Math.random()*100000) + " | PIN: " + Math.floor(Math.random()*10000000000);
-                db.ref('transactions/' + myName).push({ type: 'debit', service: `Edu PIN: ${selectedExamName}`, amount: total, time: Date.now() });
-                
-                Swal.fire({
-                    icon: 'success', title: 'Successful!',
-                    html: `<div style="background:#f0f9ff; padding:15px; border-radius:10px; font-family:monospace;">${pin}</div>`,
-                    confirmButtonText: 'Done'
-                });
+        async function executeEdu(totalCost, qty, finalPriceSingle) {
+            Swal.fire({ title: 'Processing Order...', html: 'Charging wallet balance...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            // 1. DEBIT THE USER WALLET FIRST
+            db.ref('users/' + myName).transaction(user => {
+                if (user && user.wallet >= totalCost) {
+                    user.wallet -= totalCost;
+                    return user;
+                }
+            }).then(async tx => {
+                if (tx.committed) {
+                    Swal.fire({ title: 'Generating PIN...', html: 'Fetching scratch card from GSubz API...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+                    let fd = new FormData();
+                    fd.append('serviceID', selectedServiceID);
+                    fd.append('api', GSUBZ_KEY);
+                    fd.append('quantity', qty);
+                    fd.append('requestID', "EDU-" + Date.now());
+
+                    try {
+                        const response = await fetch('https://gsubz.com/api/pay/', { method: 'POST', body: fd });
+                        const resData = await response.json();
+
+                        if(resData.code == 200 || resData.status === "TRANSACTION_SUCCESSFUL") {
+                            // Gungun PINs din da aka siyo (Yawanci yana dawowa a cikin 'pins' ko 'description')
+                            const pinResult = resData.pin || resData.pins || resData.description || "PIN Successfully Dispatched!";
+
+                            // 2. WRITE TO DEBIT TRANSACTIONS
+                            db.ref('transactions/' + myName).push({ 
+                                type: 'debit', 
+                                service: `Edu PIN: ${selectedExamName} (Qty: ${qty})`, 
+                                amount: totalCost, 
+                                pin_details: pinResult,
+                                time: Date.now() 
+                            }).then(() => {
+                                Swal.fire({
+                                    icon: 'success', 
+                                    title: 'Purchase Successful!',
+                                    html: `
+                                        <p style="font-size:12px; margin-bottom:10px;">Here is your generated card credentials:</p>
+                                        <div style="background:#0b0f19; color:#00f2fe; padding:20px; border-radius:15px; font-family:monospace; font-size:14px; text-align:center; border:1px solid #1f2937; word-break: break-all;">
+                                            <b>${pinResult}</b>
+                                        </div>
+                                        <p style="font-size:11px; color:#ff9800; margin-top:10px;">This details has been stored in your Transactions History page.</p>
+                                    `,
+                                    confirmButtonText: 'Done',
+                                    confirmButtonColor: '#0062ff'
+                                });
+                            });
+                        } else {
+                            // Idan GSubz ya dawo da error, mayar wa user da kudin walet dinsa (Refund)
+                            db.ref('users/' + myName + '/wallet').transaction(w => (w || 0) + totalCost);
+                            Swal.fire('Failed', resData.description || 'Provider has ran out of scratch cards. Wallet refunded.', 'error');
+                        }
+                    } catch(e) {
+                        // Idan network ya katse wajen kiran API, mayar masa da kudi otomatik (Refund)
+                        db.ref('users/' + myName + '/wallet').transaction(w => (w || 0) + totalCost);
+                        Swal.fire('Network Timeout', 'API did not respond in time. Wallet has been safely auto-refunded.', 'error');
+                        console.error(e);
+                    }
+                } else {
+                    Swal.fire('Error', 'Transaction rejected. Insufficient balance.', 'error');
+                }
             });
         }
     </script>

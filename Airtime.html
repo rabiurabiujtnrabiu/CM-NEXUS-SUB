@@ -11,16 +11,16 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* ASALIN STYLE DIN KA - BAN TABA KOMAI BA */
         :root {
-            --primary: #1A237E;
-            --accent: #FFD600;
-            --bg: #F4F7FE;
-            --white: #ffffff;
-            --text-main: #1e293b;
-            --text-dim: #64748b;
-            --border: #e2e8f0;
-            --glow: rgba(26, 35, 126, 0.15);
+            --primary: #0062ff;
+            --accent: #00f2fe;
+            --bg: #0b0f19; /* Duhun gaba daya dandalin */
+            --surface: #111827;
+            --border: #1f2937;
+            --white: #111827;
+            --text-main: #f9fafb;
+            --text-dim: #9ca3af;
+            --glow: rgba(0, 98, 255, 0.15);
         }
 
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -28,33 +28,33 @@
 
         header { 
             padding: 20px; display: flex; align-items: center; gap: 15px; 
-            background: var(--white); border-bottom: 1px solid rgba(0,0,0,0.02);
+            background: var(--surface); border-bottom: 1px solid var(--border);
             position: sticky; top: 0; z-index: 1000;
         }
-        .back-btn { font-size: 20px; color: var(--primary); cursor: pointer; transition: 0.2s; }
+        .back-btn { font-size: 20px; color: var(--text-main); cursor: pointer; transition: 0.2s; }
         .back-btn:active { transform: scale(0.85); }
-        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--primary); letter-spacing: -0.5px; }
+        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--text-main); letter-spacing: -0.5px; }
 
         .balance-badge {
-            background: var(--white); margin: 20px; padding: 18px 24px; 
+            background: var(--surface); margin: 20px; padding: 18px 24px; 
             border-radius: 24px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 10px 30px rgba(26, 35, 126, 0.03);
-            border: 1px solid rgba(26, 35, 126, 0.04);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--border);
         }
         .balance-badge span { font-size: 11px; color: var(--text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
         .balance-badge b { font-size: 17px; color: var(--primary); font-weight: 800; }
 
         .form-container { 
-            background: var(--white); margin: 0 20px; padding: 30px 24px; 
-            border-radius: 32px; box-shadow: 0 15px 35px rgba(0,0,0,0.02); 
-            border: 1px solid rgba(0,0,0,0.01);
+            background: var(--surface); margin: 0 20px; padding: 30px 24px; 
+            border-radius: 32px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); 
+            border: 1px solid var(--border);
         }
         .form-group { margin-bottom: 24px; }
         .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
 
         .network-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .network-btn {
-            background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 20px; padding: 14px 8px;
+            background: var(--bg); border: 2px solid var(--border); border-radius: 20px; padding: 14px 8px;
             display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
@@ -74,7 +74,7 @@
         
         .network-btn:active { transform: scale(0.95); }
         .network-btn.selected {
-            background: #fff;
+            background: var(--surface);
             border-color: var(--primary);
             box-shadow: 0 8px 20px var(--glow);
         }
@@ -82,16 +82,16 @@
 
         .input-wrapper { position: relative; }
         input {
-            width: 100%; padding: 16px 20px; border-radius: 20px; border: 2px solid #e2e8f0;
-            outline: none; font-size: 14px; font-weight: 700; color: var(--text-main); background: #f8fafc;
+            width: 100%; padding: 16px 20px; border-radius: 20px; border: 2px solid var(--border);
+            outline: none; font-size: 14px; font-weight: 700; color: var(--text-main); background: var(--bg);
             transition: all 0.3s ease;
         }
-        input:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 8px 20px var(--glow); }
+        input:focus { border-color: var(--primary); background: var(--surface); box-shadow: 0 8px 20px var(--glow); }
 
         .btn-purchase {
             width: 100%; padding: 18px; border: none; border-radius: 20px;
-            background: var(--primary); color: var(--white); font-weight: 800; font-size: 15px;
-            box-shadow: 0 10px 25px rgba(26, 35, 126, 0.25); cursor: pointer; 
+            background: var(--primary); color: white; font-weight: 800; font-size: 15px;
+            box-shadow: 0 10px 25px rgba(0, 98, 255, 0.25); cursor: pointer; 
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             margin-top: 10px; text-transform: uppercase; letter-spacing: 0.5px;
         }
@@ -114,19 +114,19 @@
         <div class="form-group">
             <label>Select Network</label>
             <div class="network-grid">
-                <div class="network-btn" id="net_mtn" onclick="selectNetwork('MTN', '1')">
+                <div class="network-btn" id="net_mtn" onclick="selectNetwork('MTN', 'mtn_share_and_sell')">
                     <div class="network-logo logo-mtn">MTN</div>
                     <span>MTN</span>
                 </div>
-                <div class="network-btn" id="net_airtel" onclick="selectNetwork('Airtel', '2')">
+                <div class="network-btn" id="net_airtel" onclick="selectNetwork('Airtel', 'airtel_vtu')">
                     <div class="network-logo logo-airtel">AIR</div>
                     <span>Airtel</span>
                 </div>
-                <div class="network-btn" id="net_glo" onclick="selectNetwork('Glo', '3')">
+                <div class="network-btn" id="net_glo" onclick="selectNetwork('Glo', 'glo_vtu')">
                     <div class="network-logo logo-glo">GLO</div>
                     <span>Glo</span>
                 </div>
-                <div class="network-btn" id="net_9mobile" onclick="selectNetwork('9mobile', '4')">
+                <div class="network-btn" id="net_9mobile" onclick="selectNetwork('9mobile', '9mobile_vtu')">
                     <div class="network-logo logo-9mobile">9M</div>
                     <span>9mobile</span>
                 </div>
@@ -154,32 +154,44 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        // GYARAN FIREBASE - ZUWA SABON ASUSU
+        // CIKAKKEN CONFIGURATION NA FIREBASE DLNKA NA GASKE
         const firebaseConfig = {
-            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com"
+            apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+            authDomain: "cm-nexus-sub.firebaseapp.com",
+            projectId: "cm-nexus-sub",
+            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+            storageBucket: "cm-nexus-sub.firebasestorage.app",
+            messagingSenderId: "22010501991",
+            appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
         };
 
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.database();
-        const myName = localStorage.getItem('username') || "Elite_User";
+        const myName = localStorage.getItem('username');
 
-        let selectedNetworkId = "";
+        // Tsaro: Idan babu login, korar user baya
+        if(!myName) {
+            window.location.href = "index.html";
+        }
+
+        let selectedNetworkId = ""; // GSubz API ServiceID
         let selectedNetworkName = "";
         let currentWalletBalance = 0;
 
-        // Gsubz API key dinka
+        // Gsubz API key dinka na gaske
         const GSUBZ_KEY = "Ap_8fe29a8969a042bf6538b658112965fb";
 
+        // SYNC WALLET BALANCE LIVE
         db.ref('users/' + myName + '/wallet').on('value', snap => {
             currentWalletBalance = parseFloat(snap.val()) || 0;
-            document.getElementById('walletBal').innerText = "₦" + currentWalletBalance.toLocaleString();
+            document.getElementById('walletBal').innerText = "₦" + currentWalletBalance.toLocaleString('en-US', { minimumFractionDigits: 2 });
         });
 
         function selectNetwork(netName, netId) {
             selectedNetworkName = netName;
             selectedNetworkId = netId;
             document.querySelectorAll('.network-btn').forEach(btn => btn.classList.remove('selected'));
-            document.getElementById('net_' + netName.toLowerCase()).classList.add('selected');
+            document.getElementById('net_' + (netName === '9mobile' ? '9mobile' : netName.toLowerCase())).classList.add('selected');
             updateButtonLabel();
         }
 
@@ -192,24 +204,25 @@
             const phone = document.getElementById('phoneNo').value.trim();
             const amt = parseFloat(document.getElementById('amount').value.trim());
 
-            if (!selectedNetworkId) return Swal.fire('Error', 'Please select a network.', 'warning');
+            if (!selectedNetworkId) return Swal.fire('Error', 'Please select a network cibiyar sadarwa.', 'warning');
             if (phone.length < 10) return Swal.fire('Error', 'Invalid phone number.', 'warning');
-            if (isNaN(amt) || amt < 50) return Swal.fire('Error', 'Min airtime is ₦50.', 'warning');
-            if (currentWalletBalance < amt) return Swal.fire('Error', 'Insufficient Balance.', 'error');
+            if (isNaN(amt) || amt < 50) return Swal.fire('Error', 'Minimum airtime is ₦50.', 'warning');
+            if (currentWalletBalance < amt) return Swal.fire('Error', 'Insufficient Balance in wallet.', 'error');
 
             Swal.fire({
-                title: 'Confirm',
-                text: `Send ₦${amt.toLocaleString()} airtime to ${phone}?`,
+                title: 'Confirm Airtime',
+                html: `Are you sure you want to send <b>₦${amt.toLocaleString()}</b> airtime to <b>${phone}</b> (${selectedNetworkName})?`,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#1A237E'
+                confirmButtonColor: '#0062ff',
+                cancelButtonColor: '#1f2937'
             }).then((res) => { if (res.isConfirmed) executeAirtime(phone, amt); });
         }
 
         async function executeAirtime(phone, amt) {
-            Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'Processing Transaction...', html: 'Checking wallet balance...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-            // RAGE KUDI A WALLET
+            // 1. CANCELLING USER WALLET LEDGER
             db.ref('users/' + myName).transaction(user => {
                 if (user && user.wallet >= amt) {
                     user.wallet -= amt;
@@ -217,8 +230,10 @@
                 }
             }).then(async tx => {
                 if (tx.committed) {
+                    Swal.fire({ title: 'Dispatching Airtime...', html: 'Connecting to GSubz API Gateway...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
                     let fd = new FormData();
-                    fd.append('serviceID', selectedNetworkName.toLowerCase());
+                    fd.append('serviceID', selectedNetworkId);
                     fd.append('api', GSUBZ_KEY);
                     fd.append('phone', phone);
                     fd.append('amount', amt);
@@ -229,18 +244,28 @@
                         const d = await response.json();
 
                         if (d.code == 200 || d.status === "TRANSACTION_SUCCESSFUL") {
+                            // 2. WRITE TRANSACTION HISTORY IF SUCCESSFUL
                             db.ref('transactions/' + myName).push({
-                                type: 'debit', service: `Airtime: ${selectedNetworkName} (${phone})`, amount: amt, time: Date.now()
+                                type: 'debit', 
+                                service: `Airtime: ${selectedNetworkName} (${phone})`, 
+                                amount: amt, 
+                                time: Date.now()
+                            }).then(() => {
+                                Swal.fire('Success!', `₦${amt.toLocaleString()} airtime successfully dispatched to ${phone}.`, 'success');
                             });
-                            Swal.fire('Success!', 'Airtime sent successfully.', 'success');
                         } else {
+                            // Idan GSubz ya dawo da kuskure, mayar wa user kudin wallet dinsa
                             db.ref('users/' + myName + '/wallet').transaction(w => (w || 0) + amt);
-                            Swal.fire('Failed', d.description || 'Provider error.', 'error');
+                            Swal.fire('Failed', d.description || 'Provider rejected order. Wallet refunded.', 'error');
                         }
                     } catch(e) {
+                        // Idan network ya katse, mayar wa user kudin wallet dinsa
                         db.ref('users/' + myName + '/wallet').transaction(w => (w || 0) + amt);
-                        Swal.fire('Error', 'Connection timeout.', 'error');
+                        Swal.fire('Network Timeout', 'Order failed due to network timeout. Your wallet has been refunded.', 'error');
+                        console.error(e);
                     }
+                } else {
+                    Swal.fire('Error', 'Transaction rejected. Insufficient wallet balance.', 'error');
                 }
             });
         }

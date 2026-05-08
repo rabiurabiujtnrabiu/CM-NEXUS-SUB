@@ -11,10 +11,17 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* ASALIN STYLE DIN KA - BAN TABA KO DIGO DAYA BA */
         :root {
-            --primary: #1A237E; --accent: #FFD600; --bg: #F4F7FE; --white: #ffffff;
-            --text-main: #1e293b; --text-dim: #64748b; --border: #e2e8f0; --glow: rgba(26, 35, 126, 0.15);
+            --primary: #0062ff; 
+            --accent: #00f2fe; 
+            --bg: #0b0f19; /* Duhun gaba daya dandalin */
+            --surface: #111827; 
+            --border: #1f2937; 
+            --white: #111827;
+            --text-main: #f9fafb; 
+            --text-dim: #9ca3af; 
+            --glow: rgba(0, 98, 255, 0.15);
+            --success: #10b981;
         }
 
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -22,30 +29,32 @@
 
         header { 
             padding: 20px; display: flex; align-items: center; gap: 15px; 
-            background: var(--white); border-bottom: 1px solid rgba(0,0,0,0.02);
+            background: var(--surface); border-bottom: 1px solid var(--border);
             position: sticky; top: 0; z-index: 1000;
         }
-        .back-btn { font-size: 20px; color: var(--primary); cursor: pointer; transition: 0.2s; }
-        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--primary); letter-spacing: -0.5px; }
+        .back-btn { font-size: 20px; color: var(--text-main); cursor: pointer; transition: 0.2s; }
+        .back-btn:active { transform: scale(0.85); }
+        header h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--text-main); letter-spacing: -0.5px; }
 
         .balance-badge {
-            background: var(--white); margin: 20px; padding: 18px 24px; 
+            background: var(--surface); margin: 20px; padding: 18px 24px; 
             border-radius: 24px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 10px 30px rgba(26, 35, 126, 0.03); border: 1px solid rgba(26, 35, 126, 0.04);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); border: 1px solid var(--border);
         }
+        .balance-badge span { font-size: 11px; color: var(--text-dim); font-weight: 800; text-transform: uppercase; }
         .balance-badge b { font-size: 17px; color: var(--primary); font-weight: 800; }
 
         .form-container { 
-            background: var(--white); margin: 0 20px; padding: 30px 24px; 
-            border-radius: 32px; box-shadow: 0 15px 35px rgba(0,0,0,0.02); 
+            background: var(--surface); margin: 0 20px; padding: 30px 24px; 
+            border-radius: 32px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid var(--border);
         }
         .form-group { margin-bottom: 24px; }
-        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
 
         .network-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .network-btn {
-            background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 20px; padding: 14px 8px;
-            display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
+            background: var(--bg); border: 2px solid var(--border); border-radius: 20px; padding: 14px 8px;
+            display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: 0.3s;
         }
         .network-logo {
             width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -55,25 +64,31 @@
         .logo-gotv { background: linear-gradient(135deg, #E65100 0%, #BF360C 100%); }
         .logo-startimes { background: linear-gradient(135deg, #388E3C 0%, #1B5E20 100%); }
 
-        .network-btn.selected { border-color: var(--primary); box-shadow: 0 8px 20px var(--glow); }
+        .network-btn span { font-size: 11px; font-weight: 700; color: var(--text-dim); }
+        .network-btn.selected { border-color: var(--primary); background: var(--surface); box-shadow: 0 8px 20px var(--glow); }
+        .network-btn.selected span { color: var(--primary); }
 
         .btn-verify {
             padding: 16px 22px; border: none; border-radius: 20px;
-            background: #e0f2fe; color: #0369a1; font-weight: 800; font-size: 13px; cursor: pointer;
+            background: rgba(0, 98, 255, 0.1); color: var(--primary); font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.3s;
         }
+        .btn-verify:active { transform: scale(0.95); }
+
         .customer-card {
-            background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d;
+            background: rgba(16, 185, 129, 0.1); border: 1px dashed rgba(16, 185, 129, 0.3); color: var(--success);
             padding: 15px 20px; border-radius: 20px; font-weight: 700; font-size: 13px;
             margin-bottom: 20px; display: none; align-items: center; gap: 10px;
         }
 
-        select, input { width: 100%; padding: 16px 20px; border-radius: 20px; border: 2px solid #e2e8f0; font-size: 14px; font-weight: 700; background: #f8fafc; outline: none; -webkit-appearance: none; }
+        select, input { width: 100%; padding: 16px 20px; border-radius: 20px; border: 2px solid var(--border); font-size: 14px; font-weight: 700; color: var(--text-main); background: var(--bg); outline: none; -webkit-appearance: none; transition: 0.3s; }
+        select:focus, input:focus { border-color: var(--primary); }
         
         .btn-purchase {
             width: 100%; padding: 18px; border: none; border-radius: 20px;
-            background: var(--primary); color: var(--white); font-weight: 800; font-size: 15px;
-            box-shadow: 0 10px 25px rgba(26, 35, 126, 0.25); cursor: pointer;
+            background: var(--primary); color: white; font-weight: 800; font-size: 15px;
+            box-shadow: 0 10px 25px rgba(0, 98, 255, 0.25); cursor: pointer; transition: 0.3s;
         }
+        .btn-purchase:active { transform: scale(0.97); }
     </style>
 </head>
 <body>
@@ -110,7 +125,7 @@
         <div class="form-group">
             <label>IUC / SmartCard Number</label>
             <div style="display:flex; gap:10px;">
-                <input type="number" id="iucNo" placeholder="Enter SmartCard number">
+                <input type="number" id="iucNo" placeholder="Enter SmartCard number" oninput="resetVerify()">
                 <button class="btn-verify" onclick="validateIuc()">VERIFY</button>
             </div>
         </div>
@@ -133,21 +148,35 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        // NEW FIREBASE SYNC - CM-NEXUS-SUB
-        const firebaseConfig = { databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com" };
+        // CIKAKKEN LIVE CONFIG NA FIREBASE DLNKA NA GASKE
+        const firebaseConfig = {
+            apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+            authDomain: "cm-nexus-sub.firebaseapp.com",
+            projectId: "cm-nexus-sub",
+            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+            storageBucket: "cm-nexus-sub.firebasestorage.app",
+            messagingSenderId: "22010501991",
+            appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
+        };
+        
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const myName = localStorage.getItem('username') || "Elite_User";
+        const myName = localStorage.getItem('username');
 
-        // GSUBZ LIVE SETTINGS
+        // Tsaro: Idan babu login, korar user baya
+        if(!myName) {
+            window.location.href = "index.html";
+        }
+
         const GSUBZ_KEY = "Ap_8fe29a8969a042bf6538b658112965fb";
         const MY_MARGIN = 100; 
 
         let currentBal = 0; let selectedProvider = ""; let verified = false;
 
+        // SYNC BALANCE LIVE
         db.ref('users/' + myName + '/wallet').on('value', snap => {
             currentBal = parseFloat(snap.val()) || 0;
-            document.getElementById('walletBal').innerText = "₦" + currentBal.toLocaleString();
+            document.getElementById('walletBal').innerText = "₦" + currentBal.toLocaleString('en-US', { minimumFractionDigits: 2 });
         });
 
         function selectProvider(name) {
@@ -158,97 +187,143 @@
             document.getElementById('tvPlan').innerHTML = '<option value="">-- Verify SmartCard First --</option>';
         }
 
+        function resetVerify() { verified = false; document.getElementById('customerCard').style.display = 'none'; document.getElementById('tvPlan').innerHTML = '<option value="">-- Verify SmartCard First --</option>'; }
+
+        // IUC VALIDATION TARE DA CODEDABS PROXY
         async function validateIuc() {
             const iuc = document.getElementById('iucNo').value.trim();
-            if (!selectedProvider || iuc.length < 5) return Swal.fire('Error', 'Select provider and enter IUC number.', 'warning');
+            if (!selectedProvider) return Swal.fire('Required', 'Please select a provider first.', 'warning');
+            if (iuc.length < 5) return Swal.fire('Required', 'Please enter a valid SmartCard/IUC number.', 'warning');
 
-            Swal.fire({ title: 'Verifying Card...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'Verifying SmartCard...', html: 'Connecting to GSubz Gateway...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
             const vUrl = `https://gsubz.com/api/customer-validation/?api=${GSUBZ_KEY}&serviceID=${selectedProvider.toLowerCase()}&number=${iuc}`;
-            const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(vUrl)}`;
+            const proxy = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(vUrl)}`;
 
             try {
                 const res = await fetch(proxy);
-                const json = await res.json();
-                const d = JSON.parse(json.contents);
+                const d = await res.json();
 
                 if (d.code == 200 || d.status === "success") {
-                    document.getElementById('customerName').innerText = "Name: " + (d.name || d.customer_name);
+                    document.getElementById('customerName').innerText = "Name: " + (d.name || d.customer_name || "Verified Customer");
                     document.getElementById('customerCard').style.display = 'flex';
                     verified = true; 
                     fetchPackages(); 
                     Swal.close();
                 } else {
-                    Swal.fire('Error', d.description || 'Invalid IUC Number', 'error');
+                    Swal.fire('Error', d.description || 'Invalid IUC Number. Double check and try again.', 'error');
                 }
-            } catch (e) { Swal.fire('Error', 'Connection timeout.', 'error'); }
+            } catch (e) { 
+                Swal.fire('Fetch Error', 'Validation gateway timed out. Please try again.', 'warning'); 
+                console.error(e);
+            }
         }
 
+        // FETCH PLANS TARE DA CODEDABS PROXY
         async function fetchPackages() {
             const planSelect = document.getElementById('tvPlan');
             planSelect.innerHTML = '<option value="">-- Loading Packages... --</option>';
             
             const pUrl = `https://api.gsubz.com/api/plans?service=${selectedProvider.toLowerCase()}`;
-            const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(pUrl)}`;
+            const proxy = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(pUrl)}`;
 
             try {
                 const res = await fetch(proxy);
-                const json = await res.json();
-                const data = JSON.parse(json.contents);
-                let opts = '<option value="">-- Choose Package --</option>';
-                data.plans.forEach(p => {
-                    let finalPrice = parseFloat(p.price) + MY_MARGIN;
-                    opts += `<option value="${p.value}" data-price="${finalPrice}">${p.displayName} (₦${finalPrice.toLocaleString()})</option>`;
-                });
-                planSelect.innerHTML = opts;
-            } catch (e) { planSelect.innerHTML = '<option value="">-- Error Loading Plans --</option>'; }
+                const data = await res.json();
+                
+                if (data && data.plans) {
+                    let opts = '<option value="">-- Choose Package --</option>';
+                    data.plans.forEach(p => {
+                        let finalPrice = parseFloat(p.price) + MY_MARGIN;
+                        opts += `<option value="${p.value}" data-price="${finalPrice}">${p.displayName} (₦${finalPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })})</option>`;
+                    });
+                    planSelect.innerHTML = opts;
+                } else {
+                    throw new Error("No plans returned");
+                }
+            } catch (e) { 
+                planSelect.innerHTML = '<option value="">-- Error Loading Plans --</option>'; 
+                console.error(e);
+            }
         }
 
         function updatePrice() {
             const sel = document.getElementById('tvPlan');
             const price = sel.options[sel.selectedIndex].getAttribute('data-price');
-            document.getElementById('buyBtn').innerText = price ? `PAY ₦${parseFloat(price).toLocaleString()}` : "PROCEED";
+            document.getElementById('buyBtn').innerText = price ? `PAY ₦${parseFloat(price).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : "PROCEED";
         }
 
         function processTvOrder() {
             const sel = document.getElementById('tvPlan');
             const plan = sel.value;
+            const meter = document.getElementById('iucNo').value.trim();
+
+            if (!verified) return Swal.fire('Required', 'Please click VERIFY to validate your SmartCard/IUC number first.', 'warning');
+            if (!plan) return Swal.fire('Required', 'Please select a cable package.', 'warning');
+            
             const price = parseFloat(sel.options[sel.selectedIndex].getAttribute('data-price'));
-            if (!verified || !plan) return Swal.fire('Error', 'Verify IUC and select package.', 'warning');
-            if (currentBal < price) return Swal.fire('Error', 'Insufficient Balance.', 'error');
+            if (currentBal < price) return Swal.fire('Error', 'Insufficient wallet balance. Please fund your account.', 'error');
 
             Swal.fire({
-                title: 'Confirm', text: `Subscribe ${selectedProvider} (${document.getElementById('iucNo').value}) for ₦${price.toLocaleString()}?`,
-                showCancelButton: true, confirmButtonColor: '#1A237E'
+                title: 'Confirm Subscription', 
+                html: `Are you sure you want to subscribe <b>${selectedProvider}</b> for SmartCard number <b>${meter}</b>?<br><br>Total Charge: <b>₦${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</b>`,
+                showCancelButton: true, 
+                confirmButtonColor: '#0062ff',
+                cancelButtonColor: '#1f2937'
             }).then(r => { if(r.isConfirmed) executeSub(plan, price); });
         }
 
         async function executeSub(plan, price) {
-            const iuc = document.getElementById('iucNo').value;
-            Swal.showLoading();
+            const iuc = document.getElementById('iucNo').value.trim();
+            Swal.fire({ title: 'Processing Transaction...', html: 'Charging wallet balance...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            // 1. DEBIT THE USER WALLET FIRST
             db.ref('users/' + myName).transaction(user => {
-                if (user && user.wallet >= price) { user.wallet -= price; return user; }
+                if (user && user.wallet >= price) { 
+                    user.wallet -= price; 
+                    return user; 
+                }
             }).then(async tx => {
                 if (tx.committed) {
+                    Swal.fire({ title: 'Activating Package...', html: 'Subscribing decoder with GSubz API...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
                     let fd = new FormData();
-                    fd.append('api', GSUBZ_KEY); fd.append('serviceID', selectedProvider.toLowerCase());
-                    fd.append('plan', plan); fd.append('number', iuc);
+                    fd.append('api', GSUBZ_KEY); 
+                    fd.append('serviceID', selectedProvider.toLowerCase());
+                    fd.append('plan', plan); 
+                    fd.append('number', iuc);
                     fd.append('requestID', "TV-" + Date.now());
 
                     try {
                         const res = await fetch('https://gsubz.com/api/pay/', { method: 'POST', body: fd });
                         const d = await res.json();
-                        if (d.code == 200) {
-                            db.ref('transactions/' + myName).push({ type: 'debit', service: `TV Sub: ${selectedProvider}`, amount: price, time: Date.now() });
-                            Swal.fire('Success!', 'Subscription activated successfully.', 'success');
+                        
+                        if (d.code == 200 || d.status === "TRANSACTION_SUCCESSFUL") {
+                            // 2. WRITE DEBIT TRANSACTION TO HISTORY
+                            db.ref('transactions/' + myName).push({ 
+                                type: 'debit', 
+                                service: `TV Sub: ${selectedProvider} (${iuc})`, 
+                                amount: price, 
+                                time: Date.now() 
+                            }).then(() => {
+                                Swal.fire('Success!', `Your ${selectedProvider} subscription has been successfully activated on SmartCard number ${iuc}!`, 'success');
+                                resetVerify();
+                                document.getElementById('iucNo').value = "";
+                                document.getElementById('buyBtn').innerText = "PROCEED";
+                            });
                         } else {
+                            // Idan GSubz ya dawo da kuskure, mayar wa user da kudin wallet dinsa (Refund)
                             db.ref('users/' + myName + '/wallet').transaction(w => (w || 0) + price);
-                            Swal.fire('Failed', d.description, 'error');
+                            Swal.fire('Failed', d.description || 'Provider rejected subscription request. Wallet refunded.', 'error');
                         }
                     } catch (e) {
+                        // Idan network ya katse, mayar wa user da kudin wallet dinsa (Refund)
                         db.ref('users/' + myName + '/wallet').transaction(w => (w || 0) + price);
-                        Swal.fire('Error', 'Timeout. Refunded.', 'error');
+                        Swal.fire('Network Timeout', 'API did not respond in time. Wallet has been safely auto-refunded.', 'error');
+                        console.error(e);
                     }
+                } else {
+                    Swal.fire('Error', 'Transaction rejected. Insufficient balance.', 'error');
                 }
             });
         }
