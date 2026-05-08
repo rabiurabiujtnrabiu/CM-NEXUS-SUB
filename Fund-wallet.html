@@ -85,8 +85,7 @@
         const db = getDatabase(app);
 
         // 1. Link dinka na PHP Backend (CANZA WANNAN LINK DIN ZUWA NA REALL DOMAIN DINKA)
-        const backendUrl = "https://cm-nexus-sub.pages.dev/generate.php";
-
+        const backendUrl = "https://yourdomain.com/generate.php";
         // Gano Username dake kai yanzu (Daga URL ko LocalStorage)
         const urlParams = new URLSearchParams(window.location.search);
         let currentUsername = urlParams.get('username') || localStorage.getItem('username');
