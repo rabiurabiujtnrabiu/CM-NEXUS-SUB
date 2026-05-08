@@ -7,16 +7,20 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         :root {
             --primary: #0062ff;
             --dark: #0f172a;
-            --bg: #f8fafc;
-            --surface: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
+            --bg: #0b0f19; /* Canza background din ya dace da duhun shafin login domin kyau */
+            --surface: #111827;
+            --border: #1f2937;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --success: #10b981;
+            --gold: #f59e0b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -25,7 +29,7 @@
         /* --- GYARARREN PRELOADER --- */
         #preloader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #ffffff; z-index: 9999; display: flex; flex-direction: column;
+            background: var(--dark); z-index: 9999; display: flex; flex-direction: column;
             align-items: center; justify-content: center; transition: 0.5s;
         }
 
@@ -43,84 +47,97 @@
 
         /* --- TOP BAR --- */
         .top-bar {
-            background: #ffffff; padding: 20px 16px; display: flex;
+            background: var(--surface); padding: 20px 16px; display: flex;
             justify-content: space-between; align-items: center;
             position: sticky; top: 0; z-index: 1000;
+            border-bottom: 1px solid var(--border);
         }
 
         .user-section { display: flex; align-items: center; gap: 12px; }
         .avatar {
-            width: 45px; height: 45px; border-radius: 12px;
-            background: #3b82f6; display: flex; align-items: center; justify-content: center;
+            width: 45px; height: 45px; border-radius: 14px;
+            background: var(--primary); display: flex; align-items: center; justify-content: center;
             font-weight: 800; color: white; font-size: 18px;
+            box-shadow: 0 4px 12px rgba(0, 98, 255, 0.2);
         }
-        .username-text { font-weight: 800; font-size: 16px; color: var(--text-main); }
+        .username-text { font-weight: 800; font-size: 15px; color: var(--text-main); }
 
         .header-stats { text-align: right; }
-        .bal-text { font-size: 18px; font-weight: 800; color: var(--dark); }
-        .xp-text { font-size: 11px; font-weight: 800; color: #f59e0b; text-transform: uppercase; margin-top: 2px; }
+        .bal-text { font-size: 17px; font-weight: 800; color: var(--text-main); }
+        .xp-text { font-size: 10px; font-weight: 800; color: var(--gold); text-transform: uppercase; margin-top: 2px; letter-spacing: 0.5px; }
 
-        .feed-wrapper { padding: 15px; }
+        .feed-wrapper { padding: 20px 16px; }
         .section-title { 
-            font-size: 14px; font-weight: 800; color: var(--text-muted); 
-            text-transform: uppercase; letter-spacing: 1px; margin: 10px 0 30px;
-            border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;
+            font-size: 13px; font-weight: 800; color: var(--primary); 
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;
+            border-bottom: 1px solid var(--border); padding-bottom: 10px;
         }
 
-        #feedArea { min-height: 200px; display: flex; flex-direction: column; align-items: center; }
-        .no-updates { text-align: center; margin-top: 50px; opacity: 0.4; }
+        #feedArea { min-height: 200px; display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .no-updates { text-align: center; margin-top: 50px; }
+        .no-updates p { font-weight: 700; color: var(--text-muted); margin-top: 10px; font-size: 13px; }
 
         .post-card {
-            width: 100%; background: white; border-radius: 20px; margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02); overflow: hidden;
+            width: 100%; background: var(--surface); border-radius: 20px; margin-bottom: 16px;
+            border: 1px solid var(--border); overflow: hidden;
+            animation: slideUp 0.5s ease-out;
         }
-        .post-header { padding: 15px; display: flex; align-items: center; gap: 10px; }
-        .post-content { padding: 0 15px 15px; font-size: 14px; line-height: 1.5; color: #475569; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .float-btns { position: fixed; right: 20px; bottom: 130px; z-index: 999; }
+        .post-header { padding: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+        .post-content { padding: 15px; font-size: 13px; line-height: 1.6; color: var(--text-muted); }
+
+        .float-btns { position: fixed; right: 20px; bottom: 130px; z-index: 999; display: flex; flex-direction: column; gap: 10px; }
         .f-btn {
             width: 55px; height: 55px; border-radius: 20px;
             display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 24px; margin-top: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1); text-decoration: none;
+            color: white; font-size: 22px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3); text-decoration: none;
+            transition: 0.3s;
         }
+        .f-btn:active { transform: scale(0.95); }
 
         .nav-bar {
             position: fixed; bottom: 25px; left: 20px; right: 20px;
             background: #0f172a; height: 80px; border-radius: 30px;
             display: flex; justify-content: space-around; align-items: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3); z-index: 1000;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .nav-link { 
             text-decoration: none; color: #94a3b8; 
-            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            transition: 0.3s;
         }
         .nav-link.active { color: #38bdf8; }
-        .nav-link i { font-size: 22px; }
-        .nav-link span { font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .nav-link i { font-size: 20px; }
+        .nav-link span { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 
         #adminPostTrigger {
-            position: fixed; bottom: 120px; left: 25px; background: #f59e0b;
+            position: fixed; bottom: 120px; left: 25px; background: var(--gold);
             color: white; padding: 12px 20px; border-radius: 15px; font-size: 12px;
             font-weight: 800; display: none; z-index: 998;
+            box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3);
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
     <div id="preloader">
-        <svg width="280" height="280" viewBox="0 0 500 500" class="animate-logo">
-            <polygon points="250,45 425,146 425,348 250,449 75,348 75,146" fill="#0f172a" stroke="#0062ff" stroke-width="15"/>
-            <text x="135" y="290" fill="#0062ff" font-size="140" font-weight="900">C</text>
-            <text x="245" y="290" fill="#0062ff" font-size="140" font-weight="900">M</text>
+        <svg width="250" height="250" viewBox="0 0 500 500" class="animate-logo">
+            <polygon points="250,45 425,146 425,348 250,449 75,348 75,146" fill="#111827" stroke="#0062ff" stroke-width="15"/>
+            <text x="110" y="300" fill="#00f2fe" font-family="'Plus Jakarta Sans', sans-serif" font-size="140" font-weight="900">C</text>
+            <text x="235" y="300" fill="#00f2fe" font-family="'Plus Jakarta Sans', sans-serif" font-size="140" font-weight="900">M</text>
+            <path d="M 210,200 L 290,320" stroke="#ff9900" stroke-width="26" stroke-linecap="round"/>
         </svg>
-        <p style="margin-top: 20px; font-weight: 800; color: #0f172a; font-size: 14px; letter-spacing: 2px;">ELITE ARENA PRO</p>
+        <p style="margin-top: 20px; font-weight: 800; color: #f9fafb; font-size: 13px; letter-spacing: 2px;">ELITE ARENA PRO</p>
     </div>
 
     <header class="top-bar">
         <div class="user-section">
-            <div class="avatar" id="headerAvatar">U</div>
-            <div class="username-text" id="usernameDisplay">@Elite_User</div>
+            <div class="avatar" id="headerAvatar">C</div>
+            <div class="username-text" id="usernameDisplay">@Loading...</div>
         </div>
         <div class="header-stats">
             <div class="bal-text" id="balance">₦0.00</div>
@@ -132,14 +149,14 @@
         <h2 class="section-title">Official Feed</h2>
         <div id="feedArea">
             <div class="no-updates">
-                <i class="fas fa-layer-group" style="font-size: 40px; color: #cbd5e1;"></i>
-                <p style="font-weight: 700; color: #94a3b8; margin-top: 10px;">No updates from Admin...</p>
+                <i class="fas fa-layer-group" style="font-size: 35px; color: var(--border);"></i>
+                <p>No updates from Admin...</p>
             </div>
         </div>
     </div>
 
     <div class="float-btns">
-        <a href="https://wa.me/2349168696552" class="f-btn" style="background:#22c55e;"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://wa.me/2349168696552" class="f-btn" style="background:#22c55e;" target="_blank"><i class="fab fa-whatsapp"></i></a>
         <a href="Support.html" class="f-btn" style="background:#0062ff;"><i class="fas fa-headset"></i></a>
     </div>
 
@@ -166,59 +183,114 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        const firebaseConfig = { databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com" };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const myName = localStorage.getItem('username') || "Elite_User";
-
-        // Preloader timeout
-        window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('preloader').style.opacity = '0';
-                setTimeout(() => document.getElementById('preloader').style.display='none', 500);
-            }, 2000);
+        // CIKAKKEN CONFIGURATION NA FIREBASE NU ALIVE!
+        const firebaseConfig = {
+            apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+            authDomain: "cm-nexus-sub.firebaseapp.com",
+            projectId: "cm-nexus-sub",
+            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+            storageBucket: "cm-nexus-sub.firebasestorage.app",
+            messagingSenderId: "22010501991",
+            appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
         };
 
-        if(myName === "Commander") document.getElementById('adminPostTrigger').style.display='block';
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.database();
 
-        db.ref('users/' + myName).on('value', snap => {
-            const u = snap.val();
-            if(u) {
-                document.getElementById('usernameDisplay').innerText = "@" + myName;
-                document.getElementById('headerAvatar').innerText = myName.charAt(0).toUpperCase();
-                document.getElementById('balance').innerText = "₦" + (parseFloat(u.wallet) || 0).toLocaleString();
-                document.getElementById('xp').innerText = (parseInt(u.xp) || 0) + " XP ELITE";
-            }
+        // TSARON GATEWAY: Idan babu login, korar user zuwa login screen nan take!
+        const myName = localStorage.getItem('username');
+        if (!myName) {
+            window.location.href = "index.html";
+        }
+
+        // Preloader transition
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const preloader = document.getElementById('preloader');
+                if (preloader) {
+                    preloader.style.opacity = '0';
+                    setTimeout(() => preloader.style.display = 'none', 500);
+                }
+            }, 1800);
         });
 
+        // Nuna asalin Admin post trigger idan mai shiga Commander ne daidai
+        if (myName === "commander" || myName === "Commander") {
+            document.getElementById('adminPostTrigger').style.display = 'block';
+        }
+
+        // Loda bayanan asusun mai amfani (User Data Stream)
+        db.ref('users/' + myName).on('value', snap => {
+            const u = snap.val();
+            if (u) {
+                document.getElementById('usernameDisplay').innerText = "@" + myName;
+                document.getElementById('headerAvatar').innerText = myName.charAt(0).toUpperCase();
+                
+                // Gyara kuskuren math na crash lokacin network delay
+                const walletBal = parseFloat(u.wallet) || 0;
+                const xpBal = parseInt(u.xp) || 0;
+                
+                document.getElementById('balance').innerText = "₦" + walletBal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+                document.getElementById('xp').innerText = xpBal + " XP ELITE";
+            } else {
+                // Idan an goge asusun a database amma yana kokarin shiga
+                localStorage.clear();
+                window.location.href = "index.html";
+            }
+        }, error => {
+            console.error("Firebase Error: ", error);
+        });
+
+        // Loda labaran Admin (Admin Feed Stream)
         db.ref('admin_feed/').on('value', snap => {
             const area = document.getElementById('feedArea');
-            if(snap.exists()) {
+            if (snap.exists()) {
                 area.innerHTML = "";
+                let feedHTML = "";
                 snap.forEach(child => {
                     const p = child.val();
-                    area.innerHTML = `
+                    feedHTML = `
                         <div class="post-card animate__animated animate__fadeIn">
                             <div class="post-header">
                                 <div style="width:30px; height:30px; border-radius:50%; background:#0062ff; color:white; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px;">A</div>
-                                <b style="font-size:13px;">Admin Update <i class="fas fa-check-circle" style="color:#0062ff;"></i></b>
+                                <b style="font-size:13px; color: var(--text-main);">Admin Update <i class="fas fa-check-circle" style="color:#0062ff;"></i></b>
                             </div>
                             <div class="post-content">${p.message}</div>
                         </div>
-                    ` + area.innerHTML;
+                    ` + feedHTML; // Sanya sabon post a sama kullum
                 });
+                area.innerHTML = feedHTML;
+            } else {
+                area.innerHTML = `
+                    <div class="no-updates">
+                        <i class="fas fa-layer-group" style="font-size: 35px; color: var(--border);"></i>
+                        <p>No updates from Admin...</p>
+                    </div>
+                `;
             }
         });
 
+        // Kirkiri sabon labari na Admin
         function openAdminPostModal() {
             Swal.fire({
                 title: 'New Post',
                 input: 'textarea',
-                inputPlaceholder: 'Write something...',
+                inputPlaceholder: 'Write something to the public...',
                 confirmButtonText: 'Publish',
-                confirmButtonColor: '#0062ff'
+                confirmButtonColor: '#0062ff',
+                showCancelButton: true,
+                cancelButtonColor: '#1f2937'
             }).then(r => {
-                if(r.value) db.ref('admin_feed/').push({ message: r.value, timestamp: Date.now() });
+                if (r.value && r.value.trim() !== "") {
+                    db.ref('admin_feed/').push({ 
+                        message: r.value.trim(), 
+                        timestamp: Date.now() 
+                    }).then(() => {
+                        Swal.fire('Published!', 'Your update has been dispatched to the main feed.', 'success');
+                    }).catch(err => {
+                        Swal.fire('Failed', 'Database error: cannot post update.', 'error');
+                    });
+                }
             });
         }
     </script>
