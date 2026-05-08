@@ -9,6 +9,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        // Wannan ita ce asalin farawa na EmailJS dinka
+        (function() {
+            emailjs.init("user_X8G9B1S6vR8a9N2L0"); // Za mu saka ainihin Key dinka a nan idan ka bude asusu
+        })();
+    </script>
 
     <style>
         :root {
@@ -36,7 +44,6 @@
             position: relative; 
         }
 
-        /* --- GLOBAL BRAND LOGO (Adjusted size & margin for perfect look) --- */
         .global-logo-container {
             width: 100%;
             display: flex;
@@ -55,7 +62,6 @@
         }
         @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0); } }
 
-        /* --- SCREENS CONTAINER --- */
         .screen-container {
             flex: 1;
             display: flex;
@@ -64,7 +70,6 @@
             width: 100%;
         }
 
-        /* --- SLIDES STYLE (ONBOARDING) --- */
         .onboarding-box { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100%; }
 
         .slide { display: none; animation: fadeIn 0.6s ease-in-out; }
@@ -72,12 +77,10 @@
         .slide h2 { font-size: 24px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px; background: linear-gradient(135deg, #00f2fe, #0062ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .slide p { font-size: 14px; color: var(--text-muted); line-height: 1.6; padding: 0 10px; }
 
-        /* Slide dots indicator */
         .dots-container { display: flex; gap: 8px; justify-content: center; margin: 20px 0; }
         .dot { width: 8px; height: 8px; border-radius: 50%; background: #374151; transition: 0.3s; }
         .dot.active { width: 24px; border-radius: 10px; background: var(--primary); }
 
-        /* --- FORM STYLING (LOGIN/REGISTER) --- */
         .form-box { display: none; flex-direction: column; justify-content: center; animation: slideUp 0.5s ease-out; }
         .form-box.active { display: flex; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -99,7 +102,6 @@
         }
         input:focus { border-color: var(--primary); background: var(--dark); }
 
-        /* FORGOT PASSWORD STYLING */
         .forgot-link {
             text-align: right;
             font-size: 12px;
@@ -113,7 +115,6 @@
         }
         .forgot-link:hover { color: var(--primary); }
 
-        /* BUTTONS */
         .btn-action {
             width: 100%; padding: 15px; border: none; border-radius: 18px;
             background: var(--primary); color: white; font-weight: 800; font-size: 15px;
@@ -123,7 +124,6 @@
         }
         .btn-action:active { transform: scale(0.97); }
 
-        /* BIOMETRIC SIGNIN ACTION */
         .fingerprint-btn {
             background: rgba(255,255,255,0.02); border: 2px dashed var(--border);
             padding: 14px; border-radius: 18px; display: none; align-items: center;
@@ -136,7 +136,6 @@
         .switch-text { text-align: center; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-top: 15px; }
         .switch-text span { color: var(--primary); cursor: pointer; }
 
-        /* SWEETALERT POPUP CUSTOM STYLES */
         .swal2-popup { border-radius: 28px !important; background: var(--surface) !important; color: white !important; font-family: 'Plus Jakarta Sans', sans-serif !important; }
         .swal2-title { color: white !important; font-weight: 800 !important; }
         .swal2-html-container { color: var(--text-muted) !important; }
@@ -280,11 +279,14 @@
                 <p class="switch-text">Already registered? <span onclick="switchForm('login')">Log In</span></p>
             </div>
 
-        </div> </div> <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+        </div>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        // CONFIGURATION FOR CM NEXUS SUB
         const firebaseConfig = {
             apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
             authDomain: "cm-nexus-sub.firebaseapp.com",
@@ -302,7 +304,6 @@
         const slides = document.querySelectorAll('.slide');
         const dots = document.querySelectorAll('.dot');
 
-        // DEVICE UNIQUE ID GENERATOR (One Account Per Device)
         function getDeviceUUID() {
             let uuid = localStorage.getItem('device_uuid');
             if (!uuid) {
@@ -314,7 +315,6 @@
 
         const deviceID = getDeviceUUID();
 
-        // Biometric checking
         const hasBiometrics = localStorage.getItem('useFingerprint') === 'true';
         const savedUser = localStorage.getItem('saved_username');
         const savedPass = localStorage.getItem('saved_password');
@@ -323,7 +323,6 @@
             document.getElementById('fingerprintLoginBtn').style.display = 'flex';
         }
 
-        // Onboarding slide switcher
         function nextSlide() {
             slides[currentSlideIdx].classList.remove('active');
             dots[currentSlideIdx].classList.remove('active');
@@ -338,25 +337,24 @@
                 }
             } else {
                 document.getElementById('onboardingScreen').style.display = 'none';
-                switchForm('login'); // Canza zuwa login yadda komai zai gyaru otomatik
+                switchForm('login'); 
             }
         }
 
-        // Switch forms (Boye Logo a shafin Register)
         function switchForm(formName) {
             document.querySelectorAll('.form-box').forEach(box => box.classList.remove('active'));
             const logoContainer = document.getElementById('globalLogo');
             
             if (formName === 'login') {
                 document.getElementById('loginScreen').classList.add('active');
-                logoContainer.style.display = 'flex'; // Dawo da logo a Login
+                logoContainer.style.display = 'flex'; 
             } else {
                 document.getElementById('registerScreen').classList.add('active');
-                logoContainer.style.display = 'none'; // Boye logo a Register gaba daya
+                logoContainer.style.display = 'none'; 
             }
         }
 
-        // 1. REGISTER WITH SINGLE DEVICE LOCK SECURITY
+        // 1. REGISTER WITH EMAIL OTP SYSTEM
         function executeRegistration() {
             const fullName = document.getElementById('regFullName').value.trim();
             const username = document.getElementById('regUsername').value.trim().toLowerCase();
@@ -366,6 +364,12 @@
 
             if (!fullName || !username || !email || !phone || !password) {
                 return Swal.fire('Error', 'Please fill out all registration fields.', 'error');
+            }
+
+            // Tabbatar email din yana da tsari mai kyau (.com, etc)
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                return Swal.fire('Invalid Email', 'Please enter a valid email address.', 'warning');
             }
 
             Swal.fire({
@@ -389,29 +393,83 @@
                         return;
                     }
 
-                    const newUserPayload = {
-                        fullName: fullName,
-                        username: username,
-                        email: email,
-                        phone: phone,
-                        password: password,
-                        wallet: 0,
-                        xp: 0,
-                        registered_device: deviceID,
-                        registered_time: Date.now()
-                    };
+                    // --- MATAKIN EMAIL OTP (THE GRAND SECURITY) ---
+                    // 1. Kirkiri lambobin OTP guda 6 na bogi
+                    const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
 
-                    db.ref('users/' + username).set(newUserPayload).then(() => {
+                    Swal.fire({
+                        title: 'Sending OTP...',
+                        html: 'We are sending a 6-digit confirmation code to your Gmail address. Please wait...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    // 2. Tura OTP zuwa Email din user ta amfani da EmailJS
+                    // Lura: Za ka kirkiri asusu a emailjs.com, sai ka saka Service ID da Template ID dinka a nan
+                    emailjs.send("service_default", "template_otp", {
+                        to_name: fullName,
+                        to_email: email,
+                        otp_code: generatedOTP
+                    }).then(() => {
+                        // 3. Tambayi User ya shigar da OTP din da aka tura masa
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Registration Successful!',
-                            text: 'Your single device account is now active. Please log in.',
-                            confirmButtonColor: '#0062ff'
-                        }).then(() => {
-                            switchForm('login');
+                            title: 'Enter Verification Code',
+                            html: `Enter the 6-digit verification code sent to <b>${email}</b>. Check your spam folder if not received.`,
+                            input: 'text',
+                            inputPlaceholder: 'Enter OTP Code',
+                            showCancelButton: true,
+                            confirmButtonText: 'Verify & Register',
+                            confirmButtonColor: '#0062ff',
+                            preConfirm: (inputOTP) => {
+                                if (!inputOTP) {
+                                    Swal.showValidationMessage('Verification code is required!');
+                                    return false;
+                                }
+                                if (inputOTP.trim() !== generatedOTP) {
+                                    Swal.showValidationMessage('Incorrect verification code! Check and try again.');
+                                    return false;
+                                }
+                                return true;
+                            }
+                        }).then((otpResult) => {
+                            if (otpResult.isConfirmed) {
+                                // OTP ya zama daidai, yanzu za a ajiye asusu a database
+                                Swal.fire({
+                                    title: 'Creating Account...',
+                                    allowOutsideClick: false,
+                                    didOpen: () => { Swal.showLoading(); }
+                                });
+
+                                const newUserPayload = {
+                                    fullName: fullName,
+                                    username: username,
+                                    email: email,
+                                    phone: phone,
+                                    password: password,
+                                    wallet: 0,
+                                    xp: 0,
+                                    registered_device: deviceID,
+                                    registered_time: Date.now()
+                                };
+
+                                db.ref('users/' + username).set(newUserPayload).then(() => {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Registration Successful!',
+                                        text: 'Your email is verified and account is now active. Please log in.',
+                                        confirmButtonColor: '#0062ff'
+                                    }).then(() => {
+                                        switchForm('login');
+                                    });
+                                }).catch(err => {
+                                    Swal.fire('Database Error', 'Failed to save register payload.', 'error');
+                                });
+                            }
                         });
                     }).catch(err => {
-                        Swal.fire('Database Error', 'Failed to save register payload.', 'error');
+                        // Idan an samu matsalar tura email (ko kuma ba ka saita asusun EmailJS ba tukunna)
+                        Swal.fire('Delivery Failed', 'Failed to send verification email. Please check your network and try again.', 'error');
+                        console.error("EmailJS Error: ", err);
                     });
                 });
             });
@@ -441,7 +499,7 @@
                 }
 
                 localStorage.setItem('username', username);
-             localStorage.setItem('saved_username', username);
+                localStorage.setItem('saved_username', username);
                 localStorage.setItem('saved_password', password);
 
                 Swal.fire({
@@ -451,7 +509,6 @@
                     showConfirmButton: false,
                     timer: 1500
                 }).then(() => {
-                    // REDIRECT TO THE CORRECT DASHBOARD FILE
                     window.location.href = "dashboard.html"; 
                 });
             });
@@ -519,7 +576,6 @@
                             return;
                         }
 
-                        // Tura bayanan Password din zuwa allon wayar cikin tsaro tunda muna amfani da Username authentication system
                         Swal.fire({
                             icon: 'success',
                             title: 'Account Found!',
