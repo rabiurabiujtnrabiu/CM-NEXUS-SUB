@@ -108,12 +108,10 @@
             window.location.href = "index.html";
         }
 
-        // ==========================================
-        //  MONNIFY CUSTOM API CONFIGURATION AREA
-        //  Sauya wadannan dabi'un da na ka na kanka:
-        // ==========================================
-        const API_KEY = "YOUR_MONNIFY_API_KEY"; // JNAKW6AD98A4CCQKMFG7SHBYS1J2LX9X
-        const CONTRACT_CODE = "YOUR_MONNIFY_CONTRACT_CODE"; // 1727805127
+        // MONNIFY API DETAILS DINKA NA GASKE
+        const API_KEY = "JNAKW6AD98A4CCQKMFG7SHBYS1J2LX9X"; 
+        const CONTRACT_CODE = "1727805127"; 
+
         document.getElementById('accName').innerText = "Account Name: CM-PRO-" + myName.toUpperCase();
 
         // 1. DYNAMIC BANK ACCOUNT SYNC (Daga asusun user na gaske)
@@ -139,10 +137,6 @@
 
         // 2. LIVE CARD & USSD PAYMENT PROCESS (Automated Credit)
         function payWithMonnify() {
-            if(API_KEY === "YOUR_MONNIFY_API_KEY" || CONTRACT_CODE === "YOUR_MONNIFY_CONTRACT_CODE") {
-                return Swal.fire('Configuration Required', 'Please configure your custom Monnify API Key and Contract Code in the code.', 'warning');
-            }
-
             const amt = parseFloat(document.getElementById('fundAmt').value);
             if(!amt || amt < 100) return Swal.fire('Warning', 'Minimum funding is ₦100', 'warning');
 
