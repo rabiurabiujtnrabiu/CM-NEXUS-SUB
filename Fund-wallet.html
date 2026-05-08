@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Funding - Add Funds</title>
+    <title>CM Nexus sub - Add Funds</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -27,18 +27,18 @@
             <p class="text-xs font-semibold tracking-wider text-cyan-100 uppercase mb-2">Automatic Bank Transfer</p>
             
             <div class="flex justify-between items-center mb-3">
-                <span id="account-number" class="text-3xl font-extrabold tracking-widest text-white">Loading...</span>
+                <span id="account-number" class="text-3xl font-extrabold tracking-widest text-white">Generating...</span>
                 <button onclick="copyAccountNumber()" class="text-white/80 hover:text-white transition-all text-xl p-2 rounded-lg hover:bg-white/10 active:scale-90" title="Copy Account Number">
                     <i class="fa-regular fa-copy"></i>
                 </button>
             </div>
             
-            <p id="bank-name" class="text-yellow-300 font-bold text-lg mb-4">Loading...</p>
+            <p id="bank-name" class="text-yellow-300 font-bold text-lg mb-4">Securing Account...</p>
             
-            <p class="text-xs text-cyan-50">Account Name: <span id="account-name" class="font-mono bg-black/20 px-2 py-1 rounded">Loading...</span></p>
+            <p class="text-xs text-cyan-50">Account Name: <span id="account-name" class="font-mono bg-black/20 px-2 py-1 rounded">CM-Nexus-sub-...</span></p>
         </div>
 
-        <div id="toast" class="hidden fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50 transition-all duration-300 animate__animated animate__fadeInDown">
+        <div id="toast" class="hidden fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50 transition-all duration-300">
             Account number copied successfully!
         </div>
 
@@ -61,7 +61,7 @@
         <div class="border border-dashed border-blue-900/50 bg-blue-950/20 rounded-2xl p-4 flex items-start gap-3">
             <i class="fa-solid fa-circle-info text-blue-400 mt-1 animate-pulse"></i>
             <p class="text-xs text-gray-400 leading-relaxed">
-                Wallet funding is instant. Ensure you transfer only to the generated accounts assigned to your username.
+                Wallet funding is instant. Ensure you transfer only to the generated accounts assigned to your username on CM Nexus sub.
             </p>
         </div>
 
@@ -71,7 +71,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Your Web App's Firebase configuration
         const firebaseConfig = {
           apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
           authDomain: "cm-nexus-sub.firebaseapp.com",
@@ -82,68 +81,104 @@
           appId: "1:22010501991:web:4140bf159c199f6796edc2"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Active username session placeholder
-        const currentUsername = "rab_lujtn"; 
+        // 1. ZABURAR AUTO-USERNAME DETECTOR (Daga URL ko LocalStorage na Login din hotonka)
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentUsername = urlParams.get('username') || localStorage.getItem('username');
 
-        // Default Fallback Details (If Firebase fetch fails or times out)
-        const fallbackDetails = {
-            account_number: "5227958615",
-            bank_name: "Wema Bank / Monnify",
-            account_name: "CM-PRO-rab_lujtn"
-        };
+        // Idan babu shi a ko'ina, muna saita asalin sunanka "rabiujtn" da kake amfani dashi
+        if (!currentUsername) {
+            currentUsername = "rabiujtn"; 
+        }
 
-        // Function to apply bank details to the UI
-        function updateBankUI(accountNumber, bankName, accountName) {
-            document.getElementById('account-number').innerText = accountNumber;
+        const bankDetailsRef = ref(db, 'bank_details/' + currentUsername);
+
+        // Aikin nuna bayanai a jikin screen dinka
+        function updateUI(accNo, bankName, accName) {
+            document.getElementById('account-number').innerText = accNo;
             document.getElementById('bank-name').innerText = bankName;
-            document.getElementById('account-name').innerText = accountName;
+            document.getElementById('account-name').innerText = accName;
         }
 
-        // Safety Timeout: If Firebase doesn't load within 4 seconds, show fallback details automatically
-        const safetyTimeout = setTimeout(() => {
-            console.warn("Firebase took too long to respond. Loading fallback bank details.");
-            updateBankUI(fallbackDetails.account_number, fallbackDetails.bank_name, fallbackDetails.account_name);
-        }, 4000);
+        // 2. DUBA KO MAI AMFANI YANA DA ACCOUNT A FIREBASE, IDAN BABU KIRA API NAMI AUTOMATIC
+        onValue(bankDetailsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data && data.account_number) {
+                // Idan an riga an taba samar masa da account a baya, nuna shi nan take
+                updateUI(data.account_number, data.bank_name, data.account_name);
+            } else {
+                // Idan babu shi, tsarin zai fara kiran Monnify don samar masa da shi live yanzu
+                autoGenerateMonnifyAccount();
+            }
+        });
 
-        // 1. Listen for Live bank details from Firebase Realtime Database
-        try {
-            const bankRef = ref(db, 'bank_details/' + currentUsername);
-            
-            onValue(bankRef, (snapshot) => {
-                clearTimeout(safetyTimeout); // Clear safety timeout since we got a response
-                const data = snapshot.val();
+        // 3. AIKIN KIRA MONNIFY API DON SAMAR DA ACCOUNT NUMBER TA ATOMATIK
+        async function autoGenerateMonnifyAccount() {
+            try {
+                // Karbo Access Token daga Monnify (Wannan mataki ne na tsaro kafin samar da account)
+                const authResponse = await fetch('https://api.monnify.com/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        // Muna amfani da API key dinka wajen hada Basic Authorization Header
+                        'Authorization': 'Basic ' + btoa("JNAKW6AD98A4CCQKMFG7SHBYS1J2LX9X:SECRET_KEY_DINKA") // NOTE: Saka Secret Key dinka na Monnify a nan maimakon SECRET_KEY_DINKA
+                    }
+                });
                 
-                if (data && data.account_number) {
-                    console.log("Firebase Data Loaded Successfully:", data);
-                    updateBankUI(
-                        data.account_number, 
-                        data.bank_name || fallbackDetails.bank_name, 
-                        data.account_name || fallbackDetails.account_name
-                    );
+                const authData = await authResponse.json();
+                const accessToken = authData.responseBody.accessToken;
+
+                // Kira API din samar da ainihin asusun banki
+                const reserveResponse = await fetch('https://api.monnify.com/api/v1/bank-transfer/reserved-accounts', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + accessToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        "accountReference": "REF-" + currentUsername + "-" + Date.now(),
+                        "accountName": "CM-Nexus-sub-" + currentUsername,
+                        "currencyCode": "NGN",
+                        "contractCode": "1727805127", // Contract Code dinka na gaske
+                        "customerEmail": currentUsername + "@cmnexus.com",
+                        "customerName": currentUsername,
+                        "getAllAvailableBanks": true
+                    })
+                });
+
+                const reserveData = await reserveResponse.json();
+
+                if (reserveData.requestSuccessful && reserveData.responseBody.accounts.length > 0) {
+                    const mainAccount = reserveData.responseBody.accounts[0]; // Zai dauki asusu na farko (misali Wema)
+                    
+                    const generatedData = {
+                        account_number: mainAccount.accountNumber,
+                        bank_name: mainAccount.bankName,
+                        account_name: mainAccount.accountName
+                    };
+
+                    // Adana bayanan asusun bankin a Firebase dinka domin lokaci na gaba ya fito nan take
+                    await set(bankDetailsRef, generatedData);
+                    
+                    // Sabunta fuskar shafinmu
+                    updateUI(generatedData.account_number, generatedData.bank_name, generatedData.account_name);
                 } else {
-                    console.log("No data found at path 'bank_details/" + currentUsername + "'. Using default details.");
-                    updateBankUI(fallbackDetails.account_number, fallbackDetails.bank_name, fallbackDetails.account_name);
+                    // Fallback idan Monnify ya dawo da kuskure saboda BVN/KYC limit a account dinka
+                    updateUI("5227958615", "Wema Bank / Monnify", "CM-Nexus-sub-" + currentUsername);
                 }
-            }, (error) => {
-                clearTimeout(safetyTimeout);
-                console.error("Firebase Database Read Failed: ", error);
-                // Force fallback UI if permission is denied or connection failed
-                updateBankUI(fallbackDetails.account_number, fallbackDetails.bank_name, fallbackDetails.account_name);
-            });
-        } catch (err) {
-            clearTimeout(safetyTimeout);
-            console.error("Initialization Error: ", err);
-            updateBankUI(fallbackDetails.account_number, fallbackDetails.bank_name, fallbackDetails.account_name);
+
+            } catch (error) {
+                console.error("Failed to generate account automatically: ", error);
+                // Idan an samu matsala wajen kiran API dinka, nuna fallback asusun don kada ya tsaya
+                updateUI("5227958615", "Wema Bank / Monnify", "CM-Nexus-sub-" + currentUsername);
+            }
         }
 
-        // Expose helper function to window context for module access
+        // Expose functions for buttons
         window.copyAccountNumber = function() {
             const accountNumber = document.getElementById('account-number').innerText;
-            if (accountNumber === "Loading...") return;
+            if (accountNumber === "Generating..." || accountNumber === "Loading...") return;
 
             navigator.clipboard.writeText(accountNumber).then(() => {
                 const toast = document.getElementById('toast');
@@ -154,7 +189,6 @@
             });
         }
 
-        // 2. Monnify Live Payment Handler
         window.initializePayment = function() {
             const amount = document.getElementById('amount').value;
             const payBtn = document.getElementById('pay-btn');
@@ -164,11 +198,9 @@
                 return;
             }
 
-            // Disable button and show loader during process initiation
             payBtn.disabled = true;
             payBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Processing...`;
 
-            // Trigger Monnify Payment SDK
             MonnifySDK.initialize({
                 amount: parseFloat(amount),
                 currency: "NGN",
@@ -177,14 +209,14 @@
                 customerEmail: currentUsername + "@cmnexus.com", 
                 apiKey: "JNAKW6AD98A4CCQKMFG7SHBYS1J2LX9X", 
                 contractCode: "1727805127", 
-                paymentDescription: "Wallet Funding via CM-Nexus",
+                paymentDescription: "Wallet Funding via CM Nexus sub",
                 isTestMode: false, 
                 metadata: {
                     "username": currentUsername
                 },
                 onComplete: function(response) {
                     if (response.status === "SUCCESSFUL") {
-                        alert("Payment successful! Your wallet request has been submitted.");
+                        alert("Payment successful!");
                         
                         const paymentRef = ref(db, 'payment_requests/' + currentUsername);
                         const newPaymentRef = push(paymentRef);
@@ -198,13 +230,13 @@
 
                         document.getElementById('amount').value = '';
                     } else {
-                        alert("Payment was not successful: " + response.status);
+                        alert("Payment failed: " + response.status);
                     }
                     payBtn.disabled = false;
                     payBtn.innerHTML = `<i class="fa-solid fa-shield-halved"></i> INITIALIZE SECURE PAYMENT`;
                 },
                 onClose: function(data) {
-                    alert("Payment window closed by user.");
+                    alert("Payment window closed.");
                     payBtn.disabled = false;
                     payBtn.innerHTML = `<i class="fa-solid fa-shield-halved"></i> INITIALIZE SECURE PAYMENT`;
                 }
