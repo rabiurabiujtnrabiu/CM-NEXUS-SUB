@@ -14,7 +14,7 @@
         :root {
             --primary: #0062ff;
             --accent: #00f2fe;
-            --bg: #0b0f19; /* Standard dark theme background */
+            --bg: #0b0f19; 
             --surface: #111827;
             --border: #1f2937;
             --white: #111827;
@@ -25,17 +25,34 @@
         }
 
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        body { margin: 0; background: var(--bg); color: var(--text-main); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        /* Fixed screen boundary wrapper to prevent page sinking */
+        html, body { 
+            height: 100%; 
+            height: 100dvh; 
+            overflow: hidden; 
+            background: var(--bg); 
+            color: var(--text-main); 
+        }
+
+        body { 
+            display: flex; 
+            flex-direction: column; 
+        }
 
         header { 
-            padding: 20px; display: flex; align-items: center; justify-content: space-between;
-            background: var(--surface); border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 1000;
+            padding: 15px 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            background: var(--surface); 
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0; /* Prevents header from shrinking */
         }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .back-btn { font-size: 20px; color: var(--text-main); cursor: pointer; transition: 0.2s; }
         .back-btn:active { transform: scale(0.85); }
-        header h1 { font-size: 16px; font-weight: 800; color: var(--text-main); }
+        header h1 { font-size: 15px; font-weight: 800; color: var(--text-main); }
         .online-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; animation: pulse-green 1.5s infinite; }
         @keyframes pulse-green {
             0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
@@ -43,28 +60,47 @@
             100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
 
-        /* CHAT WINDOW AREA */
+        /* SCROLLABLE CHAT CONTAINER WINDOW */
         .chat-container {
-            flex: 1; padding: 20px; overflow-y: auto;
-            display: flex; flex-direction: column; gap: 15px;
+            flex: 1; 
+            padding: 15px; 
+            overflow-y: auto;
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px;
             background: radial-gradient(circle at top, rgba(0, 98, 255, 0.05) 0%, transparent 70%);
+            -webkit-overflow-scrolling: touch; /* Smooth iOS momentum scroll */
         }
         .chat-container::-webkit-scrollbar { display: none; }
 
-        .message { display: flex; flex-direction: column; max-width: 80%; padding: 14px 18px; border-radius: 22px; font-size: 13px; font-weight: 600; line-height: 1.5; animation: fadeInUp 0.4s ease; word-break: break-word; }
+        .message { 
+            display: flex; 
+            flex-direction: column; 
+            max-width: 85%; 
+            padding: 12px 16px; 
+            border-radius: 20px; 
+            font-size: 13px; 
+            font-weight: 600; 
+            line-height: 1.5; 
+            animation: fadeInUp 0.3s ease; 
+            word-break: break-word; 
+        }
         
         .msg-ai {
-            background: var(--surface); color: var(--text-main);
-            border: 1px solid var(--border); border-bottom-left-radius: 5px;
+            background: var(--surface); 
+            color: var(--text-main);
+            border: 1px solid var(--border); 
+            border-bottom-left-radius: 4px;
             align-self: flex-start;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
         
         .msg-user {
             background: linear-gradient(135deg, var(--primary) 0%, #00f2fe 100%);
-            color: white; border-bottom-right-radius: 5px;
+            color: white; 
+            border-bottom-right-radius: 4px;
             align-self: flex-end;
-            box-shadow: 0 5px 15px var(--glow);
+            box-shadow: 0 4px 10px var(--glow);
         }
 
         .meta-time { font-size: 9px; opacity: 0.6; margin-top: 5px; align-self: flex-end; }
@@ -72,10 +108,17 @@
         
         /* TYPING INDICATOR */
         .typing-bubble {
-            background: var(--surface); border: 1px solid var(--border);
-            padding: 14px 20px; border-radius: 22px; border-bottom-left-radius: 5px;
-            align-self: flex-start; display: none; align-items: center; gap: 5px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: var(--surface); 
+            border: 1px solid var(--border);
+            padding: 12px 18px; 
+            border-radius: 20px; 
+            border-bottom-left-radius: 4px;
+            align-self: flex-start; 
+            display: none; 
+            align-items: center; 
+            gap: 5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            margin-bottom: 5px;
         }
         .dot { width: 6px; height: 6px; background: var(--text-dim); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
         .dot:nth-child(1) { animation-delay: -0.32s; }
@@ -85,25 +128,45 @@
             40% { transform: scale(1.0); }
         }
 
-        /* INPUT AREA */
+        /* FIXED INPUT AREA AT BOTTOM */
         .input-area {
-            padding: 15px 20px; background: var(--surface);
-            border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center;
+            padding: 12px 15px; 
+            background: var(--surface);
+            border-top: 1px solid var(--border); 
+            display: flex; 
+            gap: 10px; 
+            align-items: center;
+            flex-shrink: 0; /* Prevents input bar from compressing */
         }
         .input-box {
-            flex: 1; padding: 15px 20px; border-radius: 30px;
-            border: 2px solid var(--border); background: var(--bg);
-            color: var(--text-main); font-weight: 700; outline: none; font-size: 14px;
+            flex: 1; 
+            padding: 14px 18px; 
+            border-radius: 25px;
+            border: 2px solid var(--border); 
+            background: var(--bg);
+            color: var(--text-main); 
+            font-weight: 700; 
+            outline: none; 
+            font-size: 13px;
             transition: 0.3s;
         }
         .input-box:focus { border-color: var(--primary); }
         
         .send-btn {
-            width: 50px; height: 50px; background: var(--primary);
-            border: none; border-radius: 50%; color: white;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px; cursor: pointer; box-shadow: 0 5px 15px var(--glow);
+            width: 46px; 
+            height: 46px; 
+            background: var(--primary);
+            border: none; 
+            border-radius: 50%; 
+            color: white;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-size: 16px; 
+            cursor: pointer; 
+            box-shadow: 0 4px 10px var(--glow);
             transition: 0.3s;
+            flex-shrink: 0;
         }
         .send-btn:active { transform: scale(0.9); }
     </style>
@@ -120,7 +183,7 @@
                 </p>
             </div>
         </div>
-        <div style="font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase;">Elite Member</div>
+        <div style="font-size: 10px; font-weight: 800; color: var(--primary); text-transform: uppercase;">Elite Member</div>
     </header>
 
     <div class="chat-container" id="chatContainer">
@@ -128,10 +191,10 @@
             Hello there! I am your **Nexus AI Assistant**. I'm here 24/7 to help you with anything on the **CM Nexus Sub** platform.
             <br><br>
             Feel free to ask me about:
-            • How to fund your wallet.
-            • Resolving data or airtime delivery delays.
-            • Converting airtime to cash (Swap).
-            • Buying exam scratch cards (Edu PIN) or electricity.
+            <br>• How to fund your wallet.
+            <br>• Resolving data or airtime delivery delays.
+            <br>• Converting airtime to cash (Swap).
+            <br>• Buying exam scratch cards (Edu PIN) or electricity.
             <div class="meta-time" id="greetingTime">12:00 PM</div>
         </div>
     </div>
@@ -166,19 +229,16 @@
         const db = firebase.database();
         const myName = localStorage.getItem('username');
 
-        // Security check: Redirect to portal if not logged in
         if(!myName) {
             window.location.href = "index.html";
         }
 
-        // Set dynamic welcome message time
         document.getElementById('greetingTime').innerText = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
         function handleKeyPress(e) {
             if (e.key === 'Enter') sendMessage();
         }
 
-        // AI ENGLISH KEYWORD INDEX SYSTEM
         const aiKnowledge = {
             greetings: ["hi", "hello", "hey", "good morning", "good afternoon", "good evening", "how are you", "sannu", "barka"],
             funding: ["fund", "add money", "deposit", "wallet", "monnify", "wema", "transfer", "bank", "pay"],
@@ -195,18 +255,15 @@
             const query = input.value.trim();
             if (!query) return;
 
-            // 1. Display User message
             appendMessage(query, 'user');
             input.value = "";
 
-            // 2. Trigger active typing bubble
             const bubble = document.getElementById('typingBubble');
             const chatContainer = document.getElementById('chatContainer');
             chatContainer.appendChild(bubble);
             bubble.style.display = 'flex';
             scrollChat();
 
-            // 3. Process AI interpretation response
             setTimeout(() => {
                 const response = getAIResponse(query.toLowerCase());
                 bubble.style.display = 'none';
@@ -224,6 +281,7 @@
             msgDiv.innerHTML = `${text}<div class="meta-time">${time}</div>`;
             
             chatContainer.appendChild(msgDiv);
+            scrollChat();
         }
 
         function scrollChat() {
@@ -231,14 +289,11 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // AI CONVERSATIONAL LOGIC
         function getAIResponse(q) {
-            // Greetings Category
             if (aiKnowledge.greetings.some(word => q.includes(word))) {
                 return `Hello my friend! Welcome to Nexus AI Support. How can I help you optimize your business today? 😊`;
             }
             
-            // Funding Category
             if (aiKnowledge.funding.some(word => q.includes(word))) {
                 return `To add funds instantly to your wallet:<br><br>
                 1. Go to the <b>Wallet</b> page.<br>
@@ -246,7 +301,6 @@
                 3. Your dedicated virtual accounts (Wema, Sterling, or Fidelity) will be displayed. Transfer money directly there, and it will reflect in your wallet instantly!`;
             }
 
-            // Data Purchases Category
             if (aiKnowledge.data.some(word => q.includes(word))) {
                 return `Purchasing data is simple:<br><br>
                 • Navigate to the <b>Wallet</b> page and tap <b>Data</b>.<br>
@@ -254,7 +308,6 @@
                 • Choose the plan you want, enter the recipient phone number, and tap <b>Pay Now</b>. Your data will be dispatched within 3 seconds!`;
             }
 
-            // Airtime Category
             if (aiKnowledge.airtime.some(word => q.includes(word))) {
                 return `To buy VTU Airtime:<br><br>
                 • Click on the <b>Airtime</b> option on your Dashboard.<br>
@@ -262,7 +315,6 @@
                 • Click <b>Proceed</b>. Your transaction will be completed instantly!`;
             }
 
-            // Airtime Swap Category
             if (aiKnowledge.swap.some(word => q.includes(word))) {
                 return `To convert airtime back into wallet cash (Airtime Swap):<br><br>
                 • Go to the <b>Airtime Swap</b> page.<br>
@@ -270,7 +322,6 @@
                 • Transfer the airtime to that number, input the amount/sender details, and tap <b>Submit Request</b>. Admin will verify and credit your wallet immediately!`;
             }
 
-            // Educational Pin Category
             if (aiKnowledge.pin.some(word => q.includes(word))) {
                 return `You can generate official exam scratch cards (WAEC, NECO, JAMB) directly:<br><br>
                 • Go to the <b>Edu PIN</b> page.<br>
@@ -278,7 +329,6 @@
                 • Once successful, your real **PIN** and **Serial Number** will be displayed and stored in your **History** page for lifetime access!`;
             }
 
-            // Electricity Category
             if (aiKnowledge.electricity.some(word => q.includes(word))) {
                 return `To recharge prepaid or postpaid electricity meters:<br><br>
                 • Open the <b>Electricity</b> page.<br>
@@ -287,7 +337,6 @@
                 • After payment, your 20-digit **Meter Token Code** will be generated and shown instantly!`;
             }
 
-            // Wallet to Wallet Transfer Category
             if (aiKnowledge.transfer.some(word => q.includes(word))) {
                 return `Internal transfers allow you to send funds instantly to other members:<br><br>
                 • On the <b>Wallet</b> page, tap the **Transfer** icon (paper plane) in the top-right corner of the balance card.<br>
@@ -295,14 +344,12 @@
                 • The system will automatically verify their identity, then you can confirm and complete the transfer instantly!`;
             }
 
-            // Fallback Response
             return `I'm sorry, I didn't quite catch that. But I'm fully trained to assist you with:
-            • Funding your wallet (Fund Wallet).
-            • Buying Data bundles or Airtime.
-            • Wallet-to-Wallet transfer.
-            • Airtime Swap, Electricity, or Edu PINs.
-            
-            Just type any of these keywords, and I'll guide you step-by-step! 😊`;
+            <br>• Funding your wallet (Fund Wallet).
+            <br>• Buying Data bundles or Airtime.
+            <br>• Wallet-to-Wallet transfer.
+            <br>• Airtime Swap, Electricity, or Edu PINs.
+            <br><br>Just type any of these keywords, and I'll guide you step-by-step! 😊`;
         }
     </script>
 </body>

@@ -15,7 +15,7 @@
         :root { 
             --primary: #0062ff; 
             --accent: #00f2fe; 
-            --bg: #0b0f19; /* Canza background din ya dace da duhun dandalin duka */
+            --bg: #0b0f19; 
             --surface: #111827; 
             --border: #1f2937;
             --white: #111827; 
@@ -108,18 +108,20 @@
             window.location.href = "index.html";
         }
 
-        // Live Monnify Credentials
-        const API_KEY = "JNAKW6AD98A4CCQKMFG7SHBYS1J2LX9X";
-        const CONTRACT_CODE = "1727805127";
-
+        // ==========================================
+        //  MONNIFY CUSTOM API CONFIGURATION AREA
+        //  Sauya wadannan dabi'un da na ka na kanka:
+        // ==========================================
+        const API_KEY = "YOUR_MONNIFY_API_KEY"; // JNAKW6AD98A4CCQKMFG7SHBYS1J2LX9X
+        const CONTRACT_CODE = "YOUR_MONNIFY_CONTRACT_CODE"; // 1727805127
         document.getElementById('accName').innerText = "Account Name: CM-PRO-" + myName.toUpperCase();
 
         // 1. DYNAMIC BANK ACCOUNT SYNC (Daga asusun user na gaske)
         db.ref('users/' + myName + '/bankAccount').on('value', snap => {
             const data = snap.val();
             if(data) {
-                document.getElementById('accNum').innerText = data.accountNumber;
-                document.getElementById('bankName').innerText = data.bankName + " / Monnify";
+                document.getElementById('accNum').innerText = data.accountNumber || "No Account";
+                document.getElementById('bankName').innerText = (data.bankName || "Monnify") + " / Monnify";
             } else {
                 // Idan babu bankAccount, nuna loading ko nuna account na asali don tsaro
                 document.getElementById('accNum').innerText = "9034567812";
@@ -129,6 +131,7 @@
 
         function copyAcc() {
             const num = document.getElementById('accNum').innerText;
+            if(num === "9034567812" || num === "No Account") return;
             navigator.clipboard.writeText(num).then(() => {
                 Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Copied!', showConfirmButton: false, timer: 1500 });
             });
@@ -136,6 +139,10 @@
 
         // 2. LIVE CARD & USSD PAYMENT PROCESS (Automated Credit)
         function payWithMonnify() {
+            if(API_KEY === "YOUR_MONNIFY_API_KEY" || CONTRACT_CODE === "YOUR_MONNIFY_CONTRACT_CODE") {
+                return Swal.fire('Configuration Required', 'Please configure your custom Monnify API Key and Contract Code in the code.', 'warning');
+            }
+
             const amt = parseFloat(document.getElementById('fundAmt').value);
             if(!amt || amt < 100) return Swal.fire('Warning', 'Minimum funding is ₦100', 'warning');
 
