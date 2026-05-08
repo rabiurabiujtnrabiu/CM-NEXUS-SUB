@@ -84,73 +84,51 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // 1. ZABURAR AUTO-USERNAME DETECTOR (Daga URL ko LocalStorage na Login din hotonka)
+        // 1. Link dinka na PHP Backend (CANZA WANNAN LINK DIN ZUWA NA REALL DOMAIN DINKA)
+        const backendUrl = "https://cm-nexus-sub.pages.dev/generate.php";
+
+        // Gano Username dake kai yanzu (Daga URL ko LocalStorage)
         const urlParams = new URLSearchParams(window.location.search);
         let currentUsername = urlParams.get('username') || localStorage.getItem('username');
 
-        // Idan babu shi a ko'ina, muna saita asalin sunanka "rabiujtn" da kake amfani dashi
         if (!currentUsername) {
-            currentUsername = "rabiujtn"; 
+            currentUsername = "rabiujtn"; // Default fallback username
         }
 
         const bankDetailsRef = ref(db, 'bank_details/' + currentUsername);
 
-        // Aikin nuna bayanai a jikin screen dinka
         function updateUI(accNo, bankName, accName) {
             document.getElementById('account-number').innerText = accNo;
             document.getElementById('bank-name').innerText = bankName;
             document.getElementById('account-name').innerText = accName;
         }
 
-        // 2. DUBA KO MAI AMFANI YANA DA ACCOUNT A FIREBASE, IDAN BABU KIRA API NAMI AUTOMATIC
+        const safetyTimeout = setTimeout(() => {
+            // Idan duka tsarin ya jinkiri, nuna asusun wucin gadi don kar shafin ya makale
+            updateUI("5227958615", "Wema Bank / Monnify", "CM-Nexus-sub-" + currentUsername);
+        }, 8000);
+
+        // 2. Saurari Firebase ko akaundin yana nan riga da can
         onValue(bankDetailsRef, (snapshot) => {
             const data = snapshot.val();
             if (data && data.account_number) {
-                // Idan an riga an taba samar masa da account a baya, nuna shi nan take
+                clearTimeout(safetyTimeout);
                 updateUI(data.account_number, data.bank_name, data.account_name);
             } else {
-                // Idan babu shi, tsarin zai fara kiran Monnify don samar masa da shi live yanzu
+                // Idan babu shi, kira PHP API dinmu ya samar dashi yanzu
                 autoGenerateMonnifyAccount();
             }
         });
 
-        // 3. AIKIN KIRA MONNIFY API DON SAMAR DA ACCOUNT NUMBER TA ATOMATIK
+        // 3. Aikin kiran PHP file dinmu ta atomatik
         async function autoGenerateMonnifyAccount() {
             try {
-                // Karbo Access Token daga Monnify (Wannan mataki ne na tsaro kafin samar da account)
-                const authResponse = await fetch('https://api.monnify.com/api/v1/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        // Muna amfani da API key dinka wajen hada Basic Authorization Header
-                        'Authorization': 'Basic ' + btoa("JNAKW6AD98A4CCQKMFG7SHBYS1J2LX9X:SECRET_KEY_DINKA") // NOTE: Saka Secret Key dinka na Monnify a nan maimakon SECRET_KEY_DINKA
-                    }
-                });
-                
-                const authData = await authResponse.json();
-                const accessToken = authData.responseBody.accessToken;
+                const response = await fetch(`${backendUrl}?username=${currentUsername}`);
+                const data = await response.json();
 
-                // Kira API din samar da ainihin asusun banki
-                const reserveResponse = await fetch('https://api.monnify.com/api/v1/bank-transfer/reserved-accounts', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + accessToken,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        "accountReference": "REF-" + currentUsername + "-" + Date.now(),
-                        "accountName": "CM-Nexus-sub-" + currentUsername,
-                        "currencyCode": "NGN",
-                        "contractCode": "1727805127", // Contract Code dinka na gaske
-                        "customerEmail": currentUsername + "@cmnexus.com",
-                        "customerName": currentUsername,
-                        "getAllAvailableBanks": true
-                    })
-                });
-
-                const reserveData = await reserveResponse.json();
-
-                if (reserveData.requestSuccessful && reserveData.responseBody.accounts.length > 0) {
-                    const mainAccount = reserveData.responseBody.accounts[0]; // Zai dauki asusu na farko (misali Wema)
+                if (data.requestSuccessful && data.responseBody.accounts.length > 0) {
+                    clearTimeout(safetyTimeout);
+                    const mainAccount = data.responseBody.accounts[0];
                     
                     const generatedData = {
                         account_number: mainAccount.accountNumber,
@@ -158,24 +136,17 @@
                         account_name: mainAccount.accountName
                     };
 
-                    // Adana bayanan asusun bankin a Firebase dinka domin lokaci na gaba ya fito nan take
+                    // Adana a Firebase
                     await set(bankDetailsRef, generatedData);
-                    
-                    // Sabunta fuskar shafinmu
                     updateUI(generatedData.account_number, generatedData.bank_name, generatedData.account_name);
                 } else {
-                    // Fallback idan Monnify ya dawo da kuskure saboda BVN/KYC limit a account dinka
-                    updateUI("5227958615", "Wema Bank / Monnify", "CM-Nexus-sub-" + currentUsername);
+                    console.error("Monnify API Response failed:", data);
                 }
-
             } catch (error) {
-                console.error("Failed to generate account automatically: ", error);
-                // Idan an samu matsala wajen kiran API dinka, nuna fallback asusun don kada ya tsaya
-                updateUI("5227958615", "Wema Bank / Monnify", "CM-Nexus-sub-" + currentUsername);
+                console.error("Failed to connect to PHP backend:", error);
             }
         }
 
-        // Expose functions for buttons
         window.copyAccountNumber = function() {
             const accountNumber = document.getElementById('account-number').innerText;
             if (accountNumber === "Generating..." || accountNumber === "Loading...") return;
