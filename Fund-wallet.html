@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elite Funding | CMchat Pro</title>
+    <title>Elite Funding | CM Nexus Sub</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -64,10 +64,10 @@
         <div class="bank-card animate__animated animate__fadeInDown">
             <span class="card-label">Automatic Bank Transfer</span>
             <div class="acc-number">
-                <span id="accNum">9034567812</span>
+                <span id="accNum">Loading Account...</span>
                 <i class="far fa-copy" onclick="copyAcc()" style="cursor:pointer; font-size:20px;"></i>
             </div>
-            <div class="bank-info" id="bankName">Wema Bank / Monnify</div>
+            <div class="bank-info" id="bankName">Retrieving Bank Details...</div>
             <div style="font-size: 12px; font-weight: 700; opacity: 0.9;" id="accName">Account Name: CM-PRO-LOADING...</div>
         </div>
 
@@ -88,7 +88,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        // CIKAKKEN LIVE CONFIG NA FIREBASE DLNKA NA GASKE
+        // ASALIN INTEGRATED SABON FIREBASE CONFIG NA CM-NEXUS-SUB 100%
         const firebaseConfig = {
             apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
             authDomain: "cm-nexus-sub.firebaseapp.com",
@@ -108,20 +108,20 @@
             window.location.href = "index.html";
         }
 
-        // MONNIFY API DETAILS DINKA NA GASKE
+        // Monnify API Credentials dinka na kanka na gaske
         const API_KEY = "JNAKW6AD98A4CCQKMFG7SHBYS1J2LX9X"; 
         const CONTRACT_CODE = "1727805127"; 
 
         document.getElementById('accName').innerText = "Account Name: CM-PRO-" + myName.toUpperCase();
 
-        // 1. DYNAMIC BANK ACCOUNT SYNC (Daga asusun user na gaske)
+        // 1. DYNAMIC BANK ACCOUNT SYNC (Daga asusun user na gaske - sabon Firebase!)
         db.ref('users/' + myName + '/bankAccount').on('value', snap => {
             const data = snap.val();
             if(data) {
-                document.getElementById('accNum').innerText = data.accountNumber || "No Account";
-                document.getElementById('bankName').innerText = (data.bankName || "Monnify") + " / Monnify";
+                document.getElementById('accNum').innerText = data.accountNumber || "9034567812";
+                document.getElementById('bankName').innerText = (data.bankName || "Wema Bank") + " / Monnify";
             } else {
-                // Idan babu bankAccount, nuna loading ko nuna account na asali don tsaro
+                // Idan har yanzu babu dynamic bank karkashin wannan username din a sabon database dinka
                 document.getElementById('accNum').innerText = "9034567812";
                 document.getElementById('bankName').innerText = "Wema Bank / Monnify";
             }
@@ -129,13 +129,13 @@
 
         function copyAcc() {
             const num = document.getElementById('accNum').innerText;
-            if(num === "9034567812" || num === "No Account") return;
+            if(num === "Loading Account..." || num === "No Account") return;
             navigator.clipboard.writeText(num).then(() => {
                 Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Copied!', showConfirmButton: false, timer: 1500 });
             });
         }
 
-        // 2. LIVE CARD & USSD PAYMENT PROCESS (Automated Credit)
+        // 2. LIVE CARD & USSD PAYMENT PROCESS (Automated Credit - sabon Firebase!)
         function payWithMonnify() {
             const amt = parseFloat(document.getElementById('fundAmt').value);
             if(!amt || amt < 100) return Swal.fire('Warning', 'Minimum funding is ₦100', 'warning');
