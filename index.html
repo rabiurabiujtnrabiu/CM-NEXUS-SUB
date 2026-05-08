@@ -12,9 +12,9 @@
     
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
-        // Wannan ita ce asalin farawa na EmailJS dinka
         (function() {
-            emailjs.init("user_X8G9B1S6vR8a9N2L0"); // Za mu saka ainihin Key dinka a nan idan ka bude asusu
+            // INTEGRATED YOUR REAL PUBLIC KEY
+            emailjs.init("Kdo1uh2fYzmoDsl7G");
         })();
     </script>
 
@@ -354,7 +354,7 @@
             }
         }
 
-        // 1. REGISTER WITH EMAIL OTP SYSTEM
+        // REGISTER PROCESS WITH YOUR LIVE EMAILJS KEYS
         function executeRegistration() {
             const fullName = document.getElementById('regFullName').value.trim();
             const username = document.getElementById('regUsername').value.trim().toLowerCase();
@@ -366,7 +366,6 @@
                 return Swal.fire('Error', 'Please fill out all registration fields.', 'error');
             }
 
-            // Tabbatar email din yana da tsari mai kyau (.com, etc)
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailPattern.test(email)) {
                 return Swal.fire('Invalid Email', 'Please enter a valid email address.', 'warning');
@@ -379,22 +378,18 @@
                 didOpen: () => { Swal.showLoading(); }
             });
 
-            // Rule 1: Check device UUID duplication
             db.ref('users/').orderByChild('registered_device').equalTo(deviceID).once('value', snapshot => {
                 if (snapshot.exists()) {
                     Swal.fire('Device Blocked!', 'Multiple account creation is disabled! Only one registration allowed per mobile device to secure the platform ecosystem.', 'error');
                     return;
                 }
 
-                // Rule 2: Ensure username uniqueness
                 db.ref('users/' + username).once('value', userSnap => {
                     if (userSnap.exists()) {
                         Swal.fire('Taken!', 'This username is already registered. Try another one.', 'warning');
                         return;
                     }
 
-                    // --- MATAKIN EMAIL OTP (THE GRAND SECURITY) ---
-                    // 1. Kirkiri lambobin OTP guda 6 na bogi
                     const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
 
                     Swal.fire({
@@ -404,14 +399,12 @@
                         didOpen: () => { Swal.showLoading(); }
                     });
 
-                    // 2. Tura OTP zuwa Email din user ta amfani da EmailJS
-                    // Lura: Za ka kirkiri asusu a emailjs.com, sai ka saka Service ID da Template ID dinka a nan
-                    emailjs.send("service_default", "template_otp", {
+                    // Tura sako ta amfani da naka real Service ID da real Template ID
+                    emailjs.send("service_f6sep23", "template_otp", {
                         to_name: fullName,
                         to_email: email,
                         otp_code: generatedOTP
                     }).then(() => {
-                        // 3. Tambayi User ya shigar da OTP din da aka tura masa
                         Swal.fire({
                             title: 'Enter Verification Code',
                             html: `Enter the 6-digit verification code sent to <b>${email}</b>. Check your spam folder if not received.`,
@@ -433,7 +426,6 @@
                             }
                         }).then((otpResult) => {
                             if (otpResult.isConfirmed) {
-                                // OTP ya zama daidai, yanzu za a ajiye asusu a database
                                 Swal.fire({
                                     title: 'Creating Account...',
                                     allowOutsideClick: false,
@@ -443,7 +435,7 @@
                                 const newUserPayload = {
                                     fullName: fullName,
                                     username: username,
-                                    email: email,
+                       email: email,
                                     phone: phone,
                                     password: password,
                                     wallet: 0,
@@ -467,7 +459,6 @@
                             }
                         });
                     }).catch(err => {
-                        // Idan an samu matsalar tura email (ko kuma ba ka saita asusun EmailJS ba tukunna)
                         Swal.fire('Delivery Failed', 'Failed to send verification email. Please check your network and try again.', 'error');
                         console.error("EmailJS Error: ", err);
                     });
@@ -475,7 +466,7 @@
             });
         }
 
-        // 2. NATIVE LOGIN WITH PASSWORD
+        // LOGIN PROCESS
         function executeLogin() {
             const username = document.getElementById('loginUser').value.trim().toLowerCase();
             const password = document.getElementById('loginPass').value.trim();
@@ -514,7 +505,7 @@
             });
         }
 
-        // 3. BIOMETRIC QUICK ACCESS (FINGERPRINT)
+        // BIOMETRIC QUICK ACCESS
         function executeBiometricLogin() {
             if (!hasBiometrics || !savedUser || !savedPass) return;
 
@@ -541,7 +532,7 @@
             });
         }
 
-        // 4. FORGOT PASSWORD SECURE SYSTEM
+        // FORGOT PASSWORD
         function triggerForgotPassword() {
             Swal.fire({
                 title: 'Reset Password',
