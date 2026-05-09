@@ -281,7 +281,6 @@
         </div>
 
     </div>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
@@ -353,7 +352,36 @@
             }
         }
 
-        // REGISTER PROCESS - FIXED AND SECURITY BYPASSED
+        // BACKEND PORTAL CALL FOR MONNIFY GENERATION
+        async function generateMonnifyAccount(fullName, email) {
+            try {
+                const response = await fetch('/api/generate-bank', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        fullName: fullName,
+                        email: email
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    return {
+                        bank_name: data.bank_name,
+                        account_number: data.account_number
+                    };
+                } else {
+                    throw new Error("Failed to generate bank via API Gateway");
+                }
+            } catch (error) {
+                console.error("Monnify Gateway Error:", error);
+                return null;
+            }
+        }
+
+        // REGISTER PROCESS
         function executeRegistration() {
             const fullName = document.getElementById('regFullName').value.trim();
             const username = document.getElementById('regUsername').value.trim().toLowerCase();
@@ -377,7 +405,6 @@
                 didOpen: () => { Swal.showLoading(); }
             });
 
-            // Gaba daya an cire duba "registered_device" a nan don hana tsayawa a loading
             db.ref('users/' + username).once('value', userSnap => {
                 if (userSnap.exists()) {
                     Swal.fire('Taken!', 'This username is already registered. Try another one.', 'warning');
@@ -417,8 +444,17 @@
                             }
                             return true;
                         }
-                    }).then((otpResult) => {
+                    }).then(async (otpResult) => {
                         if (otpResult.isConfirmed) {
+                            Swal.fire({
+                                title: 'Generating Bank Account...',
+                                html: 'Securing automatic bank reservation with Monnify API Gateway...',
+                                allowOutsideClick: false,
+                                didOpen: () => { Swal.showLoading(); }
+                            });
+
+                            const bankDetails = await generateMonnifyAccount(fullName, email);
+
                             Swal.fire({
                                 title: 'Creating Account...',
                                 allowOutsideClick: false,
@@ -437,11 +473,25 @@
                                 registered_time: Date.now()
                             };
 
+                            if (bankDetails) {
+                                newUserPayload.bank_details = {
+                                    bank_name: bankDetails.bank_name,
+                                    account_number: bankDetails.account_number
+                                };
+                            }
+
                             db.ref('users/' + username).set(newUserPayload).then(() => {
+                                let successMsg = 'Your email is verified and account is active. Please log in.';
+                                if (bankDetails) {
+                                    successMsg = `Account created successfully! Monnify Bank: <b>${bankDetails.bank_name} (${bankDetails.account_number})</b> has been generated for you.`;
+                                } else {
+                                    successMsg = 'Account created successfully, but bank account generation is pending. Please check wallet later.';
+                                }
+
                                 Swal.fire({
                                     icon: 'success',
-                                  title: 'Registration Successful!',
-                                    text: 'Your email is verified and account is now active. Please log in.',
+                                    title: 'Registration Successful!',
+                                    html: successMsg,
                                     confirmButtonColor: '#0062ff'
                                 }).then(() => {
                                     switchForm('login');
