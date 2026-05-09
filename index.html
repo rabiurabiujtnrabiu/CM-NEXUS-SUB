@@ -13,7 +13,6 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            // INTEGRATED YOUR REAL PUBLIC KEY
             emailjs.init("Kdo1uh2fYzmoDsl7G");
         })();
     </script>
@@ -354,7 +353,7 @@
             }
         }
 
-        // REGISTER PROCESS WITH YOUR LIVE EMAILJS KEYS
+        // REGISTER PROCESS - FIXED AND SECURITY BYPASSED
         function executeRegistration() {
             const fullName = document.getElementById('regFullName').value.trim();
             const username = document.getElementById('regUsername').value.trim().toLowerCase();
@@ -372,96 +371,89 @@
             }
 
             Swal.fire({
-                title: 'Verifying Security...',
-                html: 'Verifying secure hardware identifier...',
+                title: 'Checking Availability...',
+                html: 'Verifying username on safe grid...',
                 allowOutsideClick: false,
                 didOpen: () => { Swal.showLoading(); }
             });
 
-            db.ref('users/').orderByChild('registered_device').equalTo(deviceID).once('value', snapshot => {
-                if (snapshot.exists()) {
-                    Swal.fire('Device Blocked!', 'Multiple account creation is disabled! Only one registration allowed per mobile device to secure the platform ecosystem.', 'error');
+            // Gaba daya an cire duba "registered_device" a nan don hana tsayawa a loading
+            db.ref('users/' + username).once('value', userSnap => {
+                if (userSnap.exists()) {
+                    Swal.fire('Taken!', 'This username is already registered. Try another one.', 'warning');
                     return;
                 }
 
-                db.ref('users/' + username).once('value', userSnap => {
-                    if (userSnap.exists()) {
-                        Swal.fire('Taken!', 'This username is already registered. Try another one.', 'warning');
-                        return;
-                    }
+                const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
 
-                    const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+                Swal.fire({
+                    title: 'Sending OTP...',
+                    html: 'We are sending a 6-digit confirmation code to your Gmail address. Please wait...',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
 
+                emailjs.send("service_f6sep23", "template_otp", {
+                    to_name: fullName,
+                    to_email: email,
+                    otp_code: generatedOTP
+                }).then(() => {
                     Swal.fire({
-                        title: 'Sending OTP...',
-                        html: 'We are sending a 6-digit confirmation code to your Gmail address. Please wait...',
-                        allowOutsideClick: false,
-                        didOpen: () => { Swal.showLoading(); }
-                    });
-
-                    // Tura sako ta amfani da naka real Service ID da real Template ID
-                    emailjs.send("service_f6sep23", "template_otp", {
-                        to_name: fullName,
-                        to_email: email,
-                        otp_code: generatedOTP
-                    }).then(() => {
-                        Swal.fire({
-                            title: 'Enter Verification Code',
-                            html: `Enter the 6-digit verification code sent to <b>${email}</b>. Check your spam folder if not received.`,
-                            input: 'text',
-                            inputPlaceholder: 'Enter OTP Code',
-                            showCancelButton: true,
-                            confirmButtonText: 'Verify & Register',
-                            confirmButtonColor: '#0062ff',
-                            preConfirm: (inputOTP) => {
-                                if (!inputOTP) {
-                                    Swal.showValidationMessage('Verification code is required!');
-                                    return false;
-                                }
-                                if (inputOTP.trim() !== generatedOTP) {
-                                    Swal.showValidationMessage('Incorrect verification code! Check and try again.');
-                                    return false;
-                                }
-                                return true;
+                        title: 'Enter Verification Code',
+                        html: `Enter the 6-digit verification code sent to <b>${email}</b>. Check your spam folder if not received.`,
+                        input: 'text',
+                        inputPlaceholder: 'Enter OTP Code',
+                        showCancelButton: true,
+                        confirmButtonText: 'Verify & Register',
+                        confirmButtonColor: '#0062ff',
+                        preConfirm: (inputOTP) => {
+                            if (!inputOTP) {
+                                Swal.showValidationMessage('Verification code is required!');
+                                return false;
                             }
-                        }).then((otpResult) => {
-                            if (otpResult.isConfirmed) {
+                            if (inputOTP.trim() !== generatedOTP) {
+                                Swal.showValidationMessage('Incorrect verification code! Check and try again.');
+                                return false;
+                            }
+                            return true;
+                        }
+                    }).then((otpResult) => {
+                        if (otpResult.isConfirmed) {
+                            Swal.fire({
+                                title: 'Creating Account...',
+                                allowOutsideClick: false,
+                                didOpen: () => { Swal.showLoading(); }
+                            });
+
+                            const newUserPayload = {
+                                fullName: fullName,
+                                username: username,
+                                email: email,
+                                phone: phone,
+                                password: password,
+                                wallet: 0,
+                                xp: 0,
+                                registered_device: deviceID,
+                                registered_time: Date.now()
+                            };
+
+                            db.ref('users/' + username).set(newUserPayload).then(() => {
                                 Swal.fire({
-                                    title: 'Creating Account...',
-                                    allowOutsideClick: false,
-                                    didOpen: () => { Swal.showLoading(); }
+                                    icon: 'success',
+                                  title: 'Registration Successful!',
+                                    text: 'Your email is verified and account is now active. Please log in.',
+                                    confirmButtonColor: '#0062ff'
+                                }).then(() => {
+                                    switchForm('login');
                                 });
-
-                                const newUserPayload = {
-                                    fullName: fullName,
-                                    username: username,
-                       email: email,
-                                    phone: phone,
-                                    password: password,
-                                    wallet: 0,
-                                    xp: 0,
-                                    registered_device: deviceID,
-                                    registered_time: Date.now()
-                                };
-
-                                db.ref('users/' + username).set(newUserPayload).then(() => {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Registration Successful!',
-                                        text: 'Your email is verified and account is now active. Please log in.',
-                                        confirmButtonColor: '#0062ff'
-                                    }).then(() => {
-                                        switchForm('login');
-                                    });
-                                }).catch(err => {
-                                    Swal.fire('Database Error', 'Failed to save register payload.', 'error');
-                                });
-                            }
-                        });
-                    }).catch(err => {
-                        Swal.fire('Delivery Failed', 'Failed to send verification email. Please check your network and try again.', 'error');
-                        console.error("EmailJS Error: ", err);
+                            }).catch(err => {
+                                Swal.fire('Database Error', 'Failed to save register payload.', 'error');
+                            });
+                        }
                     });
+                }).catch(err => {
+                    Swal.fire('Delivery Failed', 'Failed to send verification email. Please check your network and try again.', 'error');
+                    console.error("EmailJS Error: ", err);
                 });
             });
         }
