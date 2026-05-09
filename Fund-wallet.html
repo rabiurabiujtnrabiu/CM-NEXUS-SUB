@@ -1,16 +1,12 @@
 <!DOCTYPE html>
-<html lang="ha">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elite Wallet</title>
     
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
     <style>
-        /* Tsarin Shafi Gaba daya */
+        /* General Page Styling */
         body {
             margin: 0;
             padding: 15px;
@@ -19,7 +15,7 @@
             color: #ffffff;
         }
 
-        /* Blue Wallet Card (Kamar hoton da ka turo) */
+        /* Blue Wallet Card */
         .wallet-card {
             background: linear-gradient(135deg, #0099ff, #00ccd4);
             border-radius: 24px;
@@ -72,7 +68,7 @@
             background-color: rgba(255, 255, 255, 0.4);
         }
 
-        /* Tsarin Pop-up (Modal) na Funding */
+        /* Modal Pop-up Styling */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -112,7 +108,7 @@
             line-height: 1.5;
         }
 
-        /* Bayanan Banki a Cikin Pop-up */
+        /* Bank Details inside Modal */
         .bank-detail-item {
             background-color: #0d1117;
             border: 1px solid #21262d;
@@ -136,7 +132,7 @@
             color: #ffffff;
         }
 
-        /* Button Copy da Cancel */
+        /* Buttons Styling */
         .btn-action {
             width: 100%;
             padding: 12px;
@@ -179,19 +175,19 @@
     <div class="modal-overlay" id="fundModal">
         <div class="modal-box">
             <div class="modal-title">FUND YOUR WALLET</div>
-            <div class="modal-desc">Tura kudi zuwa wannan asusun bankin domin cika wallet dinka ta atomatik:</div>
+            <div class="modal-desc">Transfer money to this bank account to fund your wallet automatically:</div>
             
             <div class="bank-detail-item">
                 <div>
                     <div class="detail-label">BANK NAME</div>
-                    <div class="detail-value" id="modal-bank-name">Ana lodi...</div>
+                    <div class="detail-value" id="modal-bank-name">Loading...</div>
                 </div>
             </div>
 
             <div class="bank-detail-item">
                 <div>
                     <div class="detail-label">ACCOUNT NUMBER</div>
-                    <div class="detail-value" id="modal-account-number">Ana lodi...</div>
+                    <div class="detail-value" id="modal-account-number">Loading...</div>
                 </div>
             </div>
 
@@ -207,33 +203,37 @@
         </div>
     </div>
 
-    <script>
-        // --- MAI GIDA: JADAWALIN FIREBASE DIN KA ---
-        // Saka ainihin Firebase Config dinka na App dinka a nan idan babu shi
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Your real Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSy...",
-            authDomain: "your-project.firebaseapp.com",
-            databaseURL: "https://your-project-default-rtdb.firebaseio.com",
-            projectId: "your-project",
-            storageBucket: "your-project.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:12345:web:12345"
+            apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+            authDomain: "cm-nexus-sub.firebaseapp.com",
+            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+            projectId: "cm-nexus-sub",
+            storageBucket: "cm-nexus-sub.firebasestorage.app",
+            messagingSenderId: "22010501991",
+            appId: "1:22010501991:web:4140bf159c199f6796edc2"
         };
         
-        // Fara Firebase idan ba a yi ba
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
 
         let userBankNumber = "";
 
-        // --- DAUKO BALANCE DA BAYANAN BANKI ---
-        firebase.auth().onAuthStateChanged((user) => {
+        // --- FETCH BALANCE AND BANK DETAILS LIVE ---
+        onAuthStateChanged(auth, (user) => {
             if (user) {
                 const uid = user.uid;
 
-                // 1. Dauko Balance na User ta Atomatik
-                firebase.database().ref("Users/" + uid + "/balance").on("value", (snapshot) => {
+                // 1. Fetch User Balance
+                const balanceRef = ref(db, "Users/" + uid + "/balance");
+                onValue(balanceRef, (snapshot) => {
                     if (snapshot.exists()) {
                         let bal = parseFloat(snapshot.val());
                         document.getElementById("user-balance").innerText = "₦" + bal.toLocaleString('en-US', {minimumFractionDigits: 2});
@@ -242,51 +242,49 @@
                     }
                 });
 
-                // 2. Dauko Bayanan Banki na User
-                firebase.database().ref("Users/" + uid + "/bank_details").on("value", (snapshot) => {
+                // 2. Fetch Bank Details
+                const bankRef = ref(db, "Users/" + uid + "/bank_details");
+                onValue(bankRef, (snapshot) => {
                     if (snapshot.exists()) {
                         const data = snapshot.val();
                         userBankNumber = data.account_number;
                         
-                        // Zuba bayanan a Pop-up din
                         document.getElementById("modal-bank-name").innerText = data.bank_name;
                         document.getElementById("modal-account-number").innerText = data.account_number;
                     } else {
-                        document.getElementById("modal-bank-name").innerText = "Ba a samar ba";
-                        document.getElementById("modal-account-number").innerText = "Danna don gwadawa sake";
+                        document.getElementById("modal-bank-name").innerText = "Not generated yet";
+                        document.getElementById("modal-account-number").innerText = "Please try again later";
                     }
                 });
             } else {
-                console.log("Babu user da ya yi login.");
+                console.log("No user is signed in.");
             }
         });
 
-        // --- DOMIN BUDEWA DA RUFE POP-UP ---
-        function openFundingModal() {
+        // Make functions globally accessible for HTML button clicks
+        window.openFundingModal = function() {
             document.getElementById("fundModal").style.display = "flex";
         }
 
-        function closeFundingModal() {
+        window.closeFundingModal = function() {
             document.getElementById("fundModal").style.display = "none";
         }
 
-        // --- DOMIN COPY ACCOUNT NUMBER ---
-        function copyAccountNumber() {
+        window.copyAccountNumber = function() {
             if (userBankNumber) {
                 navigator.clipboard.writeText(userBankNumber).then(() => {
-                    alert("An kwafi Account Number: " + userBankNumber);
+                    alert("Account Number copied: " + userBankNumber);
                 }).catch(err => {
-                    // Idan tsohuwar waya ce da ba ta da navigator.clipboard
                     let tempInput = document.createElement("input");
                     tempInput.value = userBankNumber;
                     document.body.appendChild(tempInput);
                     tempInput.select();
                     document.execCommand("copy");
                     document.body.removeChild(tempInput);
-                    alert("An kwafi Account Number: " + userBankNumber);
+                    alert("Account Number copied: " + userBankNumber);
                 });
             } else {
-                alert("Ana kokarin karbo account number tukunna, dan dakata...");
+                alert("Loading bank details, please wait...");
             }
         }
     </script>
