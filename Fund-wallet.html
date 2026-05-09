@@ -205,10 +205,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Your real Firebase configuration
+        // Real Firebase config for CM Nexus sub
         const firebaseConfig = {
             apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
             authDomain: "cm-nexus-sub.firebaseapp.com",
@@ -219,49 +218,47 @@
             appId: "1:22010501991:web:4140bf159c199f6796edc2"
         };
         
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getDatabase(app);
 
         let userBankNumber = "";
 
-        // --- FETCH BALANCE AND BANK DETAILS LIVE ---
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                const uid = user.uid;
+        // Get UID from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const uid = urlParams.get('uid');
 
-                // 1. Fetch User Balance (Changed to lowercase 'users')
-                const balanceRef = ref(db, "users/" + uid + "/balance");
-                onValue(balanceRef, (snapshot) => {
-                    if (snapshot.exists()) {
-                        let bal = parseFloat(snapshot.val());
-                        document.getElementById("user-balance").innerText = "₦" + bal.toLocaleString('en-US', {minimumFractionDigits: 2});
-                    } else {
-                        document.getElementById("user-balance").innerText = "₦0.00";
-                    }
-                });
+        if (uid) {
+            // 1. Fetch User Balance
+            const balanceRef = ref(db, "users/" + uid + "/balance");
+            onValue(balanceRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    let bal = parseFloat(snapshot.val());
+                    document.getElementById("user-balance").innerText = "₦" + bal.toLocaleString('en-US', {minimumFractionDigits: 2});
+                } else {
+                    document.getElementById("user-balance").innerText = "₦0.00";
+                }
+            });
 
-                // 2. Fetch Bank Details (Changed to lowercase 'users')
-                const bankRef = ref(db, "users/" + uid + "/bank_details");
-                onValue(bankRef, (snapshot) => {
-                    if (snapshot.exists()) {
-                        const data = snapshot.val();
-                        userBankNumber = data.account_number;
-                        
-                        document.getElementById("modal-bank-name").innerText = data.bank_name;
-                        document.getElementById("modal-account-number").innerText = data.account_number;
-                    } else {
-                        document.getElementById("modal-bank-name").innerText = "Not generated yet";
-                        document.getElementById("modal-account-number").innerText = "Please try again later";
-                    }
-                });
-            } else {
-                console.log("No user is signed in.");
-            }
-        });
+            // 2. Fetch Bank Details
+            const bankRef = ref(db, "users/" + uid + "/bank_details");
+            onValue(bankRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    userBankNumber = data.account_number;
+                    
+                    document.getElementById("modal-bank-name").innerText = data.bank_name;
+                    document.getElementById("modal-account-number").innerText = data.account_number;
+                } else {
+                    document.getElementById("modal-bank-name").innerText = "Not generated yet";
+                    document.getElementById("modal-account-number").innerText = "Please try again later";
+                }
+            });
+        } else {
+            console.error("UID parameter is missing in the URL!");
+            document.getElementById("modal-bank-name").innerText = "Error: No User UID";
+            document.getElementById("modal-account-number").innerText = "Please open via App";
+        }
 
-        // Make functions globally accessible for HTML button clicks
         window.openFundingModal = function() {
             document.getElementById("fundModal").style.display = "flex";
         }
