@@ -1,216 +1,293 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ha">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CM Nexus sub - Add Funds</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <title>Elite Wallet</title>
     
-    <script type="text/javascript" src="https://sdk.monnify.com/v1/sdk.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        /* Tsarin Shafi Gaba daya */
+        body {
+            margin: 0;
+            padding: 15px;
+            background-color: #0d1117;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #ffffff;
+        }
+
+        /* Blue Wallet Card (Kamar hoton da ka turo) */
+        .wallet-card {
+            background: linear-gradient(135deg, #0099ff, #00ccd4);
+            border-radius: 24px;
+            padding: 25px;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0, 153, 255, 0.2);
+            margin-bottom: 25px;
+        }
+
+        .card-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+
+        .balance {
+            font-size: 38px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .btn-fund {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-fund:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Tsarin Pop-up (Modal) na Funding */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-box {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            padding: 25px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            color: #0099ff;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .modal-desc {
+            font-size: 14px;
+            color: #8b949e;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* Bayanan Banki a Cikin Pop-up */
+        .bank-detail-item {
+            background-color: #0d1117;
+            border: 1px solid #21262d;
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #8b949e;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        /* Button Copy da Cancel */
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            border: none;
+        }
+
+        .btn-copy {
+            background-color: #0099ff;
+            color: #ffffff;
+        }
+
+        .btn-close {
+            background-color: transparent;
+            color: #8b949e;
+            border: 1px solid #30363d;
+        }
+    </style>
 </head>
-<body class="bg-[#0b132b] text-white font-sans min-h-screen flex items-center justify-center p-4">
+<body>
 
-    <div class="w-full max-w-md bg-[#111a36] rounded-3xl p-6 shadow-2xl border border-gray-800 animate__animated animate__fadeInUp">
+    <div class="wallet-card">
+        <div class="card-label">Total Balance</div>
+        <div class="balance" id="user-balance">₦0.00</div>
         
-        <div class="flex items-center mb-6">
-            <button onclick="history.back()" class="text-white hover:text-gray-300 mr-4 text-xl transition-all hover:scale-110">
-                <i class="fa-solid fa-arrow-left"></i>
+        <div class="button-group">
+            <button class="btn btn-fund" onclick="openFundingModal()">
+                💳 Fund
             </button>
-            <h1 class="text-xl font-bold tracking-wide">Add Funds</h1>
-        </div>
-
-        <div class="bg-gradient-to-r from-[#00b4db] to-[#0083b0] rounded-3xl p-6 mb-6 relative overflow-hidden shadow-lg border border-cyan-500/30">
-            <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full"></div>
-            
-            <p class="text-xs font-semibold tracking-wider text-cyan-100 uppercase mb-2">Automatic Bank Transfer</p>
-            
-            <div class="flex justify-between items-center mb-3">
-                <span id="account-number" class="text-3xl font-extrabold tracking-widest text-white">Generating...</span>
-                <button onclick="copyAccountNumber()" class="text-white/80 hover:text-white transition-all text-xl p-2 rounded-lg hover:bg-white/10 active:scale-90" title="Copy Account Number">
-                    <i class="fa-regular fa-copy"></i>
-                </button>
-            </div>
-            
-            <p id="bank-name" class="text-yellow-300 font-bold text-lg mb-4">Securing Account...</p>
-            
-            <p class="text-xs text-cyan-50">Account Name: <span id="account-name" class="font-mono bg-black/20 px-2 py-1 rounded">CM-Nexus-sub-...</span></p>
-        </div>
-
-        <div id="toast" class="hidden fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50 transition-all duration-300">
-            Account number copied successfully!
-        </div>
-
-        <div class="mb-6">
-            <p class="text-xs font-semibold text-gray-400 tracking-wider uppercase mb-3">Pay Via Card or USSD</p>
-            
-            <div class="relative mb-4">
-                <input type="number" id="amount" placeholder="Enter Amount (₦)" 
-                    class="w-full bg-[#1b264f] border border-gray-700 rounded-2xl py-4 px-5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium transition-all"
-                    required>
-            </div>
-
-            <button id="pay-btn" onclick="initializePayment()" 
-                class="w-full bg-[#1a73e8] hover:bg-blue-600 text-white font-semibold py-4 px-5 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
-                <i class="fa-solid fa-shield-halved"></i>
-                <span>INITIALIZE SECURE PAYMENT</span>
+            <button class="btn btn-fund" style="opacity: 0.6;">
+                📜 History
             </button>
         </div>
-
-        <div class="border border-dashed border-blue-900/50 bg-blue-950/20 rounded-2xl p-4 flex items-start gap-3">
-            <i class="fa-solid fa-circle-info text-blue-400 mt-1 animate-pulse"></i>
-            <p class="text-xs text-gray-400 leading-relaxed">
-                Wallet funding is instant. Ensure you transfer only to the generated accounts assigned to your username on CM Nexus sub.
-            </p>
-        </div>
-
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+    <div class="modal-overlay" id="fundModal">
+        <div class="modal-box">
+            <div class="modal-title">FUND YOUR WALLET</div>
+            <div class="modal-desc">Tura kudi zuwa wannan asusun bankin domin cika wallet dinka ta atomatik:</div>
+            
+            <div class="bank-detail-item">
+                <div>
+                    <div class="detail-label">BANK NAME</div>
+                    <div class="detail-value" id="modal-bank-name">Ana lodi...</div>
+                </div>
+            </div>
+
+            <div class="bank-detail-item">
+                <div>
+                    <div class="detail-label">ACCOUNT NUMBER</div>
+                    <div class="detail-value" id="modal-account-number">Ana lodi...</div>
+                </div>
+            </div>
+
+            <div class="bank-detail-item">
+                <div>
+                    <div class="detail-label">ACCOUNT NAME</div>
+                    <div class="detail-value">CM-NEXUS-SUB</div>
+                </div>
+            </div>
+
+            <button class="btn-action btn-copy" onclick="copyAccountNumber()">COPY ACCOUNT NUMBER</button>
+            <button class="btn-action btn-close" onclick="closeFundingModal()">CANCEL</button>
+        </div>
+    </div>
+
+    <script>
+        // --- MAI GIDA: JADAWALIN FIREBASE DIN KA ---
+        // Saka ainihin Firebase Config dinka na App dinka a nan idan babu shi
         const firebaseConfig = {
-          apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
-          authDomain: "cm-nexus-sub.firebaseapp.com",
-          databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
-          projectId: "cm-nexus-sub",
-          storageBucket: "cm-nexus-sub.firebasestorage.app",
-          messagingSenderId: "22010501991",
-          appId: "1:22010501991:web:4140bf159c199f6796edc2"
+            apiKey: "AIzaSy...",
+            authDomain: "your-project.firebaseapp.com",
+            databaseURL: "https://your-project-default-rtdb.firebaseio.com",
+            projectId: "your-project",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:12345:web:12345"
         };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        // 1. Link dinka na PHP Backend (CANZA WANNAN LINK DIN ZUWA NA REALL DOMAIN DINKA)
-        const backendUrl = "https://yourdomain.com/generate.php";
-        // Gano Username dake kai yanzu (Daga URL ko LocalStorage)
-        const urlParams = new URLSearchParams(window.location.search);
-        let currentUsername = urlParams.get('username') || localStorage.getItem('username');
-
-        if (!currentUsername) {
-            currentUsername = "rabiujtn"; // Default fallback username
+        
+        // Fara Firebase idan ba a yi ba
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
 
-        const bankDetailsRef = ref(db, 'bank_details/' + currentUsername);
+        let userBankNumber = "";
 
-        function updateUI(accNo, bankName, accName) {
-            document.getElementById('account-number').innerText = accNo;
-            document.getElementById('bank-name').innerText = bankName;
-            document.getElementById('account-name').innerText = accName;
-        }
+        // --- DAUKO BALANCE DA BAYANAN BANKI ---
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                const uid = user.uid;
 
-        const safetyTimeout = setTimeout(() => {
-            // Idan duka tsarin ya jinkiri, nuna asusun wucin gadi don kar shafin ya makale
-            updateUI("5227958615", "Wema Bank / Monnify", "CM-Nexus-sub-" + currentUsername);
-        }, 8000);
+                // 1. Dauko Balance na User ta Atomatik
+                firebase.database().ref("Users/" + uid + "/balance").on("value", (snapshot) => {
+                    if (snapshot.exists()) {
+                        let bal = parseFloat(snapshot.val());
+                        document.getElementById("user-balance").innerText = "₦" + bal.toLocaleString('en-US', {minimumFractionDigits: 2});
+                    } else {
+                        document.getElementById("user-balance").innerText = "₦0.00";
+                    }
+                });
 
-        // 2. Saurari Firebase ko akaundin yana nan riga da can
-        onValue(bankDetailsRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data && data.account_number) {
-                clearTimeout(safetyTimeout);
-                updateUI(data.account_number, data.bank_name, data.account_name);
+                // 2. Dauko Bayanan Banki na User
+                firebase.database().ref("Users/" + uid + "/bank_details").on("value", (snapshot) => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        userBankNumber = data.account_number;
+                        
+                        // Zuba bayanan a Pop-up din
+                        document.getElementById("modal-bank-name").innerText = data.bank_name;
+                        document.getElementById("modal-account-number").innerText = data.account_number;
+                    } else {
+                        document.getElementById("modal-bank-name").innerText = "Ba a samar ba";
+                        document.getElementById("modal-account-number").innerText = "Danna don gwadawa sake";
+                    }
+                });
             } else {
-                // Idan babu shi, kira PHP API dinmu ya samar dashi yanzu
-                autoGenerateMonnifyAccount();
+                console.log("Babu user da ya yi login.");
             }
         });
 
-        // 3. Aikin kiran PHP file dinmu ta atomatik
-        async function autoGenerateMonnifyAccount() {
-            try {
-                const response = await fetch(`${backendUrl}?username=${currentUsername}`);
-                const data = await response.json();
-
-                if (data.requestSuccessful && data.responseBody.accounts.length > 0) {
-                    clearTimeout(safetyTimeout);
-                    const mainAccount = data.responseBody.accounts[0];
-                    
-                    const generatedData = {
-                        account_number: mainAccount.accountNumber,
-                        bank_name: mainAccount.bankName,
-                        account_name: mainAccount.accountName
-                    };
-
-                    // Adana a Firebase
-                    await set(bankDetailsRef, generatedData);
-                    updateUI(generatedData.account_number, generatedData.bank_name, generatedData.account_name);
-                } else {
-                    console.error("Monnify API Response failed:", data);
-                }
-            } catch (error) {
-                console.error("Failed to connect to PHP backend:", error);
-            }
+        // --- DOMIN BUDEWA DA RUFE POP-UP ---
+        function openFundingModal() {
+            document.getElementById("fundModal").style.display = "flex";
         }
 
-        window.copyAccountNumber = function() {
-            const accountNumber = document.getElementById('account-number').innerText;
-            if (accountNumber === "Generating..." || accountNumber === "Loading...") return;
-
-            navigator.clipboard.writeText(accountNumber).then(() => {
-                const toast = document.getElementById('toast');
-                toast.classList.remove('hidden');
-                setTimeout(() => {
-                    toast.classList.add('hidden');
-                }, 2500);
-            });
+        function closeFundingModal() {
+            document.getElementById("fundModal").style.display = "none";
         }
 
-        window.initializePayment = function() {
-            const amount = document.getElementById('amount').value;
-            const payBtn = document.getElementById('pay-btn');
-
-            if (!amount || amount <= 0) {
-                alert('Please enter a valid deposit amount!');
-                return;
+        // --- DOMIN COPY ACCOUNT NUMBER ---
+        function copyAccountNumber() {
+            if (userBankNumber) {
+                navigator.clipboard.writeText(userBankNumber).then(() => {
+                    alert("An kwafi Account Number: " + userBankNumber);
+                }).catch(err => {
+                    // Idan tsohuwar waya ce da ba ta da navigator.clipboard
+                    let tempInput = document.createElement("input");
+                    tempInput.value = userBankNumber;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(tempInput);
+                    alert("An kwafi Account Number: " + userBankNumber);
+                });
+            } else {
+                alert("Ana kokarin karbo account number tukunna, dan dakata...");
             }
-
-            payBtn.disabled = true;
-            payBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Processing...`;
-
-            MonnifySDK.initialize({
-                amount: parseFloat(amount),
-                currency: "NGN",
-                reference: "TX-" + Date.now(), 
-                customerName: currentUsername, 
-                customerEmail: currentUsername + "@cmnexus.com", 
-                apiKey: "JNAKW6AD98A4CCQKMFG7SHBYS1J2LX9X", 
-                contractCode: "1727805127", 
-                paymentDescription: "Wallet Funding via CM Nexus sub",
-                isTestMode: false, 
-                metadata: {
-                    "username": currentUsername
-                },
-                onComplete: function(response) {
-                    if (response.status === "SUCCESSFUL") {
-                        alert("Payment successful!");
-                        
-                        const paymentRef = ref(db, 'payment_requests/' + currentUsername);
-                        const newPaymentRef = push(paymentRef);
-                        set(newPaymentRef, {
-                            amount: parseFloat(amount),
-                            status: "success",
-                            reference: response.transactionReference,
-                            timestamp: Date.now(),
-                            method: "monnify_card"
-                        });
-
-                        document.getElementById('amount').value = '';
-                    } else {
-                        alert("Payment failed: " + response.status);
-                    }
-                    payBtn.disabled = false;
-                    payBtn.innerHTML = `<i class="fa-solid fa-shield-halved"></i> INITIALIZE SECURE PAYMENT`;
-                },
-                onClose: function(data) {
-                    alert("Payment window closed.");
-                    payBtn.disabled = false;
-                    payBtn.innerHTML = `<i class="fa-solid fa-shield-halved"></i> INITIALIZE SECURE PAYMENT`;
-                }
-            });
         }
     </script>
 </body>
