@@ -231,8 +231,8 @@
             if (user) {
                 const uid = user.uid;
 
-                // 1. Fetch User Balance
-                const balanceRef = ref(db, "Users/" + uid + "/balance");
+                // 1. Fetch User Balance (Changed to lowercase 'users')
+                const balanceRef = ref(db, "users/" + uid + "/balance");
                 onValue(balanceRef, (snapshot) => {
                     if (snapshot.exists()) {
                         let bal = parseFloat(snapshot.val());
@@ -242,8 +242,8 @@
                     }
                 });
 
-                // 2. Fetch Bank Details
-                const bankRef = ref(db, "Users/" + uid + "/bank_details");
+                // 2. Fetch Bank Details (Changed to lowercase 'users')
+                const bankRef = ref(db, "users/" + uid + "/bank_details");
                 onValue(bankRef, (snapshot) => {
                     if (snapshot.exists()) {
                         const data = snapshot.val();
