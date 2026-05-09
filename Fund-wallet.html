@@ -207,7 +207,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Real Firebase config for CM Nexus sub
         const firebaseConfig = {
             apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
             authDomain: "cm-nexus-sub.firebaseapp.com",
@@ -223,13 +222,16 @@
 
         let userBankNumber = "";
 
-        // Get UID from URL parameter
+        // DUKAN GYARAN YANA NAN: 
+        // Maimakon dogon UID, muna amfani da sunan 'username' dake LocalStorage tunda an yi login
         const urlParams = new URLSearchParams(window.location.search);
-        const uid = urlParams.get('uid');
+        let username = urlParams.get('uid') || localStorage.getItem('username');
 
-        if (uid) {
-            // 1. Fetch User Balance
-            const balanceRef = ref(db, "users/" + uid + "/balance");
+        if (username) {
+            username = username.toLowerCase().trim();
+
+            // 1. Dauko Wallet Balance ta hanyar Username dake Firebase
+            const balanceRef = ref(db, "users/" + username + "/wallet");
             onValue(balanceRef, (snapshot) => {
                 if (snapshot.exists()) {
                     let bal = parseFloat(snapshot.val());
@@ -239,8 +241,8 @@
                 }
             });
 
-            // 2. Fetch Bank Details
-            const bankRef = ref(db, "users/" + uid + "/bank_details");
+            // 2. Dauko Monnify Bank Details ta hanyar Username dake Firebase
+            const bankRef = ref(db, "users/" + username + "/bank_details");
             onValue(bankRef, (snapshot) => {
                 if (snapshot.exists()) {
                     const data = snapshot.val();
@@ -249,14 +251,14 @@
                     document.getElementById("modal-bank-name").innerText = data.bank_name;
                     document.getElementById("modal-account-number").innerText = data.account_number;
                 } else {
-                    document.getElementById("modal-bank-name").innerText = "Not generated yet";
-                    document.getElementById("modal-account-number").innerText = "Please try again later";
+                    document.getElementById("modal-bank-name").innerText = "Generating Bank...";
+                    document.getElementById("modal-account-number").innerText = "Please wait a moment...";
                 }
             });
         } else {
-            console.error("UID parameter is missing in the URL!");
-            document.getElementById("modal-bank-name").innerText = "Error: No User UID";
-            document.getElementById("modal-account-number").innerText = "Please open via App";
+            console.error("No active session or Username found!");
+            document.getElementById("modal-bank-name").innerText = "Error: No Session";
+            document.getElementById("modal-account-number").innerText = "Please login again";
         }
 
         window.openFundingModal = function() {
