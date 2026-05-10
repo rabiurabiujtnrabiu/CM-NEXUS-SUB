@@ -261,7 +261,7 @@
                     <label>Phone Number</label>
                     <div class="input-wrapper">
                         <i class="fas fa-phone"></i>
-                        <input type="number" id="regPhone" placeholder="e.g. 08076784616">
+                        <input type="number" id="regPhone" placeholder="e.g. 08088884616">
                     </div>
                 </div>
 
@@ -353,19 +353,19 @@
         }
 
         // BACKEND PORTAL CALL FOR MONNIFY GENERATION
-        async function generateMonnifyAccount(fullName, email) {
+        async function generateMonnifyAccount(fullName, email, username) {
             try {
-                const response = await fetch('/api/generate-bank', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        fullName: fullName,
-                        email: email
-                    })
-                });
-
+                    const response = await fetch('https://cm-nexus-sub.pages.dev/api/generate-bank', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fullName: fullName,
+          email: email,
+          username: username // Tabbatar cewa an riga an karbo username dake register a sama
+        })
+      });
                 if (response.ok) {
                     const data = await response.json();
                     return {
@@ -453,8 +453,7 @@
                                 didOpen: () => { Swal.showLoading(); }
                             });
 
-                            const bankDetails = await generateMonnifyAccount(fullName, email);
-
+                            const bankDetails = await generateMonnifyAccount(fullName, email, username);
                             Swal.fire({
                                 title: 'Creating Account...',
                                 allowOutsideClick: false,
