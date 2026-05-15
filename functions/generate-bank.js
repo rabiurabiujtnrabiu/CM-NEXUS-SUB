@@ -26,20 +26,28 @@ export async function onRequestPost(context) {
 
     // Validate incoming parameters from the mobile app runtime environment
     if (!amount || !email || !fullName || !username) {
-        return new Response(JSON.stringify({ error: "Missing required request parameters (amount, email, fullName, username)" }), { 
+        return new Response(JSON.stringify({ error: "Missing required request parameters" }), { 
             status: 400, 
             headers: corsHeaders 
         });
     }
 
-    // SANDBOX FALLBACK: Prioritize Cloudflare environment variables, fallback to test keys for active staging logs
-    const privateKey = env.OPAY_PRIVATE_KEY || "OPAYPRV17784871036800.9285314107105687"; 
-    const publicKey = env.OPAY_PUBLIC_KEY || "OPAYPUB17784871036800.8971411104862697";
+    // PRODUCTION LIVE UPGRADE: Read secure merchant credentials directly from Cloudflare Settings Environment
+    // Make sure you update these keys to your real OPay Live Production Keys inside your Cloudflare Dashboard!
+    const privateKey = env.OPAY_PRIVATE_KEY; 
+    const publicKey = env.OPAY_PUBLIC_KEY;
 
-    console.log(`Generating OPay secure sandbox funding cashier link for: ${username}`);
+    if (!privateKey || !publicKey) {
+        return new Response(JSON.stringify({ error: "System Configuration Error: Live OPay API Keys are missing in Cloudflare settings." }), { 
+            status: 500, 
+            headers: corsHeaders 
+        });
+    }
 
-    // Call official OPay payment endpoint architecture
-    const opayResponse = await fetch("https://api.opaycheckout.com/api/v1/international/cashier/create", {
+    console.log(`Generating OPay LIVE funding cashier link for user: ${username}`);
+
+    // CRITICAL FIX: Switched to official OPay LOCAL LIVE endpoint for real production money transactions in Nigeria
+    const opayResponse = await fetch("https://api.opaycheckout.com/api/v1/local/cashier/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -52,13 +60,13 @@ export async function onRequestPost(context) {
         reference: "CMN-" + Date.now(),
         returnUrl: "https://cmnexussub.name.ng/success",
         
-        // Automated IPN Callback to trigger the atomic worker webhook backend we built earlier
+        // Automated Live IPN Callback to trigger our secure atomic firebase wallet funding webhook
         callbackUrl: "https://cmnexussub.name.ng/api/webhook", 
         
         userEmail: email,
         userName: fullName,
         metadata: {
-          username: username // Secure tunneling parameter to trace balance wallet allocation
+          username: username // Secure tracking to pass account ownership to the webhook engine
         }
       })
     });
@@ -67,8 +75,8 @@ export async function onRequestPost(context) {
     return new Response(JSON.stringify(opayData), { status: 200, headers: corsHeaders });
 
   } catch (error) {
-    console.error("Cashier Creation API Bridge Failure:", error.message);
-    return new Response(JSON.stringify({ error: "Internal payment processing engine crash", details: error.message }), { 
+    console.error("LIVE Cashier Creation API Bridge Failure:", error.message);
+    return new Response(JSON.stringify({ error: "Internal live payment processing engine crash", details: error.message }), { 
         status: 500, 
         headers: corsHeaders 
     });
