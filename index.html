@@ -138,21 +138,11 @@
         .swal2-popup { border-radius: 28px !important; background: var(--surface) !important; color: white !important; font-family: 'Plus Jakarta Sans', sans-serif !important; }
         .swal2-title { color: white !important; font-weight: 800 !important; }
         .swal2-html-container { color: var(--text-muted) !important; }
-        .swal2-input {
-            background: var(--dark) !important;
-            border: 2px solid var(--border) !important;
-            border-radius: 16px !important;
-            color: white !important;
-            font-size: 14px !important;
-            font-weight: 700 !important;
-        }
-        .swal2-input:focus { border-color: var(--primary) !important; outline: none !important; }
     </style>
 </head>
 <body>
 
     <div class="wrapper">
-
         <div id="globalLogo" class="global-logo-container">
             <div class="brand-logo">
                 <svg viewBox="0 0 500 500" width="100%" height="100%">
@@ -165,39 +155,34 @@
         </div>
 
         <div class="screen-container">
-
+            <!-- ONBOARDING -->
             <div id="onboardingScreen" class="onboarding-box">
                 <div class="slide active">
                     <h2>Fast & Cheap Subscriptions</h2>
                     <p>Enjoy blazing fast and extremely affordable internet data and airtime delivery on all Nigerian networks.</p>
                 </div>
-
                 <div class="slide">
                     <h2>Secure Wallet System</h2>
                     <p>CM Nexus Sub secures your funds with double transaction PIN security. Auto-funding and withdrawals active.</p>
                 </div>
-
                 <div class="slide">
                     <h2>Join Arena & Earn</h2>
                     <p>Participate in the Nexus Arena, gather XP coins, refer friends, and swap your earnings into cash wallet!</p>
                 </div>
-
                 <div class="dots-container">
                     <div class="dot active"></div>
                     <div class="dot"></div>
                     <div class="dot"></div>
                 </div>
-
                 <button class="btn-action" onclick="nextSlide()" id="onboardBtn">Next</button>
             </div>
 
-
+            <!-- LOGIN -->
             <div id="loginScreen" class="form-box">
                 <div class="form-header">
                     <h2>Welcome Back</h2>
                     <p>Log in to access your CM Nexus Sub dashboard</p>
                 </div>
-
                 <div class="form-group">
                     <label>Username</label>
                     <div class="input-wrapper">
@@ -205,7 +190,6 @@
                         <input type="text" id="loginUser" placeholder="Enter username">
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label>Password</label>
                     <div class="input-wrapper">
@@ -213,26 +197,21 @@
                         <input type="password" id="loginPass" placeholder="Enter account password">
                     </div>
                 </div>
-
                 <a href="#" class="forgot-link" onclick="triggerForgotPassword()">Forgot Password?</a>
-
                 <button class="btn-action" onclick="executeLogin()">Log In</button>
-
                 <div class="fingerprint-btn" id="fingerprintLoginBtn" onclick="executeBiometricLogin()">
                     <i class="fas fa-fingerprint"></i>
                     <span>Use Fingerprint to Sign In</span>
                 </div>
-
                 <p class="switch-text">New to Nexus? <span onclick="switchForm('register')">Register Account</span></p>
             </div>
 
-
+            <!-- REGISTER -->
             <div id="registerScreen" class="form-box">
                 <div class="form-header">
                     <h2>Create Account</h2>
                     <p>Register once to join CM Nexus Sub secure grid</p>
                 </div>
-
                 <div class="form-group">
                     <label>Full Name</label>
                     <div class="input-wrapper">
@@ -240,7 +219,6 @@
                         <input type="text" id="regFullName" placeholder="e.g. Aliyu Ibrahim">
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label>Username</label>
                     <div class="input-wrapper">
@@ -248,7 +226,6 @@
                         <input type="text" id="regUsername" placeholder="Create unique username">
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label>Email Address</label>
                     <div class="input-wrapper">
@@ -256,7 +233,6 @@
                         <input type="email" id="regEmail" placeholder="e.g. aliyu@gmail.com">
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label>Phone Number</label>
                     <div class="input-wrapper">
@@ -264,7 +240,6 @@
                         <input type="number" id="regPhone" placeholder="e.g. 08088884616">
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label>Password</label>
                     <div class="input-wrapper">
@@ -272,15 +247,12 @@
                         <input type="password" id="regPass" placeholder="Create strong password">
                     </div>
                 </div>
-
                 <button class="btn-action" onclick="executeRegistration()">Register Now</button>
-
                 <p class="switch-text">Already registered? <span onclick="switchForm('login')">Log In</span></p>
             </div>
-
         </div>
-
     </div>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
@@ -312,7 +284,6 @@
         }
 
         const deviceID = getDeviceUUID();
-
         const hasBiometrics = localStorage.getItem('useFingerprint') === 'true';
         const savedUser = localStorage.getItem('saved_username');
         const savedPass = localStorage.getItem('saved_password');
@@ -324,9 +295,7 @@
         function nextSlide() {
             slides[currentSlideIdx].classList.remove('active');
             dots[currentSlideIdx].classList.remove('active');
-
             currentSlideIdx++;
-
             if (currentSlideIdx < slides.length) {
                 slides[currentSlideIdx].classList.add('active');
                 dots[currentSlideIdx].classList.add('active');
@@ -342,7 +311,6 @@
         function switchForm(formName) {
             document.querySelectorAll('.form-box').forEach(box => box.classList.remove('active'));
             const logoContainer = document.getElementById('globalLogo');
-            
             if (formName === 'login') {
                 document.getElementById('loginScreen').classList.add('active');
                 logoContainer.style.display = 'flex'; 
@@ -352,31 +320,23 @@
             }
         }
 
-        // BACKEND PORTAL CALL FOR MONNIFY GENERATION
-        async function generateMonnifyAccount(fullName, email, username) {
+        // GYARA: Sabon tsarin OPay Gateway Integration
+        async function initializeUserGateway(fullName, email, username) {
             try {
-                    const response = await fetch('https://cm-nexus-sub.pages.dev/api/generate-bank', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          fullName: fullName,
-          email: email,
-          username: username // Tabbatar cewa an riga an karbo username dake register a sama
-        })
-      });
-                if (response.ok) {
-                    const data = await response.json();
-                    return {
-                        bank_name: data.bank_name,
-                        account_number: data.account_number
-                    };
-                } else {
-                    throw new Error("Failed to generate bank via API Gateway");
-                }
+                const response = await fetch('https://cm-nexus-sub.cmnexussub.workers.dev/api/generate-bank', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fullName: fullName,
+                        email: email,
+                        username: username,
+                        action: "register_sync"
+                    })
+                });
+                if (response.ok) { return await response.json(); }
+                return null;
             } catch (error) {
-                console.error("Monnify Gateway Error:", error);
+                console.error("Gateway Sync Error:", error);
                 return null;
             }
         }
@@ -415,7 +375,7 @@
 
                 Swal.fire({
                     title: 'Sending OTP...',
-                    html: 'We are sending a 6-digit confirmation code to your Gmail address. Please wait...',
+                    html: 'We are sending a 6-digit confirmation code to your Gmail address.',
                     allowOutsideClick: false,
                     didOpen: () => { Swal.showLoading(); }
                 });
@@ -427,19 +387,15 @@
                 }).then(() => {
                     Swal.fire({
                         title: 'Enter Verification Code',
-                        html: `Enter the 6-digit verification code sent to <b>${email}</b>. Check your spam folder if not received.`,
+                        html: `Enter the 6-digit code sent to <b>${email}</b>.`,
                         input: 'text',
-                        inputPlaceholder: 'Enter OTP Code',
+                        inputPlaceholder: 'OTP Code',
                         showCancelButton: true,
                         confirmButtonText: 'Verify & Register',
                         confirmButtonColor: '#0062ff',
                         preConfirm: (inputOTP) => {
-                            if (!inputOTP) {
-                                Swal.showValidationMessage('Verification code is required!');
-                                return false;
-                            }
-                            if (inputOTP.trim() !== generatedOTP) {
-                                Swal.showValidationMessage('Incorrect verification code! Check and try again.');
+                            if (!inputOTP || inputOTP.trim() !== generatedOTP) {
+                                Swal.showValidationMessage('Incorrect or missing OTP code!');
                                 return false;
                             }
                             return true;
@@ -447,19 +403,14 @@
                     }).then(async (otpResult) => {
                         if (otpResult.isConfirmed) {
                             Swal.fire({
-                                title: 'Generating Bank Account...',
-                                html: 'Securing automatic bank reservation with Monnify API Gateway...',
+                                title: 'Securing Account...',
+                                html: 'Integrating profile with OPay Secure Gateway...',
                                 allowOutsideClick: false,
                                 didOpen: () => { Swal.showLoading(); }
                             });
 
-                            const bankDetails = await generateMonnifyAccount(fullName, email, username);
-                            Swal.fire({
-                                title: 'Creating Account...',
-                                allowOutsideClick: false,
-                                didOpen: () => { Swal.showLoading(); }
-                            });
-
+                            await initializeUserGateway(fullName, email, username);
+                            
                             const newUserPayload = {
                                 fullName: fullName,
                                 username: username,
@@ -468,41 +419,22 @@
                                 password: password,
                                 wallet: 0,
                                 xp: 0,
-                                registered_device: deviceID,
-                                registered_time: Date.now()
+                              registered_device: deviceID,
+                                  registered_time: Date.now()
                             };
 
-                            if (bankDetails) {
-                                newUserPayload.bank_details = {
-                                    bank_name: bankDetails.bank_name,
-                                    account_number: bankDetails.account_number
-                                };
-                            }
-
                             db.ref('users/' + username).set(newUserPayload).then(() => {
-                                let successMsg = 'Your email is verified and account is active. Please log in.';
-                                if (bankDetails) {
-                                    successMsg = `Account created successfully! Monnify Bank: <b>${bankDetails.bank_name} (${bankDetails.account_number})</b> has been generated for you.`;
-                                } else {
-                                    successMsg = 'Account created successfully, but bank account generation is pending. Please check wallet later.';
-                                }
-
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Registration Successful!',
-                                    html: successMsg,
+                                    html: `Welcome <b>${fullName}</b>! Use the <b>"Fund"</b> button on your wallet page to add money via OPay Transfer or Card.`,
                                     confirmButtonColor: '#0062ff'
-                                }).then(() => {
-                                    switchForm('login');
-                                });
-                            }).catch(err => {
-                                Swal.fire('Database Error', 'Failed to save register payload.', 'error');
+                                }).then(() => { switchForm('login'); });
                             });
                         }
                     });
                 }).catch(err => {
-                    Swal.fire('Delivery Failed', 'Failed to send verification email. Please check your network and try again.', 'error');
-                    console.error("EmailJS Error: ", err);
+                    Swal.fire('Delivery Failed', 'Check your network and try again.', 'error');
                 });
             });
         }
@@ -511,111 +443,41 @@
         function executeLogin() {
             const username = document.getElementById('loginUser').value.trim().toLowerCase();
             const password = document.getElementById('loginPass').value.trim();
+            if (!username || !password) { return Swal.fire('Required', 'Please input credentials.', 'warning'); }
 
-            if (!username || !password) {
-                return Swal.fire('Required', 'Please input both username and password.', 'warning');
-            }
-
-            Swal.fire({
-                title: 'Authenticating...',
-                html: 'Verifying credentials with secure database...',
-                allowOutsideClick: false,
-                didOpen: () => { Swal.showLoading(); }
-            });
+            Swal.fire({ title: 'Authenticating...', didOpen: () => { Swal.showLoading(); } });
 
             db.ref('users/' + username).once('value', snap => {
                 const userData = snap.val();
                 if (!userData || userData.password !== password) {
-                    Swal.fire('Failed', 'Incorrect username or password combination.', 'error');
+                    Swal.fire('Failed', 'Incorrect combination.', 'error');
                     return;
                 }
-
                 localStorage.setItem('username', username);
                 localStorage.setItem('saved_username', username);
                 localStorage.setItem('saved_password', password);
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Welcome Back!',
-                    text: 'Authorization successful. Opening gateway...',
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(() => {
-                    window.location.href = "dashboard.html"; 
-                });
+                window.location.href = "dashboard.html"; 
             });
         }
 
-        // BIOMETRIC QUICK ACCESS
         function executeBiometricLogin() {
             if (!hasBiometrics || !savedUser || !savedPass) return;
-
-            Swal.fire({
-                title: 'Biometric Access',
-                text: 'Place your registered finger on the sensor to log in.',
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonText: 'Scan Fingerprint',
-                confirmButtonColor: '#0062ff'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    localStorage.setItem('username', savedUser);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Authenticated!',
-                        text: 'Biometric lock bypassed. Opening gateway...',
-                        showConfirmButton: false,
-                        timer: 1200
-                    }).then(() => {
-                        window.location.href = "dashboard.html";
-                    });
-                }
-            });
+            localStorage.setItem('username', savedUser);
+            window.location.href = "dashboard.html";
         }
 
-        // FORGOT PASSWORD
         function triggerForgotPassword() {
             Swal.fire({
                 title: 'Reset Password',
-                text: 'Please enter your registered Username to recover your password.',
                 input: 'text',
-                inputPlaceholder: 'Enter your username',
                 showCancelButton: true,
-                confirmButtonText: 'Retrieve Password',
-                confirmButtonColor: '#0062ff',
-                preConfirm: (username) => {
-                    if (!username) {
-                        Swal.showValidationMessage('Username is required!');
-                        return false;
-                    }
-                    return username.trim().toLowerCase();
-                }
+                confirmButtonColor: '#0062ff'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    const username = result.value;
-                    
-                    Swal.fire({
-                        title: 'Searching...',
-                        html: 'Fetching account credentials...',
-                        allowOutsideClick: false,
-                        didOpen: () => { Swal.showLoading(); }
-                    });
-
-                    db.ref('users/' + username).once('value', snap => {
+                    db.ref('users/' + result.value.toLowerCase()).once('value', snap => {
                         const userData = snap.val();
-                        if (!userData) {
-                            Swal.fire('Not Found', 'No account associated with this username exists.', 'error');
-                            return;
-                        }
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Account Found!',
-                            html: `Hello <b>${userData.fullName}</b>,<br><br>Your registered password is:<br><br><span style="font-size: 20px; font-weight: 800; color: #0062ff; letter-spacing: 1px;">${userData.password}</span><br><br>Keep this credentials secure.`,
-                            confirmButtonColor: '#0062ff'
-                        });
-                    }).catch(err => {
-                        Swal.fire('Error', 'Failed to retrieve database payload.', 'error');
+                        if (!userData) { Swal.fire('Error', 'Account not found.', 'error'); return; }
+                        Swal.fire('Found!', `Your password is: <b>${userData.password}</b>`, 'success');
                     });
                 }
             });
