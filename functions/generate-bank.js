@@ -5,7 +5,7 @@ export async function onRequestOptions(context) {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      "Access-Age": "86400",
+      "Access-Control-Max-Age": "86400",
     },
   });
 }
@@ -31,15 +31,17 @@ export async function onRequestPost(context) {
         });
     }
 
-    // Force strict integer datatype formatting for OPay production gateway compliance
+    // Strict formatting for sandbox gateway compliance
     const cleanAmount = Math.round(parseFloat(amount));
 
-    // LIVE PRODUCTION KEYS: 
-    // If env variable injection is delayed, replace the text strings below with your active live production credentials directly for an immediate fix.
-    const privateKey = env.OPAY_PRIVATE_KEY || "SAKA_LIVE_PRIVATE_KEY_DINKA_ANAN_IDAN_ENV_YA_GANA"; 
-    const publicKey = env.OPAY_PUBLIC_KEY || "SAKA_LIVE_PUBLIC_KEY_DINKA_ANAN_IDAN_ENV_YA_GANA";
+    // Hardcoded sandbox credentials directly from your active staging dashboard
+    const privateKey = env.OPAY_PRIVATE_KEY || "OPAYPRV17784871036800.9285314107105687"; 
+    const publicKey = env.OPAY_PUBLIC_KEY || "OPAYPUB17784871036800.8971411104862697";
 
-    const opayResponse = await fetch("https://api.opaycheckout.com/api/v1/local/cashier/create", {
+    console.log(`Generating OPay SANDBOX checkout session link for user: ${username}`);
+
+    // FIXED ENVIRONMENT: Routing explicitly to OPay international sandbox checkout engine
+    const opayResponse = await fetch("https://sandbox-api.opaycheckout.com/api/v1/international/cashier/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,7 +49,7 @@ export async function onRequestPost(context) {
       },
       body: JSON.stringify({
         publicKey: publicKey,
-        amount: cleanAmount.toString(), // Strict structural verification
+        amount: cleanAmount.toString(),
         currency: "NGN",
         reference: "CMN-" + Date.now(),
         returnUrl: "https://cmnexussub.name.ng/success",
@@ -64,8 +66,8 @@ export async function onRequestPost(context) {
     return new Response(JSON.stringify(opayData), { status: 200, headers: corsHeaders });
 
   } catch (error) {
-    console.error("LIVE Cashier Creation API Bridge Failure:", error.message);
-    return new Response(JSON.stringify({ error: "Internal live payment processing engine crash", details: error.message }), { 
+    console.error("SANDBOX Cashier Creation API Bridge Failure:", error.message);
+    return new Response(JSON.stringify({ error: "Internal sandbox payment engine crash", details: error.message }), { 
         status: 500, 
         headers: corsHeaders 
     });
