@@ -1,5 +1,4 @@
 export async function onRequestOptions(context) {
-  // Wannan yana kula da kiran preflight (OPTIONS) na wayoyin Android don hana CORS error
   return new Response(null, {
     status: 204,
     headers: {
@@ -12,9 +11,8 @@ export async function onRequestOptions(context) {
 }
 
 export async function onRequestPost(context) {
-  const { request, env } = context;
-
-  // Saita Headers na CORS don kowa ya iya kiran API din daga asalin App (APK)
+  const { request, env } = context; 
+  
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -24,116 +22,55 @@ export async function onRequestPost(context) {
 
   try {
     const body = await request.json();
-    const { fullName, email, username } = body;
+    const { amount, email, fullName, username } = body;
 
-    if (!username) {
-      return new Response(JSON.stringify({ error: "Username is required" }), { 
-        status: 400, 
-        headers: corsHeaders 
-      });
+    // Validate incoming parameters from the mobile app runtime environment
+    if (!amount || !email || !fullName || !username) {
+        return new Response(JSON.stringify({ error: "Missing required request parameters (amount, email, fullName, username)" }), { 
+            status: 400, 
+            headers: corsHeaders 
+        });
     }
 
-    // Karbo Variables na gaske (Live) daga Cloudflare Settings
-    const MONNIFY_API_KEY = env.MONNIFY_API_KEY;
-    const MONNIFY_SECRET_KEY = env.MONNIFY_SECRET_KEY;
-    const MONNIFY_CONTRACT_CODE = env.MONNIFY_CONTRACT_CODE;
-    
-    // ASALIN LINK NA GASKIYA (LIVE) NA MONNIFY
-    const MONNIFY_BASE_URL = "https://api.monnify.com"; 
-    
-    // Firebase URL dinka
-    const FIREBASE_DB_URL = "https://cm-nexus-sub-default-rtdb.firebaseio.com"; 
+    // SANDBOX FALLBACK: Prioritize Cloudflare environment variables, fallback to test keys for active staging logs
+    const privateKey = env.OPAY_PRIVATE_KEY || "OPAYPRV17784871036800.9285314107105687"; 
+    const publicKey = env.OPAY_PUBLIC_KEY || "OPAYPUB17784871036800.8971411104862697";
 
-    console.log(`Fara samar da asalin banki na gaske ga: ${fullName} (${email})`);
+    console.log(`Generating OPay secure sandbox funding cashier link for: ${username}`);
 
-    // Step 1: Karbo Access Token na gaske daga Monnify
-    const authHeader = btoa(`${MONNIFY_API_KEY}:${MONNIFY_SECRET_KEY}`);
-    const tokenResponse = await fetch(`${MONNIFY_BASE_URL}/api/v1/auth/login`, {
-      method: 'POST',
+    // Call official OPay payment endpoint architecture
+    const opayResponse = await fetch("https://api.opaycheckout.com/api/v1/international/cashier/create", {
+      method: "POST",
       headers: {
-        'Authorization': `Basic ${authHeader}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    const tokenData = await tokenResponse.json();
-    console.log("Monnify Live Token Response:", JSON.stringify(tokenData));
-
-    if (!tokenData.requestSuccessful) {
-      return new Response(JSON.stringify({ error: "Failed to get Monnify Live token", details: tokenData }), { 
-        status: 400, 
-        headers: corsHeaders 
-      });
-    }
-
-    const accessToken = tokenData.responseBody.accessToken;
-
-    // Step 2: Kirkiri Reserved Account na gaske a Monnify
-    const accountReference = "REF-" + Math.random().toString(36).substring(2, 15) + "-" + Date.now();
-    const reservationResponse = await fetch(`${MONNIFY_BASE_URL}/api/v1/bank-transfer/reserved-accounts`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${privateKey}`
       },
       body: JSON.stringify({
-        accountReference: accountReference,
-        accountName: fullName,
-        currencyCode: "NGN",
-        contractCode: MONNIFY_CONTRACT_CODE,
-        customerEmail: email,
-        customerName: fullName,
-        getAllAvailableBanks: true
+        publicKey: publicKey,
+        amount: amount,
+        currency: "NGN",
+        reference: "CMN-" + Date.now(),
+        returnUrl: "https://cmnexussub.name.ng/success",
+        
+        // Automated IPN Callback to trigger the atomic worker webhook backend we built earlier
+        callbackUrl: "https://cmnexussub.name.ng/api/webhook", 
+        
+        userEmail: email,
+        userName: fullName,
+        metadata: {
+          username: username // Secure tunneling parameter to trace balance wallet allocation
+        }
       })
     });
 
-    const reservationData = await reservationResponse.json();
-    console.log("Monnify Live Account Reservation Response:", JSON.stringify(reservationData));
-
-    if (reservationData.requestSuccessful && reservationData.responseBody.accounts.length > 0) {
-      const primaryAccount = reservationData.responseBody.accounts[0];
-      const bankName = primaryAccount.bankName;
-      const accountNumber = primaryAccount.accountNumber;
-
-      // Step 3: Adana bayanan banki a Firebase Database dumu-dumu
-      const cleanUsername = username.replace(/[.#$[\]]/g, "_"); // Tsaftace username don Firebase
-      
-      const firebaseResponse = await fetch(`${FIREBASE_DB_URL}/users/${cleanUsername}/bankDetails.json`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          bankName: bankName,
-          accountNumber: accountNumber,
-          accountName: fullName
-        })
-      });
-
-      const firebaseData = await firebaseResponse.json();
-      console.log("Firebase Save Response:", JSON.stringify(firebaseData));
-
-      return new Response(JSON.stringify({
-        status: "success",
-        bank_name: bankName,
-        account_number: accountNumber
-      }), {
-        status: 200,
-        headers: corsHeaders
-      });
-
-    } else {
-      return new Response(JSON.stringify({ error: "Reservation failed on Monnify Live", details: reservationData }), { 
-        status: 400, 
-        headers: corsHeaders 
-      });
-    }
+    const opayData = await opayResponse.json();
+    return new Response(JSON.stringify(opayData), { status: 200, headers: corsHeaders });
 
   } catch (error) {
-    console.error("Babban Kuskure na Gaske (Exception):", error.message);
-    return new Response(JSON.stringify({ error: error.message }), { 
-      status: 500, 
-      headers: corsHeaders 
+    console.error("Cashier Creation API Bridge Failure:", error.message);
+    return new Response(JSON.stringify({ error: "Internal payment processing engine crash", details: error.message }), { 
+        status: 500, 
+        headers: corsHeaders 
     });
   }
 }
