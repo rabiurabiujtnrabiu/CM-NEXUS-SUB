@@ -31,17 +31,20 @@ export async function onRequestPost(context) {
         });
     }
 
-    // Strict formatting for sandbox gateway compliance
+    // Strict rounding formatting for secure OPay live production token execution
     const cleanAmount = Math.round(parseFloat(amount));
 
-    // Hardcoded sandbox credentials directly from your active staging dashboard
+    // ==========================================
+    // ⚠️ LIVE PRODUCTION CREDENTIALS CONFIGURATION
+    // ==========================================
+    // Shiga OPay LIVE Dashboard dinka na gaske (ba na test ba), ka kofopo ainihin keys dinka ka manna su a maimakon wadannan na kasa:
     const privateKey = env.OPAY_PRIVATE_KEY || "OPAYPRV17784871036800.9285314107105687"; 
     const publicKey = env.OPAY_PUBLIC_KEY || "OPAYPUB17784871036800.8971411104862697";
 
-    console.log(`Generating OPay SANDBOX checkout session link for user: ${username}`);
+    console.log(`Initiating secure OPay LIVE merchant funding session for user client: ${username}`);
 
-    // FIXED ENVIRONMENT: Routing explicitly to OPay international sandbox checkout engine
-    const opayResponse = await fetch("https://sandbox-api.opaycheckout.com/api/v1/international/cashier/create", {
+    // LOCAL PRODUCTION ENGINE: Reconfigured specifically for real money checkout operations inside Nigeria
+    const opayResponse = await fetch("https://api.opaycheckout.com/api/v1/local/cashier/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -66,8 +69,8 @@ export async function onRequestPost(context) {
     return new Response(JSON.stringify(opayData), { status: 200, headers: corsHeaders });
 
   } catch (error) {
-    console.error("SANDBOX Cashier Creation API Bridge Failure:", error.message);
-    return new Response(JSON.stringify({ error: "Internal sandbox payment engine crash", details: error.message }), { 
+    console.error("LIVE Cashier Creation API Bridge Failure:", error.message);
+    return new Response(JSON.stringify({ error: "Internal live payment processing engine crash", details: error.message }), { 
         status: 500, 
         headers: corsHeaders 
     });
