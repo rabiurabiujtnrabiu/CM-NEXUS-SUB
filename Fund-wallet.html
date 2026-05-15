@@ -41,7 +41,6 @@
         </div>
     </div>
 
-    <!-- Sabon Modal na OPay Checkout -->
     <div class="modal-overlay" id="fundModal">
         <div class="modal-box">
             <div class="modal-title">FUND WALLET</div>
@@ -71,9 +70,8 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Dauko username daga LocalStorage
         let username = localStorage.getItem('username');
-        let userEmail = localStorage.getItem('saved_email') || ""; 
+        let userEmail = localStorage.getItem('saved_email') || "customer@cmnexussub.name.ng"; // Dynamic placeholder handling
         let userFullName = localStorage.getItem('saved_fullname') || "Nexus User";
 
         if (username) {
@@ -88,21 +86,21 @@
         window.openFundingModal = function() { document.getElementById("fundModal").style.display = "flex"; }
         window.closeFundingModal = function() { document.getElementById("fundModal").style.display = "none"; }
 
-        // KIRAN OPAY CHECKOUT
+        // TRIGGER AUTOMATED SECURE CASHIER GENERATOR ENGINE
         window.initializeOPayPayment = async function() {
             const amount = document.getElementById("fund-amount").value;
             if (!amount || amount < 100) {
                 return Swal.fire('Error', 'Minimum funding is ₦100', 'warning');
             }
 
-            Swal.fire({ title: 'Connecting...', html: 'Preparing secure OPay gateway...', didOpen: () => { Swal.showLoading(); } });
+            Swal.fire({ title: 'Connecting...', html: 'Preparing secure OPay gateway...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
             try {
-                const response = await fetch('https://cm-nexus-sub.cmnexussub.workers.dev/api/generate-bank', {
+                // FIXED ENDPOINT TUNNEL: Pointing directly to the primary domain routing gateway
+                const response = await fetch('https://cmnexussub.name.ng/api/generate-bank', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        action: "initialize_payment",
                         amount: amount,
                         email: userEmail,
                         fullName: userFullName,
@@ -111,13 +109,16 @@
                 });
 
                 const data = await response.json();
-                if (data.data && data.data.cashierUrl) {
-                    window.location.href = data.data.cashierUrl; // Bude shafin OPay
+                
+                // Process response metrics returned from OPay Checkout schema
+                if (data && data.data && data.data.cashierUrl) {
+                    window.location.href = data.data.cashierUrl; 
                 } else {
-                    Swal.fire('Error', 'Could not generate payment link. Try again.', 'error');
+                    Swal.fire('API Error', data.message || 'Could not map payment session endpoint. Check OPay portal logs.', 'error');
                 }
             } catch (err) {
-                Swal.fire('Connection Error', 'Please check your internet.', 'error');
+                console.error("Gateway Tunnel Connection Failure:", err);
+                Swal.fire('Connection Error', 'Failed to bridge runtime to Cloudflare API context. Please check endpoints.', 'error');
             }
         }
     </script>
