@@ -3,85 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fund Wallet</title>
+    <title>Fund Wallet | CM Nexus Sub</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { background-color: #0d121d; color: #ffffff; font-family: 'Plus Jakarta Sans', sans-serif; padding: 20px; margin: 0; }
         
-        /* Premium Bank Box */
-        .bank-info-box { background: rgba(25, 33, 48, 0.6); border: 1px solid #1f293d; border-radius: 24px; padding: 25px; text-align: center; margin-bottom: 25px; backdrop-filter: blur(10px); }
+        /* Premium Glass Box */
+        .bank-info-box { background: rgba(25, 33, 48, 0.6); border: 1px solid #1f293d; border-radius: 24px; padding: 25px; text-align: center; margin-bottom: 25px; backdrop-filter: blur(10px); cursor: pointer; }
         #account-number { font-size: 34px; font-weight: 800; color: #00d2fe; margin: 8px 0; }
         
-        /* Instructional Box */
-        .info-box { background: #131926; border-left: 4px solid #009fff; padding: 16px; border-radius: 12px; margin-bottom: 25px; font-size: 13px; color: #94a3b8; }
+        /* Info Box */
+        .info-box { background: #131926; border-left: 4px solid #009fff; padding: 16px; border-radius: 12px; margin-bottom: 25px; font-size: 13px; color: #94a3b8; line-height: 1.6; }
         
-        /* Input Section with Pointer */
-        .label-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-weight: 600; }
+        /* Centered Reference Section */
+        .reference-section { display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .label-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; font-weight: 600; }
         .pointer { animation: point 1s infinite alternate; }
         @keyframes point { from { transform: translateY(-5px); } to { transform: translateY(0px); } }
         
-        .amount-input { width: 100%; padding: 18px; border-radius: 16px; border: 2px solid #1f293d; background: #0d121d; color: white; font-size: 16px; margin-bottom: 20px; }
-        .amount-input:focus { border-color: #009fff; outline: none; }
+        .amount-input { width: 92%; padding: 18px; border-radius: 16px; border: 2px solid #1f293d; background: #0d121d; color: white; font-size: 16px; margin-bottom: 20px; text-align: center; }
+        .btn-pay { width: 92%; padding: 18px; border-radius: 16px; background: #009fff; border: none; color: white; font-weight: 800; font-size: 16px; cursor: pointer; }
         
-        .btn-pay { width: 100%; padding: 18px; border-radius: 16px; background: #009fff; border: none; color: white; font-weight: 800; font-size: 16px; cursor: pointer; }
-        
-        /* Loading */
-        #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(8, 12, 21, 0.98); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
-        .rotating-logo { width: 80px; height: 80px; animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        /* Custom Loading Overlay */
+        #custom-loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d121d; z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        .logo-img { width: 120px; height: 120px; animation: pulse 1.5s infinite; border-radius: 20px; }
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.7; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.7; } }
     </style>
 </head>
 <body>
 
-<div class="bank-info-box" onclick="copyAccountNumber()">
+<div class="bank-info-box" onclick="copyAcc()">
     <p style="margin:0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Make Transfer To</p>
-    <h2 style="margin: 5px 0;">bestStar MFB</h2>
     <h1 id="account-number">2000300022</h1>
-    <p style="margin:0; color: #fff;">RABIU HAMZA</p>
+    <p style="margin:0;">bestStar MFB | RABIU HAMZA</p>
     <p style="font-size: 11px; color: #6c7d93; margin-top: 10px;">Tap to copy account number</p>
 </div>
 
 <div class="info-box">
     <b>How to fund:</b> Copy the account number above, make the transfer from your bank app, then copy the <b>Reference ID</b> from your bank alert and paste it below. <br><br>
-    <b>Yadda za ka saka kuɗi:</b> Ka kwafi lambar asusun da ke sama,wace zaka tura kudin daga bankinka, sannan ka ɗauki <b>Reference ID</b> daga bankin ka ka liƙa a ƙasa.
+    <b>Yadda za ka saka kuɗi:</b> Ka kwafi lambar asusun da ke sama,wace zaka tura kudi daga bankinka, sannan ka ɗauki <b>Reference ID</b> daga bankin ka ka liƙa a ƙasa.
 </div>
 
-<div class="label-wrap">
-    <span class="pointer">👇</span>
-    <label>Reference ID (From Bank Alert)</label>
+<div class="reference-section">
+    <div class="label-wrap">
+        <span class="pointer">👇</span>
+        <label>Reference ID (From Bank Alert)</label>
+    </div>
+    <input type="text" id="ref-id" class="amount-input" placeholder="e.g., 123456789">
+    <button class="btn-pay" onclick="verify()">VERIFY PAYMENT</button>
 </div>
-<input type="text" id="ref-id" class="amount-input" placeholder="e.g., 123456789">
-<button class="btn-pay" onclick="submitReference()">VERIFY PAYMENT</button>
 
-<div id="loading-overlay">
-    <svg class="rotating-logo" viewBox="0 0 500 500"><polygon points="250,45 425,146 425,348 250,449 75,348 75,146" fill="none" stroke="#00f2fe" stroke-width="20" /></svg>
-    <p style="margin-top: 20px; font-weight: 700;">Verifying transaction safely...</p>
+<!-- Custom Loading Screen -->
+<div id="custom-loader">
+    <img src="https://i.imgur.com/ewrUk5x.jpeg" class="logo-img" alt="Logo">
+    <p id="loader-text" style="margin-top: 20px; font-weight: 600; color: #009fff;">Verifying transaction...</p>
 </div>
 
 <script>
-    function copyAccountNumber() {
-        navigator.clipboard.writeText("2000300022");
-        alert("Account number copied!");
-    }
-
-    async function submitReference() {
-        const refId = document.getElementById("ref-id").value;
-        if (!refId) { alert("Please enter Reference ID"); return; }
-
-        document.getElementById('loading-overlay').style.display = 'flex';
-        // Tuntubar API (jtn-gateway-engine)
-        try {
-            const response = await fetch('https://jtn-gateway-engine.cmnexussub.workers.dev', {
-                method: 'POST',
-                body: JSON.stringify({ refId, userId: "rabiujtn" })
-            });
-            const data = await response.json();
-            document.getElementById('loading-overlay').style.display = 'none';
-            alert(data.message || data.error);
-        } catch (err) {
-            document.getElementById('loading-overlay').style.display = 'none';
-            alert("Connection error.");
+    async function verify() {
+        const ref = document.getElementById("ref-id").value;
+        if (!ref) {
+            Swal.fire({ icon: 'error', title: 'Oops!', text: 'Please enter a Reference ID' });
+            return;
         }
+
+        const loader = document.getElementById("custom-loader");
+        loader.style.display = "flex";
+
+        try {
+            const res = await fetch('https://jtn-gateway-engine.cmnexussub.workers.dev', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refId: ref, userId: "rabiujtn" })
+            });
+            const data = await res.json();
+            
+            loader.style.display = "none";
+            Swal.fire({ icon: data.success ? 'success' : 'error', title: data.success ? 'Success' : 'Failed', text: data.message || data.error });
+        } catch (e) {
+            loader.style.display = "none";
+            Swal.fire({ icon: 'error', title: 'Connection Error', text: 'Please try again later' });
+        }
+    }
+    
+    function copyAcc() {
+        navigator.clipboard.writeText("2000300022");
+        Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'Copied!', showConfirmButton: false, timer: 1000 });
     }
 </script>
 </body>
