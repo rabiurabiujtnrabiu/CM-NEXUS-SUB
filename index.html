@@ -247,6 +247,18 @@
                         <input type="password" id="regPass" placeholder="Create strong password">
                     </div>
                 </div>
+                <div class="form-group">
+    <label>Confirm Password</label>
+    <div class="input-wrapper">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="regConfirmPass" placeholder="Confirm your password">
+    </div>
+</div>
+
+<div style="display:flex; align-items:center; gap:10px; margin-bottom: 20px;">
+    <input type="checkbox" id="fingerprintToggle" style="accent-color: var(--primary); transform: scale(1.3);">
+    <span style="font-size: 13px; color: var(--text-muted);">Enable Fingerprint Login</span>
+</div>
                 <button class="btn-action" onclick="executeRegistration()">Register Now</button>
                 <p class="switch-text">Already registered? <span onclick="switchForm('login')">Log In</span></p>
             </div>
@@ -254,21 +266,25 @@
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
-            authDomain: "cm-nexus-sub.firebaseapp.com",
-            projectId: "cm-nexus-sub",
-            databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
-            storageBucket: "cm-nexus-sub.firebasestorage.app",
-            messagingSenderId: "22010501991",
-            appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
-        };
+      <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+        authDomain: "cm-nexus-sub.firebaseapp.com",
+        databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+        projectId: "cm-nexus-sub",
+        storageBucket: "cm-nexus-sub.firebasestorage.app",
+        messagingSenderId: "22010501991",
+        appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
+    };
 
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        const db = firebase.database();
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
+</script>
 
         let currentSlideIdx = 0;
         const slides = document.querySelectorAll('.slide');
@@ -347,7 +363,14 @@
             const username = document.getElementById('regUsername').value.trim().toLowerCase();
             const email = document.getElementById('regEmail').value.trim();
             const phone = document.getElementById('regPhone').value.trim();
-            const password = document.getElementById('regPass').value.trim();
+            // ... (layin 366)
+const password = document.getElementById('regPass').value.trim();
+const confirmPass = document.getElementById('regConfirmPass').value.trim(); // Ƙara wannan
+const useFingerprint = document.getElementById('fingerprintToggle').checked; // Ƙara wannan
+// Duba Password Match
+if (password !== confirmPass) {
+    return Swal.fire('Error', 'Passwords do not match!', 'error');
+}
 
             if (!fullName || !username || !email || !phone || !password) {
                 return Swal.fire('Error', 'Please fill out all registration fields.', 'error');
