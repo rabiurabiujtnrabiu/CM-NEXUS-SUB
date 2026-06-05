@@ -395,47 +395,51 @@ if (password !== confirmPass) {
         showCancelButton: true,
         confirmButtonText: 'Verify & Register',
         confirmButtonColor: '#0062ff',
-        preConfirm: (inputOTP) => {
-            if (!inputOTP || inputOTP.trim() !== generatedOTP) {
-                Swal.showValidationMessage('Incorrect or missing OTP code!');
-                return false;
-            }
-            return true;
-        }
-    }).then(async (otpResult) => {
-        if (otpResult.isConfirmed)
-Swal.fire({
-    title: 'Securing Account...',
-    html: 'Please wait while we finalize your registration...',
-    allowOutsideClick: false,
-    didOpen: () => { Swal.showLoading(); }
+        // A fara daga nan lokacin da kake gyara:
+preConfirm: (inputOTP) => {
+    if (!inputOTP || inputOTP.trim() !== generatedOTP) {
+        Swal.showValidationMessage('Incorrect or missing OTP code!');
+        return false;
+    }
+    return true;
+}
+}).then(async (otpResult) => {
+    if (otpResult.isConfirmed) {
+        Swal.fire({
+            title: 'Securing Account...',
+            html: 'Please wait while we finalize your registration...',
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }
+        });
+
+        const newUserPayload = {
+            fullName: fullName,
+            username: username,
+            email: email,
+            phone: phone,
+            password: password,
+            useFingerprint: useFingerprint,
+            wallet: 0,
+            xp: 0,
+            registered_device: deviceID,
+            registered_time: Date.now()
+        };
+
+        db.ref('users/' + username).set(newUserPayload).then(() => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Registration Successful!',
+                html: `Welcome <b>${fullName}</b>! Your CM Nexus Sub account is ready.`,
+                confirmButtonColor: '#0062ff'
+            }).then(() => {
+                switchForm('login');
+            });
+        }).catch(err => {
+            Swal.fire('Error', 'Registration failed: ' + err.message, 'error');
+        });
+    }
 });
 
-const newUserPayload = {
-    fullName: fullName,
-    username: username,
-    email: email,
-    phone: phone,
-    password: password,
-    useFingerprint: useFingerprint,
-    wallet: 0,
-    xp: 0,
-    registered_device: deviceID,
-    registered_time: Date.now()
-};
-
-db.ref('users/' + username).set(newUserPayload).then(() => {
-    Swal.fire({
-        icon: 'success',
-        title: 'Registration Successful!',
-        html: `Welcome <b>${fullName}</b>! Your CM Nexus Sub account is ready.`,
-        confirmButtonColor: '#0062ff'
-    }).then(() => { 
-        switchForm('login'); 
-    });
-}).catch(err => {
-    Swal.fire('Error', 'Registration failed: ' + err.message, 'error');
-});
 
         // LOGIN PROCESS
         function executeLogin() {
