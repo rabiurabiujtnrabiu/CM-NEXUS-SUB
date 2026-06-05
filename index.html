@@ -383,65 +383,66 @@ if (password !== confirmPass) {
                 });
 
                 emailjs.send("service_f6sep23", "template_otp", {
-                    to_name: fullName,
-                    to_email: email,
-                    otp_code: generatedOTP
-                }).then(() => {
-                    Swal.fire({
-                        title: 'Enter Verification Code',
-                        html: `Enter the 6-digit code sent to <b>${email}</b>.`,
-                        input: 'text',
-                        inputPlaceholder: 'OTP Code',
-                        showCancelButton: true,
-                        confirmButtonText: 'Verify & Register',
-                        confirmButtonColor: '#0062ff',
-                        preConfirm: (inputOTP) => {
-                            if (!inputOTP || inputOTP.trim() !== generatedOTP) {
-                                Swal.showValidationMessage('Incorrect or missing OTP code!');
-                                return false;
-                            }
-                            return true;
-                        }
-                    }).then(async (otpResult) => {
-                        if (otpResult.isConfirmed) {
-
-Swal.fire({
-    title: 'Securing Account...',
-    html: 'Please wait while we finalize your registration...',
-    allowOutsideClick: false,
-    didOpen: () => { Swal.showLoading(); }
-});
-
-                            
-                            const newUserPayload = {
-                                fullName: fullName,
-                                username: username,
-                                email: email,
-                                phone: phone,
-                                password: password,
-                                wallet: 0,
-                                xp: 0,
-                             useFingerprint: useFingerprint, registered_device: deviceID,  
-                              registered_time: Date.now()
-                            };
-
-                      db.ref('users/' + username).set(newUserPayload).then(() => {
+    to_name: fullName,
+    to_email: email,
+    otp_code: generatedOTP
+}).then(() => {
     Swal.fire({
-        icon: 'success',
-        title: 'Registration Successful!',
-        html: `Welcome <b>${fullName}</b>! Your CM Nexus Sub account is ready.`,
-        confirmButtonColor: '#0062ff'
-    }).then(() => { 
-        switchForm('login'); 
-    });
-}).catch(err => {
-    Swal.fire('Error', 'Registration failed: ' + err.message, 'error');
-});
+        title: 'Enter Verification Code',
+        html: `Enter the 6-digit code sent to <b>${email}</b>.`,
+        input: 'text',
+        inputPlaceholder: 'OTP Code',
+        showCancelButton: true,
+        confirmButtonText: 'Verify & Register',
+        confirmButtonColor: '#0062ff',
+        preConfirm: (inputOTP) => {
+            if (!inputOTP || inputOTP.trim() !== generatedOTP) {
+                Swal.showValidationMessage('Incorrect or missing OTP code!');
+                return false;
+            }
+            return true;
+        }
+    }).then(async (otpResult) => {
+        if (otpResult.isConfirmed) {
+            Swal.fire({
+                title: 'Securing Account...',
+                html: 'Please wait while we finalize your registration...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
 
-                    Swal.fire('Delivery Failed', 'Check your network and try again.', 'error');
+            const newUserPayload = {
+                fullName: fullName,
+                username: username,
+                email: email,
+                phone: phone,
+                password: password,
+                useFingerprint: useFingerprint,
+                wallet: 0,
+                xp: 0,
+                registered_device: deviceID,
+                registered_time: Date.now()
+            };
+
+            db.ref('users/' + username).set(newUserPayload).then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Registration Successful!',
+                    html: `Welcome <b>${fullName}</b>! Your CM Nexus Sub account is ready.`,
+                    confirmButtonColor: '#0062ff'
+                }).then(() => { 
+                    switchForm('login'); 
                 });
+            }).catch(err => {
+                Swal.fire('Error', 'Registration failed: ' + err.message, 'error');
             });
         }
+    });
+}).catch(err => {
+    // Wannan yana kama error idan EmailJS bai iya tura OTP ba
+    Swal.fire('Delivery Failed', 'Check your network and try again.', 'error');
+});
+
 
         // LOGIN PROCESS
         function executeLogin() {
