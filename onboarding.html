@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome | CM Nexus Sub</title>
+    <!-- Muna amfani da Swiper.js don Swipe mai santsi -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <style>
+        body { margin: 0; background: #5a4ad1; color: white; font-family: 'Plus Jakarta Sans', sans-serif; height: 100vh; overflow: hidden; }
+        .progress-container { display: flex; gap: 6px; padding: 25px 20px; }
+        .progress-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; }
+        .progress-bar.active { background: white; }
+        
+        .swiper { width: 100%; height: 80vh; }
+        .swiper-slide { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+        img { width: 85%; max-width: 320px; border-radius: 40px; margin-bottom: 30px; }
+        h2 { font-size: 24px; margin-bottom: 10px; }
+        p { font-size: 15px; color: #e0e0e0; max-width: 80%; }
+        
+        .btn-get-started { 
+            display: none; margin-top: 20px; padding: 15px 40px; background: white; 
+            color: #5a4ad1; border-radius: 15px; font-weight: bold; cursor: pointer; text-decoration: none; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="progress-container" id="progressContainer">
+    <div class="progress-bar active"></div>
+    <div class="progress-bar"></div>
+    <div class="progress-bar"></div>
+    <div class="progress-bar"></div>
+    <div class="progress-bar"></div>
+    <div class="progress-bar"></div>
+</div>
+
+<div class="swiper">
+    <div class="swiper-wrapper">
+        <!-- Hotuna 6 -->
+        <div class="swiper-slide"> <img src="https://raw.githubusercontent.com/rabiurabiujtnrabiu/CM-NEXUS-SUB/main/1.jpg"> <h2>CM Nexus Sub</h2> <p>Fastest VTU Wallet in Nigeria.</p> </div>
+        <div class="swiper-slide"> <img src="https://raw.githubusercontent.com/rabiurabiujtnrabiu/CM-NEXUS-SUB/main/2.jpg"> <h2>Instant Delivery</h2> <p>Data and Airtime in seconds.</p> </div>
+        <div class="swiper-slide"> <img src="https://raw.githubusercontent.com/rabiurabiujtnrabiu/CM-NEXUS-SUB/main/3.jpg"> <h2>Secure Wallet</h2> <p>Your funds are protected with double security.</p> </div>
+        <div class="swiper-slide"> <img src="https://raw.githubusercontent.com/rabiurabiujtnrabiu/CM-NEXUS-SUB/main/4.jpg"> <h2>Earn Points</h2> <p>Participate in tasks and gather XP coins.</p> </div>
+        <div class="swiper-slide"> <img src="https://raw.githubusercontent.com/rabiurabiujtnrabiu/CM-NEXUS-SUB/main/5.jpg"> <h2>Earn Money</h2> <p>Monetize your activities and grow income.</p> </div>
+        <div class="swiper-slide"> <img src="https://raw.githubusercontent.com/rabiurabiujtnrabiu/CM-NEXUS-SUB/main/6.jpg"> <h2>CM Arena</h2> <p>Join the arena where winners get paid.</p> 
+            <a href="index.html" class="btn-get-started" id="getStartedBtn" style="display:block;">Get Started</a> 
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script>
+    const swiper = new Swiper('.swiper', {
+        on: {
+            slideChange: function () {
+                document.querySelectorAll('.progress-bar').forEach((bar, index) => {
+                    bar.classList.toggle('active', index <= swiper.activeIndex);
+                });
+            }
+        }
+    });
+
+    // Idan user ya riga ya shiga, kada a sake nuna onboarding
+    if (localStorage.getItem('seenOnboarding')) { window.location.href = 'index.html'; }
+    document.getElementById('getStartedBtn').addEventListener('click', () => {
+        localStorage.setItem('seenOnboarding', 'true');
+    });
+</script>
+</body>
+</html>
