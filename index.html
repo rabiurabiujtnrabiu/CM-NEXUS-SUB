@@ -8,22 +8,22 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
-        body { background: #0b0f19; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; }
+        body { background: #0b0f19; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; margin: 0; }
         .box { width: 90%; max-width: 400px; background: #111827; padding: 30px; border-radius: 25px; }
         .logo { width: 100px; height: 100px; display: block; margin: 0 auto 20px; }
+        .form-box { display: none; }
+        .active { display: block; }
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: none; background: #1f2937; color: white; }
-        button { width: 100%; padding: 12px; background: #0062ff; border: none; border-radius: 10px; color: white; cursor: pointer; }
+        button { width: 100%; padding: 12px; background: #0062ff; border: none; border-radius: 10px; color: white; cursor: pointer; margin-top: 10px; }
+        .switch-link { text-align: center; margin-top: 15px; cursor: pointer; color: #9ca3af; font-size: 14px; }
     </style>
 </head>
 <body>
 
-<script>
-    if (!localStorage.getItem('seenOnboarding')) { window.location.href = 'onboarding.html'; }
-</script>
-
 <div class="box">
     <img src="https://raw.githubusercontent.com/rabiurabiujtnrabiu/CM-NEXUS-SUB/main/7.jpg" class="logo">
-    <div id="registerScreen">
+    
+    <div id="registerScreen" class="form-box active">
         <input type="text" id="regUser" placeholder="Username">
         <input type="email" id="regEmail" placeholder="Email">
         <input type="number" id="regPhone" placeholder="Phone">
@@ -31,15 +31,29 @@
         <input type="password" id="regConfirm" placeholder="Confirm Password">
         <input type="text" id="regRef" placeholder="Referral Code">
         <button onclick="initRegistration()">Register</button>
+        <div class="switch-link" onclick="toggleForm()">Already have an account? Login</div>
+    </div>
+
+    <div id="loginScreen" class="form-box">
+        <input type="text" id="loginUser" placeholder="Username">
+        <input type="password" id="loginPass" placeholder="Password">
+        <button onclick="executeLogin()">Log In</button>
+        <div class="switch-link" onclick="toggleForm()">Don't have an account? Register</div>
     </div>
 </div>
 
 <script>
     emailjs.init("Kdo1uh2fYzmoDsl7G");
-    firebase.initializeApp({ /* Firebase Config */ });
+    const firebaseConfig = { /* Saka Firebase Config ɗinka anan */ };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const deviceID = localStorage.getItem('did') || 'CN-' + Math.random().toString(36).substr(2, 9);
     localStorage.setItem('did', deviceID);
+
+    function toggleForm() {
+        document.getElementById('registerScreen').classList.toggle('active');
+        document.getElementById('loginScreen').classList.toggle('active');
+    }
 
     function initRegistration() {
         const u = document.getElementById('regUser').value;
@@ -51,10 +65,22 @@
             Swal.fire({ title: 'Verify OTP', input: 'text' }).then(res => {
                 if(res.value == otp) {
                     db.ref('users/' + u).set({ email: e, password: p, deviceID: deviceID }).then(() => {
-                        Swal.fire('Success', 'Registered!').then(() => location.reload());
+                        Swal.fire('Success', 'Registered!').then(() => toggleForm());
                     });
                 }
             });
+        });
+    }
+
+    function executeLogin() {
+        const u = document.getElementById('loginUser').value;
+        const p = document.getElementById('loginPass').value;
+        db.ref('users/' + u).once('value', snap => {
+            if(snap.val() && snap.val().password === p) {
+                window.location.href = "wallet.html";
+            } else {
+                Swal.fire('Error', 'Invalid details', 'error');
+            }
         });
     }
 </script>
