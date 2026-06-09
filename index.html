@@ -13,8 +13,8 @@
         .logo { width: 100px; height: 100px; display: block; margin: 0 auto 20px; }
         .form-box { display: none; }
         .active { display: block; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: none; background: #1f2937; color: white; }
-        button { width: 100%; padding: 12px; background: #0062ff; border: none; border-radius: 10px; color: white; cursor: pointer; margin-top: 10px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: none; background: #1f2937; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #0062ff; border: none; border-radius: 10px; color: white; cursor: pointer; margin-top: 10px; font-weight: bold; }
         .switch-link { text-align: center; margin-top: 15px; cursor: pointer; color: #9ca3af; font-size: 14px; }
     </style>
 </head>
@@ -44,9 +44,20 @@
 
 <script>
     emailjs.init("Kdo1uh2fYzmoDsl7G");
-    const firebaseConfig = { /* Saka Firebase Config ɗinka anan */ };
+    
+    // Firebase Config - Tabbatar ka saka naka anan
+    const firebaseConfig = {
+        apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
+        authDomain: "cm-nexus-sub.firebaseapp.com",
+        databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+        projectId: "cm-nexus-sub",
+        storageBucket: "cm-nexus-sub.firebasestorage.app",
+        messagingSenderId: "22010501991",
+        appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
+    };
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    
     const deviceID = localStorage.getItem('did') || 'CN-' + Math.random().toString(36).substr(2, 9);
     localStorage.setItem('did', deviceID);
 
@@ -59,14 +70,21 @@
         const u = document.getElementById('regUser').value;
         const e = document.getElementById('regEmail').value;
         const p = document.getElementById('regPass').value;
-        const otp = Math.floor(100000 + Math.random() * 900000);
         
+        if(!u || !e || !p) return Swal.fire('Error', 'Fill all fields', 'error');
+
+        const otp = Math.floor(100000 + Math.random() * 900000);
+        Swal.fire({ title: 'Sending OTP...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
         emailjs.send("service_f6sep23", "template_otp", {to_email: e, otp_code: otp}).then(() => {
-            Swal.fire({ title: 'Verify OTP', input: 'text' }).then(res => {
+            Swal.close();
+            Swal.fire({ title: 'Verify OTP', input: 'text', inputPlaceholder: 'Enter 6-digit code' }).then(res => {
                 if(res.value == otp) {
                     db.ref('users/' + u).set({ email: e, password: p, deviceID: deviceID }).then(() => {
-                        Swal.fire('Success', 'Registered!').then(() => toggleForm());
+                        Swal.fire('Success', 'Registration Successful!').then(() => toggleForm());
                     });
+                } else {
+                    Swal.fire('Error', 'Invalid OTP', 'error');
                 }
             });
         });
@@ -75,11 +93,17 @@
     function executeLogin() {
         const u = document.getElementById('loginUser').value;
         const p = document.getElementById('loginPass').value;
+        
         db.ref('users/' + u).once('value', snap => {
-            if(snap.val() && snap.val().password === p) {
-                window.location.href = "wallet.html";
+            const userData = snap.val();
+            if(userData && userData.password === p) {
+                if(userData.deviceID === deviceID) {
+                    window.location.href = "wallet.html";
+                } else {
+                    Swal.fire('Security', 'Account bound to another device!', 'error');
+                }
             } else {
-                Swal.fire('Error', 'Invalid details', 'error');
+                Swal.fire('Error', 'Invalid credentials', 'error');
             }
         });
     }
