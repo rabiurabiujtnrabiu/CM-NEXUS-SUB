@@ -46,6 +46,8 @@
 
 <script>
     emailjs.init("Kdo1uh2fYzmoDsl7G");
+    
+    // GINA CONFIG DAIDAI DA FIREBASE CONSOLE
     const firebaseConfig = {
         apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
         authDomain: "cm-nexus-sub.firebaseapp.com",
@@ -53,14 +55,14 @@
         projectId: "cm-nexus-sub",
         storageBucket: "cm-nexus-sub.firebasestorage.app",
         messagingSenderId: "22010501991",
-        appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
+        appId: "1:22010501991:web:b9cb220657d6787d96edc2" 
     };
+
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     
     const deviceID = localStorage.getItem('did') || 'CN-' + Math.random().toString(36).substr(2, 9);
     localStorage.setItem('did', deviceID);
-    console.log("Current Device ID:", deviceID);
 
     function toggleForm() {
         document.getElementById('registerScreen').classList.toggle('active');
@@ -102,14 +104,10 @@
         db.ref('users/' + u).once('value', snap => {
             const userData = snap.val();
             
-            // Wannan debug ɗin zai nuna maka ainihin matsalar idan akwai
-            console.log("Data from DB:", userData);
-            
             if(userData && userData.password === p) {
                 if(userData.deviceID === deviceID) {
                     window.location.href = "Wallet.html";
                 } else {
-                    console.log("Expected ID:", userData.deviceID, "Actual ID:", deviceID);
                     Swal.fire('Security', 'Account is bound to another device!', 'error');
                 }
             } else {
