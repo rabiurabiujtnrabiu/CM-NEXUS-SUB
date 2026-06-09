@@ -14,20 +14,18 @@
         :root {
             --primary: #0062ff; 
             --accent: #00f2fe; 
-            --bg: #0b0f19; /* Canza background din ya dace da sauran shafukan app din */
+            --bg: #0b0f19; 
             --surface: #111827; 
             --border: #1f2937;
-            --white: #111827; 
             --success: #10b981; 
             --danger: #ff4757;
             --grad: linear-gradient(135deg, #0062ff 0%, #00f2fe 100%);
-            --dark-nav: #0f172a;
             --text-main: #f9fafb;
             --text-muted: #9ca3af;
         }
         
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); color: var(--text-main); padding-bottom: 120px; overflow-x: hidden; }
+        body { margin: 0; background: var(--bg); color: var(--text-main); padding-bottom: 40px; overflow-x: hidden; }
         ::-webkit-scrollbar { display: none; }
 
         header { padding: 25px 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -43,30 +41,11 @@
         .balance-label { font-size: 12px; font-weight: 600; opacity: 0.9; letter-spacing: 1px; }
         .balance-amount { font-size: 34px; font-weight: 800; margin: 8px 0 25px; display: flex; align-items: center; gap: 8px; }
         
-        /* TRANSFER ICON A SAMAN CARD INDA KA YI WA ALAMA */
         .transfer-trigger {
-            position: absolute;
-            top: 25px;
-            right: 25px;
-            width: 48px;
-            height: 48px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            transition: 0.3s;
-            animation: pulse-border 2s infinite;
-        }
-        .transfer-trigger:active { transform: scale(0.9); }
-        @keyframes pulse-border {
-            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+            position: absolute; top: 25px; right: 25px; width: 48px; height: 48px;
+            background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 16px; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 18px; cursor: pointer; transition: 0.3s;
         }
 
         .wallet-actions { display: flex; gap: 15px; }
@@ -75,9 +54,7 @@
             padding: 14px; border-radius: 20px; color: white; font-weight: 700; 
             font-size: 12px; backdrop-filter: blur(10px); cursor: pointer; 
             display: flex; align-items: center; justify-content: center; gap: 8px; flex: 1; 
-            transition: 0.3s;
         }
-        .action-btn:active { transform: scale(0.97); }
 
         .services-grid { 
             display: grid; grid-template-columns: repeat(4, 1fr); 
@@ -88,9 +65,7 @@
             width: 58px; height: 58px; background: var(--surface); border-radius: 20px; 
             display: flex; align-items: center; justify-content: center; 
             font-size: 20px; color: var(--primary); border: 1px solid var(--border);
-            box-shadow: 0 8px 18px rgba(0,0,0,0.15); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .service-item:active .icon-box { transform: scale(0.9); }
         .service-item span { font-size: 11px; font-weight: 700; color: var(--text-muted); text-align: center; }
 
         .recent-box { padding: 15px 20px 0; }
@@ -99,40 +74,11 @@
             background: var(--surface); padding: 16px; border-radius: 24px; 
             display: flex; align-items: center; gap: 15px; margin-bottom: 12px; 
             border: 1px solid var(--border);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
         }
         .trans-info { flex: 1; }
         .trans-info b { font-size: 14px; display: block; color: var(--text-main); }
-        .trans-info small { font-size: 11px; color: var(--text-muted); display: block; margin-top: 2px; }
+        .trans-info small { font-size: 11px; color: var(--text-muted); display: block; }
         .trans-amt { font-weight: 800; font-size: 14px; }
-
-        .bottom-nav { 
-            position: fixed; bottom: 25px; left: 20px; right: 20px;
-            background: var(--dark-nav); height: 75px; border-radius: 24px; 
-            display: flex; justify-content: space-around; align-items: center;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); z-index: 2000; padding: 0 10px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .nav-item { 
-            text-decoration: none; color: #64748b; 
-            display: flex; flex-direction: column; align-items: center; gap: 6px;
-            width: 70px; font-size: 10px; font-weight: 800; text-transform: uppercase;
-        }
-        .nav-item i { font-size: 24px; }
-        .nav-item.active { color: #38bdf8; transform: translateY(-8px); }
-
-        .swal2-popup { border-radius: 28px !important; background: var(--surface) !important; color: white !important; font-family: 'Plus Jakarta Sans', sans-serif !important; }
-        .swal2-title { color: white !important; font-weight: 800 !important; }
-        .swal2-html-container { color: var(--text-muted) !important; }
-        .swal2-input {
-            background: var(--bg) !important;
-            border: 2px solid var(--border) !important;
-            border-radius: 16px !important;
-            color: white !important;
-            font-size: 14px !important;
-            font-weight: 700 !important;
-        }
-        .swal2-input:focus { border-color: var(--primary) !important; outline: none !important; }
     </style>
 </head>
 <body>
@@ -151,7 +97,7 @@
         <div class="balance-label">TOTAL BALANCE</div>
         <div class="balance-amount">₦<span id="balance">0.00</span></div>
         
-        <div class="transfer-trigger" onclick="openTransferModal()" title="Internal Wallet Transfer">
+        <div class="transfer-trigger" onclick="openTransferModal()">
             <i class="fa-solid fa-paper-plane"></i>
         </div>
 
@@ -177,178 +123,28 @@
         <div id="miniHistory"></div>
     </div>
 
-    <nav class="bottom-nav">
-        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i><span>Hub</span></a>
-        <a href="CM-ARENA.html" class="nav-item"><i class="fa-solid fa-shield-halved"></i><span>Arena</span></a>
-        <a href="Wallet.html" class="nav-item active"><i class="fa-solid fa-wallet"></i><span>Wallet</span></a>
-        <a href="Settings.html" class="nav-item"><i class="fa-solid fa-sliders"></i><span>Settings</span></a>
-    </nav>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
     <script>
-        // CIKAKKEN CONFIGURATION NA FIREBASE DLNKA NA GASKE
         const firebaseConfig = {
             apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
             authDomain: "cm-nexus-sub.firebaseapp.com",
-            projectId: "cm-nexus-sub",
             databaseURL: "https://cm-nexus-sub-default-rtdb.firebaseio.com",
+            projectId: "cm-nexus-sub",
             storageBucket: "cm-nexus-sub.firebasestorage.app",
             messagingSenderId: "22010501991",
             appId: "1:22010501991:web:8f84589f0d89ab7496edc2"
         };
-        
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const myName = localStorage.getItem('username');
 
-        // Tsaro: Idan babu login, korar user baya
-        if(!myName) {
-            window.location.href = "index.html";
-        }
-        
+        if(!myName) window.location.href = "index.html";
         document.getElementById('walletUser').innerText = myName;
-        let walletBal = 0;
 
-        // SYNC BALANCE
         db.ref('users/' + myName + '/wallet').on('value', snap => {
-            walletBal = parseFloat(snap.val()) || 0;
-            document.getElementById('balance').innerText = walletBal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            document.getElementById('balance').innerText = (parseFloat(snap.val()) || 0).toLocaleString('en-US', { minimumFractionDigits: 2 });
         });
-
-        // RECENT ACTIVITY
-        db.ref('transactions/' + myName).limitToLast(4).on('value', snap => {
-            const list = document.getElementById('miniHistory');
-            list.innerHTML = "";
-            if (snap.exists()) {
-                snap.forEach(child => {
-                    const t = child.val();
-                    const isDebit = t.type === 'debit';
-                    list.innerHTML = `
-                        <div class="transaction animate__animated animate__fadeInUp">
-                            <div class="trans-info"><b>${t.service}</b><small>${new Date(t.time).toLocaleString()}</small></div>
-                            <div class="trans-amt" style="color:${isDebit ? 'var(--danger)' : 'var(--success)'}">${isDebit ? '-' : '+'}₦${Number(t.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
-                        </div>` + list.innerHTML;
-                });
-            } else {
-                list.innerHTML = `<p style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:20px;">No recent transactions yet.</p>`;
-            }
-        });
-
-        // LIVE INTERNAL TRANSFER LOGIC (WALLET TO WALLET)
-        function openTransferModal() {
-            Swal.fire({
-                title: 'Internal Transfer',
-                text: 'Transfer funds instantly to any CM Nexus Sub member username.',
-                html: `
-                    <input id="recipientInput" class="swal2-input" placeholder="Recipient Username">
-                    <input id="amountInput" type="number" class="swal2-input" placeholder="Amount (₦)">
-                `,
-                showCancelButton: true,
-                confirmButtonText: 'Transfer Now',
-                confirmButtonColor: '#0062ff',
-                cancelButtonColor: '#1f2937',
-                preConfirm: () => {
-                    const recipient = document.getElementById('recipientInput').value.trim().toLowerCase();
-                    const amount = parseFloat(document.getElementById('amountInput').value);
-                    
-                    if (!recipient) {
-                        Swal.showValidationMessage('Please enter a recipient username!');
-                        return false;
-                    }
-                    if (recipient === myName.toLowerCase()) {
-                        Swal.showValidationMessage('You cannot transfer funds to yourself!');
-                        return false;
-                    }
-                    if (isNaN(amount) || amount <= 0) {
-                        Swal.showValidationMessage('Please enter a valid amount greater than zero!');
-                        return false;
-                    }
-                    if (amount > walletBal) {
-                        Swal.showValidationMessage('Insufficient balance in wallet!');
-                        return false;
-                    }
-                    return { recipient, amount };
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const { recipient, amount } = result.value;
-                    
-                    Swal.fire({
-                        title: 'Securing Connection...',
-                        html: `Verifying account identity for <b>@${recipient}</b>...`,
-                        allowOutsideClick: false,
-                        didOpen: () => { Swal.showLoading(); }
-                    });
-
-                    // Tabbatar ko asusun mai karba yana nan da gaske
-                    db.ref('users/' + recipient).once('value', snap => {
-                        if (!snap.exists()) {
-                            Swal.fire('Not Found', `The username <b>@${recipient}</b> is not registered on CM Nexus Sub.`, 'error');
-                            return;
-                        }
-
-                        const recipientName = snap.val().fullName || recipient;
-
-                        Swal.fire({
-                            title: 'Confirm Transfer',
-                            html: `Transfer <b>₦${amount.toLocaleString()}</b> to <b>${recipientName} (@${recipient})</b>?<br><br><i>This transaction is irreversible.</i>`,
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#0062ff',
-                            cancelButtonColor: '#1f2937'
-                        }).then((confirmResult) => {
-                            if (confirmResult.isConfirmed) {
-                                Swal.fire({
-                                    title: 'Processing Transfer...',
-                                    allowOutsideClick: false,
-                                    didOpen: () => { Swal.showLoading(); }
-                                });
-
-                                // Rage kudin wallet din Mai tura kudi
-                                db.ref('users/' + myName).transaction(sender => {
-                                    if (sender && sender.wallet >= amount) {
-                                        sender.wallet -= amount;
-                                        return sender;
-                                    }
-                                }).then(tx => {
-                                    if (tx.committed) {
-                                        // Kara kudin wallet din Mai karba otomatik
-                                        db.ref('users/' + recipient + '/wallet').transaction(w => (parseFloat(w) || 0) + amount).then(() => {
-                                            const timeNow = Date.now();
-                                            
-                                            // Rubuta History a asusun Mai tura kudi (Debit)
-                                            db.ref('transactions/' + myName).push({
-                                                service: `Transfer to @${recipient}`,
-                                                amount: amount,
-                                                type: 'debit',
-                                                time: timeNow
-                                            });
-
-                                            // Rubuta History a asusun Mai karba (Credit)
-                                            db.ref('transactions/' + recipient).push({
-                                                service: `Received from @${myName}`,
-                                                amount: amount,
-                                                type: 'credit',
-                                                time: timeNow
-                                            });
-
-                                            Swal.fire('Success!', `Instantly transferred <b>₦${amount.toLocaleString()}</b> to <b>@${recipient}</b>.`, 'success');
-                                        });
-                                    } else {
-                                        Swal.fire('Failed', 'Transaction rejected. Insufficient funds.', 'error');
-                                    }
-                                }).catch(err => {
-                                    Swal.fire('Database Error', 'Could not complete transfer payload.', 'error');
-                                    console.error(err);
-                                });
-                            }
-                        });
-                    });
-                }
-            });
-        }
     </script>
 </body>
 </html>
