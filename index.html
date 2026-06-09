@@ -7,6 +7,8 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
     <style>
         body { background: #0b0f19; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; margin: 0; }
         .box { width: 90%; max-width: 400px; background: #111827; padding: 30px; border-radius: 25px; }
@@ -58,6 +60,7 @@
     
     const deviceID = localStorage.getItem('did') || 'CN-' + Math.random().toString(36).substr(2, 9);
     localStorage.setItem('did', deviceID);
+    console.log("Current Device ID:", deviceID);
 
     function toggleForm() {
         document.getElementById('registerScreen').classList.toggle('active');
@@ -98,11 +101,16 @@
         
         db.ref('users/' + u).once('value', snap => {
             const userData = snap.val();
+            
+            // Wannan debug ɗin zai nuna maka ainihin matsalar idan akwai
+            console.log("Data from DB:", userData);
+            
             if(userData && userData.password === p) {
                 if(userData.deviceID === deviceID) {
                     window.location.href = "Wallet.html";
                 } else {
-                    Swal.fire('Security', 'Account bound to another device!', 'error');
+                    console.log("Expected ID:", userData.deviceID, "Actual ID:", deviceID);
+                    Swal.fire('Security', 'Account is bound to another device!', 'error');
                 }
             } else {
                 Swal.fire('Error', 'Invalid credentials', 'error');
