@@ -98,23 +98,25 @@
     }
 
     function executeLogin() {
-        const u = document.getElementById('loginUser').value.trim();
-        const p = document.getElementById('loginPass').value.trim();
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value.trim();
+    
+    db.ref('users/' + u).once('value', snap => {
+        const userData = snap.val();
         
-        db.ref('users/' + u).once('value', snap => {
-            const userData = snap.val();
-            
-            if(userData && userData.password === p) {
-                if(userData.deviceID === deviceID) {
-                    window.location.href = "Wallet.html";
-                } else {
-                    Swal.fire('Security', 'Account is bound to another device!', 'error');
-                }
+        if(userData && userData.password === p) {
+            if(userData.deviceID === deviceID) {
+                // GYARA: Mun adana username a localStorage kafin mu tura shi Wallet.html
+                localStorage.setItem('username', u); 
+                window.location.href = "Wallet.html";
             } else {
-                Swal.fire('Error', 'Invalid credentials', 'error');
+                Swal.fire('Security', 'Account is bound to another device!', 'error');
             }
-        });
-    }
+        } else {
+            Swal.fire('Error', 'Invalid credentials', 'error');
+        }
+    });
+}
 </script>
 </body>
 </html>
