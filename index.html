@@ -29,7 +29,6 @@
         <input type="number" id="regPhone" placeholder="Phone">
         <input type="password" id="regPass" placeholder="Password">
         <input type="password" id="regConfirm" placeholder="Confirm Password">
-        <input type="text" id="regRef" placeholder="Referral Code">
         <button onclick="initRegistration()">Register</button>
         <div class="switch-link" onclick="toggleForm()">Already have an account? Login</div>
     </div>
@@ -44,8 +43,6 @@
 
 <script>
     emailjs.init("Kdo1uh2fYzmoDsl7G");
-    
-    // Firebase Config - Tabbatar ka saka naka anan
     const firebaseConfig = {
         apiKey: "AIzaSyDm6DoHt0g0_B1E8FTxv8jRkbauTVu95Q0",
         authDomain: "cm-nexus-sub.firebaseapp.com",
@@ -57,7 +54,6 @@
     };
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    
     const deviceID = localStorage.getItem('did') || 'CN-' + Math.random().toString(36).substr(2, 9);
     localStorage.setItem('did', deviceID);
 
@@ -67,9 +63,10 @@
     }
 
     function initRegistration() {
-        const u = document.getElementById('regUser').value;
-        const e = document.getElementById('regEmail').value;
-        const p = document.getElementById('regPass').value;
+        // Muna amfani da .trim() don cire duk wani sarari (space)
+        const u = document.getElementById('regUser').value.trim();
+        const e = document.getElementById('regEmail').value.trim();
+        const p = document.getElementById('regPass').value.trim();
         
         if(!u || !e || !p) return Swal.fire('Error', 'Fill all fields', 'error');
 
@@ -78,10 +75,10 @@
 
         emailjs.send("service_f6sep23", "template_otp", {to_email: e, otp_code: otp}).then(() => {
             Swal.close();
-            Swal.fire({ title: 'Verify OTP', input: 'text', inputPlaceholder: 'Enter 6-digit code' }).then(res => {
+            Swal.fire({ title: 'Verify OTP', input: 'text' }).then(res => {
                 if(res.value == otp) {
                     db.ref('users/' + u).set({ email: e, password: p, deviceID: deviceID }).then(() => {
-                        Swal.fire('Success', 'Registration Successful!').then(() => toggleForm());
+                        Swal.fire('Success', 'Registered!').then(() => toggleForm());
                     });
                 } else {
                     Swal.fire('Error', 'Invalid OTP', 'error');
@@ -91,11 +88,14 @@
     }
 
     function executeLogin() {
-        const u = document.getElementById('loginUser').value;
-        const p = document.getElementById('loginPass').value;
+        const u = document.getElementById('loginUser').value.trim();
+        const p = document.getElementById('loginPass').value.trim();
         
         db.ref('users/' + u).once('value', snap => {
             const userData = snap.val();
+            // Muna amfani da console.log don mu gano matsalar
+            console.log("Checking User:", u, "Found Data:", userData);
+            
             if(userData && userData.password === p) {
                 if(userData.deviceID === deviceID) {
                     window.location.href = "wallet.html";
