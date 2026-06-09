@@ -26,9 +26,10 @@
     <div id="registerScreen" class="form-box active">
         <input type="text" id="regUser" placeholder="Username">
         <input type="email" id="regEmail" placeholder="Email">
-        <input type="number" id="regPhone" placeholder="Phone">
+        <input type="number" id="regPhone" placeholder="Phone Number">
         <input type="password" id="regPass" placeholder="Password">
         <input type="password" id="regConfirm" placeholder="Confirm Password">
+        <input type="text" id="regRef" placeholder="Referral Code">
         <button onclick="initRegistration()">Register</button>
         <div class="switch-link" onclick="toggleForm()">Already have an account? Login</div>
     </div>
@@ -54,6 +55,7 @@
     };
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    
     const deviceID = localStorage.getItem('did') || 'CN-' + Math.random().toString(36).substr(2, 9);
     localStorage.setItem('did', deviceID);
 
@@ -63,12 +65,15 @@
     }
 
     function initRegistration() {
-        // Muna amfani da .trim() don cire duk wani sarari (space)
         const u = document.getElementById('regUser').value.trim();
         const e = document.getElementById('regEmail').value.trim();
+        const ph = document.getElementById('regPhone').value.trim();
         const p = document.getElementById('regPass').value.trim();
+        const cp = document.getElementById('regConfirm').value.trim();
+        const ref = document.getElementById('regRef').value.trim();
         
-        if(!u || !e || !p) return Swal.fire('Error', 'Fill all fields', 'error');
+        if(!u || !e || !ph || !p || !cp) return Swal.fire('Error', 'Fill all fields', 'error');
+        if(p !== cp) return Swal.fire('Error', 'Passwords do not match', 'error');
 
         const otp = Math.floor(100000 + Math.random() * 900000);
         Swal.fire({ title: 'Sending OTP...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
@@ -77,7 +82,7 @@
             Swal.close();
             Swal.fire({ title: 'Verify OTP', input: 'text' }).then(res => {
                 if(res.value == otp) {
-                    db.ref('users/' + u).set({ email: e, password: p, deviceID: deviceID }).then(() => {
+                    db.ref('users/' + u).set({ email: e, phone: ph, password: p, referral: ref, deviceID: deviceID }).then(() => {
                         Swal.fire('Success', 'Registered!').then(() => toggleForm());
                     });
                 } else {
@@ -93,9 +98,6 @@
         
         db.ref('users/' + u).once('value', snap => {
             const userData = snap.val();
-            // Muna amfani da console.log don mu gano matsalar
-            console.log("Checking User:", u, "Found Data:", userData);
-            
             if(userData && userData.password === p) {
                 if(userData.deviceID === deviceID) {
                     window.location.href = "Wallet.html";
